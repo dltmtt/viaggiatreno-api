@@ -3,7 +3,7 @@ from datetime import date, datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
-from .models import StopType
+from api.models import StopType
 
 
 def to_datetime(timestamp_ms: int | None) -> datetime | None:

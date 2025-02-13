@@ -9,8 +9,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
 from api import utils
-
-from .models import (
+from api.models import (
     Arrival,
     BaseStation,
     Departure,
