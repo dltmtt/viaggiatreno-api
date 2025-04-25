@@ -62,7 +62,7 @@ BASE_URI = "http://www.viaggiatreno.it/infomobilita/resteasy/viaggiatreno"
 
 
 def get(endpoint: str, *args: str) -> dict | str:
-    url = f'{BASE_URI}/{endpoint}/{"/".join(str(arg) for arg in args)}'
+    url = f"{BASE_URI}/{endpoint}/{'/'.join(str(arg) for arg in args)}"
     r = requests.get(url, timeout=30)
     r.raise_for_status()
 
@@ -71,7 +71,6 @@ def get(endpoint: str, *args: str) -> dict | str:
 
 @app.get(
     "/stations/search/{query}",
-    response_model=list[BaseStation],
     tags=["stations"],
 )
 def get_matching_stations(query: str, limit: int = 10) -> list[BaseStation]:
@@ -87,7 +86,6 @@ def get_matching_stations(query: str, limit: int = 10) -> list[BaseStation]:
 
 @app.get(
     "/stations/{station_id}/departures",
-    response_model=list[Departure],
     tags=["stations"],
 )
 def get_departures(
@@ -121,7 +119,6 @@ def get_departures(
 
 @app.get(
     "/stations/{station_id}/arrivals",
-    response_model=list[Arrival],
     tags=["stations"],
 )
 def get_arrivals(
@@ -153,7 +150,7 @@ def get_arrivals(
     ]
 
 
-@app.get("/trains/{train_number}", response_model=list[TrainInfo], tags=["trains"])
+@app.get("/trains/{train_number}", tags=["trains"])
 def get_trains_with_number(train_number: int) -> list[TrainInfo]:
     r = get("cercaNumeroTrenoTrenoAutocomplete", train_number)
 
@@ -177,7 +174,7 @@ def get_trains_with_number(train_number: int) -> list[TrainInfo]:
     ]
 
 
-@app.get("/trains", response_model=TrainProgress, tags=["trains"])
+@app.get("/trains", tags=["trains"])
 def get_train_progress(
     origin_station_id: str,
     train_number: int,
@@ -242,7 +239,7 @@ def get_train_progress(
     )
 
 
-@app.get("/stats", response_model=Stats, tags=["other"])
+@app.get("/stats", tags=["other"])
 def get_stats() -> Stats:
     """Get statistics about today's circulating trains."""
     timestamp = int(datetime.now(tz=ZoneInfo("Europe/Rome")).timestamp() * 1000)
