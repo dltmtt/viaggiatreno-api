@@ -17,6 +17,8 @@ from api.models import StopType, TrainProgress, TrainStop
 if TYPE_CHECKING:
     from api.models import Arrival, BaseStation, Departure, TrainInfo
 
+logger = logging.getLogger(__name__)
+
 
 class Train:
     """A train is identified by the triple (number, origin_station_id, departure_date)."""
@@ -69,7 +71,7 @@ class Train:
                 departure_date,
             )
         except api.HTTPException:
-            logging.exception("Error while fetching train progress")
+            logger.exception("Error while fetching train progress")
             return None
 
         return cls(number, origin_station_id, departure_date, detailed_info)
@@ -354,7 +356,7 @@ def choose_station(query: str) -> Station | None:
     try:
         stations: list[BaseStation] = api.get_matching_stations(query)
     except api.HTTPException:
-        logging.exception("Error while fetching stations")
+        logger.exception("Error while fetching stations")
         return None
 
     if len(stations) == 1:
@@ -372,7 +374,7 @@ def choose_train(train_number: int) -> Train | None:
     try:
         train_info: list[TrainInfo] = api.get_trains_with_number(train_number)
     except api.HTTPException:
-        logging.exception("Error while fetching train info")
+        logger.exception("Error while fetching train info")
         return None
 
     if len(train_info) == 1:
