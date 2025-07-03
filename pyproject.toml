@@ -1,7 +1,3 @@
-[build-system]
-requires = ["setuptools"]
-build-backend = "setuptools.build_meta"
-
 [project]
 name = "viaggiatreno-api-wrapper"
 version = "0.2.0"
@@ -22,7 +18,7 @@ cli = "cli.main:main"
 dump-stations = "api.wrapper:dump_stations"
 
 [dependency-groups]
-dev = ["ruff>=0.7.3"]
+dev = ["ruff>=0.12.1"]
 
 [tool.ruff]
 target-version = "py312"
@@ -30,6 +26,3 @@ target-version = "py312"
 [tool.ruff.lint]
 select = ["ALL"]
 ignore = ["D", "FIX", "T20", "TD", "E501"]
-
-[tool.setuptools.packages.find]
-include = ["cli", "api"]
