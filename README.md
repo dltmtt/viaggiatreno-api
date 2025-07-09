@@ -2,8 +2,6 @@
 
 Esploriamo le [API di ViaggiaTreno][API]. Le richieste sono tutte di tipo GET e il base-uri è <http://www.viaggiatreno.it/infomobilita/resteasy/viaggiatreno/>.
 
-[API]: http://www.viaggiatreno.it/infomobilita/rest-jsapi "API di ViaggiaTreno"
-
 ## Casi d'uso
 
 ### Ricerca stazione
@@ -19,14 +17,6 @@ Possiamo verificare lo stato effettivo del treno chiamando `andamentoTreno`, che
 Dovrei controllare se le informazioni relative ai binari riportate da `partenze` e `arrivi` sono affidabili; al momento, nel dubbio, uso quelle riportate da `andamentoTreno`.
 Dovrei anche controllare se è possibile capire se un treno è partito dalla sua stazione di partenza senza scorrere tutte le fermate.
 
-### Ricerca itinerario
-
-Prendiamo il treno per andare da un posto all'altro. Ci affidiamo a ViaggiaTreno per trovare le possibili soluzioni di viaggio.
-
-Selezioniamo la stazione di partenza e quella di arrivo: chiamiamo `autocompletaStazione` (ci servono i codici delle stazioni di partenza e di arrivo) e scegliamo un orario.
-Cerchiamo un itinerario con `soluzioniViaggioNew` e scegliamo quello che ci interessa.
-Vediamo per quali stazioni passa il treno, a che binario si ferma e se è in ritardo (forse lo vediamo anche da `soluzioniViaggioNew`, devo verificare) chiamando `andamentoTreno`. Tutto molto bello ma ancora in fase di sviluppo.
-
 ## Possibili _endpoint_
 
 - [`autocompletaStazione`, `autocompletaStazioneImpostaViaggio`,`autocompletaStazioneNTS` e `cercaStazione`](#autocompletastazione-autocompletastazioneimpostaviaggioautocompletastazionents-e-cercastazione)
@@ -35,7 +25,6 @@ Vediamo per quali stazioni passa il treno, a che binario si ferma e se è in rit
 - [`dettaglioStazione`](#dettagliostazione)
 - [`andamentoTreno`](#andamentotreno)
 - [`elencoStazioni`](#elencostazioni)
-- [`soluzioniViaggioNew`](#soluzioniviaggionew)
 
 Quelli che chiamo parametri vanno aggiunti dopo l'endpoint, separati da un `/`.
 
@@ -316,14 +305,6 @@ In ben 13 casi (18 se si contano i duplicati), `nomeLungo` è più corto di `nom
 
 `nomeCitta` non è affidabile: spesso è una A e basta. Potrebbe essere che ci sia solo nelle città con più stazioni.
 
-### `soluzioniViaggioNew`
-
-> **Parametri**:
->
-> 1. `str`: codice della stazione di partenza
-> 2. `str`: codice della stazione di arrivo
-> 3. `str`: data nel formato `YYYY-MM-DDTHH:MM:SS*`
-
 ### `StampaTreno`
 
 Unico endpoint di tipo POST.
@@ -368,3 +349,5 @@ Esempio di risposta:
 `datiMeteo` restituisce un errore se chiamata col codice 9 (Trentino-Alto Adige).
 
 [^1]: Una lista completa si può trovare [qui](https://www.cit-rail.org/media/files/appendix_circular_letter_10_2021_list_of_codes_2021-05-17.pdf).
+
+[API]: http://www.viaggiatreno.it/infomobilita/rest-jsapi
