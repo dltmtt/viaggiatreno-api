@@ -1241,16 +1241,19 @@ L'analisi dei seguenti endpoint è più complicata in quanto i dati sono molto p
 }
 ```
 
-Il campo `codiceCliente` identifica l'operatore ferroviario. I valori possibili (ma potrebbero essercene altri) sono riportati nella tabella seguente:
+Il campo `codiceCliente` si riferisce al codice cliente RFI e identifica l'impresa ferroviaria. La seguente tabella, possibilmente non esaustiva, elenca i codici cliente e le relative imprese ferroviarie:
 
-| `codiceCliente` | Operatore                      |
-| --------------- | ------------------------------ |
-| 1               | Trenitalia (alta velocità)     |
-| 2               | Trenitalia (regionali)         |
-| 4               | Trenitalia (Intercity e Notte) |
-| 18              | Trenitalia Tper                |
-| 63              | Trenord                        |
-| 910             | Ferrovie del Sud Est           |
+| `codiceCliente` | Impresa ferroviaria        |
+| --------------- | -------------------------- |
+| 1               | Trenitalia (alta velocità) |
+| 2               | Trenitalia (regionali)     |
+| 4               | Trenitalia (InterCity)     |
+| 18              | Trenitalia Tper            |
+| 63              | Trenord                    |
+| 64              | TILO                       |
+| 910             | Ferrovie del Sud Est       |
+
+Il nome effettivo con cui un'impresa ferroviaria è registrata presso RFI può essere diverso da quello riportato in questa tabella, ma non è pubblicamente disponibile o quantomeno non è stato trovato.
 
 Le maggior parte delle immagini che indicano ritardi o cancellazioni sono visibili aprendo la legenda di [ViaggiaTreno], sebbene alcune di esse non siano più presenti (ad esempio quella per la mancata rilevazione, che è presente ma non nella legenda).
 
