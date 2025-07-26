@@ -8,6 +8,7 @@
 # ///
 
 import json
+import random
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 from pathlib import Path
@@ -856,6 +857,173 @@ def andamento_treno(ctx, departure_station, date_str, numero_treno):
         print(f"Error: Missing field in train info response: {e}")
     except click.ClickException:
         raise  # Re-raise click exceptions (like station resolution errors)
+
+
+def get_stations_from_file(stations_file):
+    """Get list of stations from a stations file"""
+    stations_path = Path(stations_file)
+    if not stations_path.exists():
+        error_msg = (
+            f"Stations file not found: {stations_file}. "
+            "Please run 'autocompleta-stazione --all' to create it."
+        )
+        raise click.ClickException(error_msg)
+
+    stations = []
+    with stations_path.open("r", encoding="utf-8") as f:
+        for line_text in f:
+            clean_line = line_text.strip()
+            if clean_line and "|" in clean_line:
+                name, code = clean_line.split("|", 1)
+                stations.append({"name": name, "code": code})
+
+    if not stations:
+        error_msg = f"No valid station data found in {stations_file}"
+        raise click.ClickException(error_msg)
+
+    return stations
+
+
+def fetch_station_data(
+    station_code: str, station_name: str, data_type: str, formatted_datetime: str
+):
+    """Fetch partenze or arrivi data for a single station"""
+    try:
+        if data_type == "partenze":
+            response = get_json("partenze", station_code, formatted_datetime)
+        elif data_type == "arrivi":
+            response = get_json("arrivi", station_code, formatted_datetime)
+        else:
+            error_msg = f"Invalid data_type: {data_type}"
+            raise ValueError(error_msg)
+    except requests.RequestException as e:
+        return {
+            "success": False,
+            "station_code": station_code,
+            "station_name": station_name,
+            "data_type": data_type,
+            "error": str(e),
+        }
+    else:
+        return {
+            "success": True,
+            "station_code": station_code,
+            "station_name": station_name,
+            "data_type": data_type,
+            "data": response,
+        }
+
+
+@cli.command("sample-stations")
+@click.option(
+    "-n",
+    "--samples",
+    type=int,
+    default=50,
+    help="Number of random stations to sample (default: 50)",
+)
+@click.option(
+    "-r",
+    "--read-from",
+    type=str,
+    default="dumps/autocompletaStazione.csv",
+    help="Path to stations file (default: dumps/autocompletaStazione.csv)",
+)
+@click.pass_context
+def sample_stations(ctx, samples, read_from):
+    """Sample random stations and fetch their departures and arrivals.
+
+    Results are saved to {output}/partenze and {output}/arrivi directories.
+    File names follow the format: {STATION_CODE}_{ISO_DATETIME}_{TYPE}.json
+    """
+    output_dir = ctx.obj["output"] or "dumps"
+
+    # Create output directories
+    partenze_dir = Path(output_dir) / "partenze"
+    arrivi_dir = Path(output_dir) / "arrivi"
+    partenze_dir.mkdir(parents=True, exist_ok=True)
+    arrivi_dir.mkdir(parents=True, exist_ok=True)
+
+    # Get current datetime for API and filename
+    now = datetime.now(tz=ZoneInfo("Europe/Rome"))
+    formatted_datetime = format_datetime_for_api(None)  # Uses current time
+    iso_datetime = (
+        now.replace(microsecond=0).isoformat().replace(":", "-").replace("+", "_")
+    )
+
+    print(f"Loading station data from {read_from}...")
+    try:
+        stations = get_stations_from_file(read_from)
+    except click.ClickException as e:
+        print(f"Error: {e}")
+        return
+
+    if len(stations) < samples:
+        print(f"Warning: Only {len(stations)} stations available, sampling all of them")
+        samples = len(stations)
+
+    # Sample random stations
+    sampled_stations = random.sample(stations, samples)
+    print(
+        f"Sampling {samples} random stations from {len(stations)} available stations..."
+    )
+
+    # Prepare tasks for both partenze and arrivi
+    tasks = []
+    for station in sampled_stations:
+        tasks.append((station["code"], station["name"], "partenze", formatted_datetime))
+        tasks.append((station["code"], station["name"], "arrivi", formatted_datetime))
+
+    # Fetch data in parallel
+    successful_fetches = 0
+    failed_fetches = 0
+    skipped_empty = 0
+
+    with ThreadPoolExecutor(max_workers=10) as executor:
+        futures = {
+            executor.submit(
+                fetch_station_data, code, name, data_type, formatted_datetime
+            ): (code, name, data_type)
+            for code, name, data_type, formatted_datetime in tasks
+        }
+
+        for future in as_completed(futures):
+            result = future.result()
+            code, name, data_type = futures[future]
+
+            if result["success"]:
+                # Skip saving if the data is an empty array
+                if result["data"] == []:
+                    skipped_empty += 1
+                    print(f"⚠ Skipped {data_type} for {name} ({code}): empty data")
+                    continue
+
+                # Create filename: {STATION_CODE}_{ISO_DATETIME}_{TYPE}.json
+                filename = f"{code}_{iso_datetime}_{data_type}.json"
+
+                # Choose output directory
+                if data_type == "partenze":
+                    output_path = partenze_dir / filename
+                else:
+                    output_path = arrivi_dir / filename
+
+                # Save data
+                with output_path.open("w", encoding="utf-8") as f:
+                    json.dump(result["data"], f, indent=2, ensure_ascii=False)
+
+                successful_fetches += 1
+                print(f"✓ Saved {data_type} for {name} ({code}) to {output_path}")
+            else:
+                failed_fetches += 1
+                print(
+                    f"✗ Failed to fetch {data_type} for {name} ({code}): {result['error']}"
+                )
+
+    print("\n✅ Completed sampling:")
+    print(f"  • Successful fetches: {successful_fetches}")
+    print(f"  • Failed fetches: {failed_fetches}")
+    print(f"  • Skipped empty data: {skipped_empty}")
+    print(f"  • Results saved in {partenze_dir} and {arrivi_dir}")
 
 
 @cli.command("dump-all")
