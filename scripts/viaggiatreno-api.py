@@ -7,10 +7,12 @@
 # ]
 # ///
 
+import csv
 import json
 import random
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
+from io import StringIO
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
@@ -19,6 +21,7 @@ import requests
 
 BASE_URI = "http://www.viaggiatreno.it/infomobilita/resteasy/viaggiatreno"
 MAX_REGION = 22
+MIN_CSV_COLUMNS = 2
 
 # Region code to name mapping
 REGIONS = {
@@ -88,7 +91,9 @@ def resolve_station_code(station_input: str) -> str:
         msg = f"Error searching for station '{station_input}': {e}"
         raise click.ClickException(msg) from e
     else:
-        lines = [line.strip() for line in response.split("\n") if line.strip()]
+        # Parse CSV data with pipe delimiter
+        csv_reader = csv.reader(StringIO(response), delimiter="|")
+        lines = [row for row in csv_reader if len(row) >= MIN_CSV_COLUMNS]
 
         if not lines:
             msg = f"No stations found matching '{station_input}'"
@@ -96,14 +101,14 @@ def resolve_station_code(station_input: str) -> str:
 
         # If only one result, use it
         if len(lines) == 1:
-            station_name, station_code = lines[0].split("|")
+            station_name, station_code = lines[0][0], lines[0][1]
             click.echo(f"Using station: {station_name} ({station_code})")
             return station_code
 
         # Multiple results - show options
         click.echo(f"Multiple stations found matching '{station_input}':")
-        for i, line in enumerate(lines[:MAX_RESULTS_TO_SHOW], 1):
-            station_name, station_code = line.split("|")
+        for i, row in enumerate(lines[:MAX_RESULTS_TO_SHOW], 1):
+            station_name, station_code = row[0], row[1]
             click.echo(f"  {i}. {station_name} ({station_code})")
 
         if len(lines) > MAX_RESULTS_TO_SHOW:
@@ -118,7 +123,7 @@ def resolve_station_code(station_input: str) -> str:
             msg = "Selection cancelled or invalid"
             raise click.ClickException(msg)
 
-        station_name, station_code = lines[choice - 1].split("|")
+        station_name, station_code = lines[choice - 1][0], lines[choice - 1][1]
         click.echo(f"Selected: {station_name} ({station_code})")
         return station_code
 
@@ -871,10 +876,10 @@ def get_stations_from_file(stations_file):
 
     stations = []
     with stations_path.open("r", encoding="utf-8") as f:
-        for line_text in f:
-            clean_line = line_text.strip()
-            if clean_line and "|" in clean_line:
-                name, code = clean_line.split("|", 1)
+        csv_reader = csv.reader(f, delimiter="|")
+        for row in csv_reader:
+            if len(row) >= MIN_CSV_COLUMNS:
+                name, code = row[0], row[1]
                 stations.append({"name": name, "code": code})
 
     if not stations:
