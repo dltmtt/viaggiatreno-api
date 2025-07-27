@@ -1,5 +1,5 @@
 {
-  "$id": "https://github.com/dltmtt/viaggiatreno-api/blob/main/schemas/andamentoTreno.schema.json",
+  "$id": "https://raw.githubusercontent.com/dltmtt/viaggiatreno-api/refs/heads/main/schemas/andamentoTreno.schema.json",
   "type": "object",
   "properties": {
     "tipoTreno": {
