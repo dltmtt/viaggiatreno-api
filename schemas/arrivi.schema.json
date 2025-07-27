@@ -1,0 +1,687 @@
+{
+  "$id": "https://github.com/dltmtt/viaggiatreno-api/blob/main/schemas/arrivi.schema.json",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "arrivato": {
+        "type": "boolean",
+        "description": "Se il treno è già arrivato nella stazione di cui si vogliono conoscere gli arrivi."
+      },
+      "dataPartenzaTrenoAsDate": {
+        "type": "string",
+        "format": "date",
+        "description": "Data di partenza del treno nel formato YYYY-MM-DD.",
+        "examples": ["2025-07-26"]
+      },
+      "dataPartenzaTreno": {
+        "type": "integer",
+        "description": "Data di partenza del treno in millisecondi dalla Unix Epoch.",
+        "examples": [1753480800000]
+      },
+      "partenzaTreno": {
+        "type": ["integer", "null"],
+        "description": "Ora di partenza del treno in millisecondi dalla Unix Epoch.",
+        "examples": [1753556970000, null]
+      },
+      "millisDataPartenza": {
+        "type": ["string", "null"],
+        "default": null,
+        "description": "Data di partenza del treno in millisecondi dalla Unix Epoch come stringa. Presente solo in treni cancellati.",
+        "examples": ["1753567200000", null]
+      },
+      "numeroTreno": {
+        "type": "integer",
+        "description": "Numero identificativo del treno.",
+        "examples": [23, 26387, 21007]
+      },
+      "categoria": {
+        "type": "string",
+        "description": "Categoria del treno. Meno dettagliato di `categoriaDescrizione`: le Frecce vedono questo campo vuoto.",
+        "examples": ["", "EC", "EN", "EXP", "IC", "ICN", "MET", "REG"]
+      },
+      "categoriaDescrizione": {
+        "$comment": "Lo spazio non è un errore, è così che viene restituito.",
+        "type": "string",
+        "description": "Categoria del treno.",
+        "examples": [
+          " FA",
+          " FB",
+          " FR",
+          "EC FR",
+          "EC",
+          "EN",
+          "EXP",
+          "IC",
+          "ICN",
+          "MET",
+          "REG"
+        ]
+      },
+      "origine": {
+        "type": "string",
+        "description": "Nome della stazione di partenza del treno tra quelle presenti nel database. Può essere l'ultima stazione estera o la prima italiana dopo il confine per treni che provengono dall'estero.",
+        "examples": [
+          "MODANE",
+          "MILANO CENTRALE",
+          "ROMA TERMINI",
+          "TORINO PORTA NUOVA"
+        ]
+      },
+      "codOrigine": {
+        "type": "string",
+        "pattern": "^S\\d{5}$",
+        "description": "Codice della stazione di origine del treno."
+      },
+      "destinazione": {
+        "const": null
+      },
+      "codDestinazione": {
+        "const": null
+      },
+      "origineEstera": {
+        "const": null
+      },
+      "destinazioneEstera": {
+        "const": null
+      },
+      "oraPartenzaEstera": {
+        "const": null
+      },
+      "oraArrivoEstera": {
+        "const": null
+      },
+      "tratta": {
+        "const": 0
+      },
+      "regione": {
+        "const": 0
+      },
+      "origineZero": {
+        "const": null
+      },
+      "destinazioneZero": {
+        "const": null
+      },
+      "orarioPartenzaZero": {
+        "const": null
+      },
+      "orarioArrivoZero": {
+        "const": null
+      },
+      "circolante": {
+        "type": "boolean"
+      },
+      "codiceCliente": {
+        "type": "integer",
+        "description": "Codice cliente RFI associato all'impresa ferroviaria.",
+        "examples": [1, 2, 4, 18, 63, 64, 910]
+      },
+      "binarioEffettivoArrivoCodice": {
+        "type": ["string", "null"],
+        "examples": ["0", "2", "166", "167", "171", "1979", "1985", null]
+      },
+      "binarioEffettivoArrivoDescrizione": {
+        "type": ["string", "null"],
+        "examples": ["16", "1", "6", "2TR"]
+      },
+      "binarioEffettivoArrivoTipo": {
+        "enum": ["0", null]
+      },
+      "binarioProgrammatoArrivoCodice": {
+        "enum": ["0", null]
+      },
+      "binarioProgrammatoArrivoDescrizione": {
+        "type": ["string", "null"],
+        "examples": ["9", "II", "15", "XVII", "18", "1 Tr MI", "VIT"]
+      },
+      "binarioEffettivoPartenzaCodice": {
+        "const": null
+      },
+      "binarioEffettivoPartenzaDescrizione": {
+        "const": null
+      },
+      "binarioEffettivoPartenzaTipo": {
+        "const": null
+      },
+      "binarioProgrammatoPartenzaCodice": {
+        "const": null
+      },
+      "binarioProgrammatoPartenzaDescrizione": {
+        "const": null
+      },
+      "subTitle": {
+        "const": null
+      },
+      "esisteCorsaZero": {
+        "const": null
+      },
+      "orientamento": {
+        "enum": ["A", "B", "", null],
+        "description": "Orientamento del treno, può essere A (executive/business/1 classe in coda) o B (executive/business/1 classe in testa). È `null` per i treni che non sono distinti in classi o che non prevedono la prenotazione dei posti, come i regionali. È una stringa vuota quando, pur essendo un treno con classi, non è possibile determinare l'orientamento."
+      },
+      "inStazione": {
+        "type": "boolean"
+      },
+      "haCambiNumero": {
+        "type": "boolean",
+        "description": "Indica se il treno cambia numero durante il viaggio."
+      },
+      "nonPartito": {
+        "type": "boolean"
+      },
+      "provvedimento": {
+        "$comment": "Potrebbero esserci altri valori numerici; lasciando la definizione così è possibile rilevare eventuali cambiamenti futuri per ulteriori analisi.",
+        "enum": [0, 1, 2, 3],
+        "default": 0,
+        "description": "Indica lo stato di cancellazione del treno: 1 = treno completamente cancellato, 2 = cancellato nella tratta finale (arriva in una stazione diversa rispetto a quella programmata), 3 = cancellato nella tratta iniziale (parte da una stazione diversa rispetto a quella programmata)."
+      },
+      "riprogrammazione": {
+        "enum": ["N", null],
+        "default": "N"
+      },
+      "orarioPartenza": {
+        "const": null
+      },
+      "orarioArrivo": {
+        "type": "integer",
+        "description": "Orario di arrivo in millisecondi dalla Unix Epoch."
+      },
+      "stazionePartenza": {
+        "const": null
+      },
+      "stazioneArrivo": {
+        "const": null
+      },
+      "statoTreno": {
+        "const": null
+      },
+      "corrispondenze": {
+        "const": []
+      },
+      "servizi": {
+        "const": []
+      },
+      "ritardo": {
+        "type": "number",
+        "description": "Ritardo del treno in minuti. Se negativo indica un anticipo. Spesso a 0 anche quando il treno è in ritardo, utilizzare andamentoTreno per informazioni più accurate."
+      },
+      "tipoProdotto": {
+        "enum": ["0", "99", "100", "101", "102"],
+        "default": "0",
+        "description": "Valore associato a 99 per i Treni Storici, a 100 per i Frecciarossa, a 101 per i Frecciargento e a 102 per i Frecciabianca. Viene usato insieme a `categoria` per determinare `categoriaDescrizione`."
+      },
+      "compOrarioPartenzaZeroEffettivo": {
+        "const": null
+      },
+      "compOrarioArrivoZeroEffettivo": {
+        "const": null
+      },
+      "compOrarioPartenzaZero": {
+        "const": null
+      },
+      "compOrarioArrivoZero": {
+        "const": null
+      },
+      "compOrarioArrivo": {
+        "type": "string",
+        "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$",
+        "description": "Orario di arrivo nel formato HH:MM.",
+        "examples": ["21:34", "22:06"]
+      },
+      "compOrarioPartenza": {
+        "const": null
+      },
+      "compNumeroTreno": {
+        "type": "string",
+        "description": "Nome completo del treno calcolato a partire da `categoria`, `numeroTreno` e `tipoProdotto`.",
+        "examples": ["REG 2328", " TS 96376", " FA 8852"]
+      },
+      "compOrientamento": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "minItems": 9,
+        "maxItems": 9,
+        "description": "Orientamento del treno in diverse lingue (IT, EN, DE, FR, ES, RO, JA, ZH, RU).",
+        "examples": [
+          ["--", "--", "--", "--", "--", "--", "--", "--", "--"],
+          [
+            "Business in testa",
+            "Business in the head",
+            "Business Zugspitze",
+            "Business en t&ecirc;te",
+            "Business al inicio del tren",
+            "Business la &icirc;nceputul trenului",
+            "頭の中でBusiness",
+            "Business在前几节车厢",
+            "Business в головной части поезда"
+          ],
+          [
+            "Business in coda",
+            "Business at the rear",
+            "Business Zugende",
+            "Businesse en queue",
+            "Business al final del tren",
+            "Business la coada trenului",
+            "背面のBusiness",
+            "Business在后几节车厢",
+            "Business в хвосте поезда"
+          ],
+          [
+            "Executive in testa",
+            "Executive in the head",
+            "Executive Zugspitze",
+            "Executive en t&ecirc;te",
+            "Executive al inicio del tren",
+            "Executive la &icirc;nceputul trenului",
+            "頭の中でExecutive",
+            "Executive在前几节车厢",
+            "Executive в головной части поезда"
+          ],
+          [
+            "Executive in coda",
+            "Executive at the rear",
+            "Executive Zugende",
+            "Executive en queue",
+            "Executive al final del tren",
+            "Executive la coada trenului",
+            "背面のExecutive",
+            "Executive在后几节车厢",
+            "Executive в хвосте поезда"
+          ],
+          [
+            "1 classe in testa",
+            "1st Class in the head",
+            "1. Klasse Zugspitze ",
+            "1&egrave;re classe en t&ecirc;te",
+            "1&ordf; clase al inicio del tren",
+            "clasa I la &icirc;nceputul trenului",
+            "1等車前方",
+            "一等车厢在前几节车厢",
+            "1 класс в головной части поезда"
+          ]
+        ]
+      },
+      "compTipologiaTreno": {
+        "enum": ["regionale", "nazionale"],
+        "description": "Tipologia del treno."
+      },
+      "compClassRitardoTxt": {
+        "enum": ["", "ritardo01_txt", "ritardo02_txt", "ritardo03_txt", null]
+      },
+      "compClassRitardoLine": {
+        "enum": [
+          "regolare_line",
+          "ritardo01_line",
+          "ritardo02_line",
+          "ritardo03_line",
+          null
+        ]
+      },
+      "compImgRitardo2": {
+        "$comment": "L'immagine che indica la cancellazione del treno è presente solo qua, non in compImgRitardo.",
+        "enum": [
+          "/vt_static/img/legenda/icone_legenda/nonpartito.png",
+          "/vt_static/img/legenda/icone_legenda/regolare.png",
+          "/vt_static/img/legenda/icone_legenda/ritardo01.png",
+          "/vt_static/img/legenda/icone_legenda/ritardo02.png",
+          "/vt_static/img/legenda/icone_legenda/ritardo03.png",
+          "/vt_static/img/avvisi/alert3.png",
+          "/vt_static/img/legenda/icone_legenda/cancellazione.png"
+        ],
+        "format": "uri-reference"
+      },
+      "compImgRitardo": {
+        "enum": [
+          "/vt_static/img/legenda/icone_legenda/nonpartito.png",
+          "/vt_static/img/legenda/icone_legenda/regolare.png",
+          "/vt_static/img/legenda/icone_legenda/ritardo01.png",
+          "/vt_static/img/legenda/icone_legenda/ritardo02.png",
+          "/vt_static/img/legenda/icone_legenda/ritardo03.png",
+          "/vt_static/img/avvisi/alert3.png"
+        ],
+        "format": "uri-reference",
+        "description": "URL relativo del bollino che indica il ritardo. È usato da ViaggiaTreno."
+      },
+      "compRitardo": {
+        "type": "array",
+        "description": "Descrizioni del ritardo in diverse lingue (IT, EN, DE, FR, ES, RO, JA, ZH, RU).",
+        "items": {
+          "type": ["string", "null"]
+        },
+        "minItems": 9,
+        "maxItems": 9,
+        "examples": [
+          [
+            "non partito",
+            "not departed",
+            "keine Partei",
+            "pas encore partit",
+            "no sali&oacute;",
+            "nu a plecat",
+            "未発車",
+            "未出发",
+            "не отправленный"
+          ],
+          [
+            "in orario",
+            "on time",
+            "p&#252;nktlich",
+            "&agrave; l'heure",
+            "en horario",
+            "conform orarului",
+            "定刻",
+            "按时",
+            "по расписанию"
+          ],
+          [
+            "ritardo 1 min.",
+            "delay 1 min.",
+            "Versp&#228;tung 1 Min.",
+            "retard de 1 min.",
+            "retraso de 1 min.",
+            "&icirc;nt&acirc;rziere 1 min.",
+            "遅延 1 分",
+            "误点 1分钟",
+            "опоздание на 1 минут"
+          ],
+          [
+            "Mancato rilevamento",
+            "Missing detection",
+            "Erkennung fehlgeschlagen",
+            "D&eacutetection manqu&eacutee",
+            "Detecciónn fallida",
+            null,
+            null,
+            null,
+            null
+          ],
+          [
+            "Cancellato",
+            "Canceled",
+            "Storniert",
+            "Annul&eacute",
+            "Cancelado",
+            null,
+            null,
+            null,
+            null
+          ]
+        ]
+      },
+      "compRitardoAndamento": {
+        "type": "array",
+        "items": {
+          "type": ["string", "null"]
+        },
+        "minItems": 9,
+        "maxItems": 9,
+        "examples": [
+          [
+            "non partito",
+            "not departed",
+            "keine Partei",
+            "pas encore partit",
+            "no sali&oacute;",
+            "nu a plecat",
+            "未発車",
+            "未出发",
+            "не отправленный"
+          ],
+          [
+            "con un anticipo di 1 min.",
+            "1 minutes early",
+            "mit einem Vorsprung von 1 Min.",
+            "en avance de 1 min.",
+            "est&aacute; adelantado 1 min.",
+            "cu un avans de 1 min.",
+            "1 分の繰上",
+            "提前 1分钟",
+            "con un anticipo di 1 min."
+          ],
+          [
+            "con un ritardo di 1 min.",
+            "1 minutes late",
+            "mit einer Verz&#246;gerung von 1 Min.",
+            "avec un retard de 1 min.",
+            "con un retraso de 1 min.",
+            "cu o &icirc;nt&acirc;rziere de 1 min.",
+            "1 分の遅延",
+            "误点 1分钟",
+            "с опозданием в 1 минут"
+          ]
+        ]
+      },
+      "compInStazionePartenza": {
+        "enum": [
+          ["", "", "", "", "", "", "", "", ""],
+          [
+            "Partito",
+            "Departed",
+            "angef&#228;hrt",
+            "Partit",
+            "Salido",
+            "Plecat",
+            "発車済",
+            "已出发",
+            "отправленный"
+          ]
+        ]
+      },
+      "compInStazioneArrivo": {
+        "enum": [
+          ["", "", "", "", "", "", "", "", ""],
+          [
+            "Arrivato",
+            "Arrived",
+            "angekommen",
+            "Arriv&eacute;",
+            "Llegado",
+            "Sosit",
+            "到着済",
+            "已到达",
+            "прибывший"
+          ]
+        ]
+      },
+      "compOrarioEffettivoArrivo": {
+        "type": ["string", "null"],
+        "pattern": "^/vt_static/img/legenda/icone_legenda/regolare\\.png([01][0-9]|2[0-3]):[0-5][0-9]$",
+        "description": "Orario di arrivo effettivo del treno nel formato HH:MM preceduto probabilmente per errore da un URL relativo che punta a un'immagine.",
+        "examples": [
+          "/vt_static/img/legenda/icone_legenda/regolare.png22:03",
+          "/vt_static/img/legenda/icone_legenda/regolare.png21:27"
+        ]
+      },
+      "compDurata": {
+        "const": ""
+      },
+      "compImgCambiNumerazione": {
+        "enum": [
+          "&nbsp;&nbsp;",
+          "&nbsp;&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/numerazioni.png\">",
+          "&nbsp;&nbsp;&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/cancellazione.png\">"
+        ],
+        "contentMediaType": "text/html",
+        "description": "HTML per l'immagine del cambio numerazione."
+      },
+      "materiale_label": {
+        "enum": ["business", null]
+      },
+      "ultimoRilev": {
+        "type": ["integer", "null"],
+        "description": "Ultimo rilevamento del treno in millisecondi dalla Unix Epoch."
+      },
+      "iconTreno": {
+        "const": null
+      }
+    },
+    "required": [
+      "arrivato",
+      "dataPartenzaTrenoAsDate",
+      "dataPartenzaTreno",
+      "partenzaTreno",
+      "millisDataPartenza",
+      "numeroTreno",
+      "categoria",
+      "categoriaDescrizione",
+      "origine",
+      "codOrigine",
+      "destinazione",
+      "codDestinazione",
+      "origineEstera",
+      "destinazioneEstera",
+      "oraPartenzaEstera",
+      "oraArrivoEstera",
+      "tratta",
+      "regione",
+      "origineZero",
+      "destinazioneZero",
+      "orarioPartenzaZero",
+      "orarioArrivoZero",
+      "circolante",
+      "codiceCliente",
+      "binarioEffettivoArrivoCodice",
+      "binarioEffettivoArrivoDescrizione",
+      "binarioEffettivoArrivoTipo",
+      "binarioProgrammatoArrivoCodice",
+      "binarioProgrammatoArrivoDescrizione",
+      "binarioEffettivoPartenzaCodice",
+      "binarioEffettivoPartenzaDescrizione",
+      "binarioEffettivoPartenzaTipo",
+      "binarioProgrammatoPartenzaCodice",
+      "binarioProgrammatoPartenzaDescrizione",
+      "subTitle",
+      "esisteCorsaZero",
+      "orientamento",
+      "inStazione",
+      "haCambiNumero",
+      "nonPartito",
+      "provvedimento",
+      "riprogrammazione",
+      "orarioPartenza",
+      "orarioArrivo",
+      "stazionePartenza",
+      "stazioneArrivo",
+      "statoTreno",
+      "corrispondenze",
+      "servizi",
+      "ritardo",
+      "tipoProdotto",
+      "compOrarioPartenzaZeroEffettivo",
+      "compOrarioArrivoZeroEffettivo",
+      "compOrarioPartenzaZero",
+      "compOrarioArrivoZero",
+      "compOrarioArrivo",
+      "compOrarioPartenza",
+      "compNumeroTreno",
+      "compOrientamento",
+      "compTipologiaTreno",
+      "compClassRitardoTxt",
+      "compClassRitardoLine",
+      "compImgRitardo2",
+      "compImgRitardo",
+      "compRitardo",
+      "compRitardoAndamento",
+      "compInStazionePartenza",
+      "compInStazioneArrivo",
+      "compOrarioEffettivoArrivo",
+      "compDurata",
+      "compImgCambiNumerazione",
+      "materiale_label",
+      "ultimoRilev",
+      "iconTreno"
+    ],
+    "allOf": [
+      {
+        "if": {
+          "properties": {
+            "provvedimento": {
+              "const": 1
+            }
+          }
+        },
+        "then": {
+          "properties": {
+            "millisDataPartenza": {
+              "type": "string"
+            },
+            "riprogrammazione": {
+              "const": null
+            },
+            "compRitardo": {
+              "const": [
+                "Cancellato",
+                "Canceled",
+                "Storniert",
+                "Annul&eacute",
+                "Cancelado",
+                null,
+                null,
+                null,
+                null
+              ]
+            },
+            "compImgRitardo2": {
+              "const": "/vt_static/img/legenda/icone_legenda/cancellazione.png"
+            },
+            "compImgRitardo": {
+              "const": "/vt_static/img/legenda/icone_legenda/regolare.png"
+            }
+          }
+        },
+        "else": {
+          "properties": {
+            "millisDataPartenza": {
+              "const": null
+            },
+            "riprogrammazione": {
+              "const": "N"
+            }
+          }
+        }
+      },
+      {
+        "if": {
+          "properties": {
+            "provvedimento": {
+              "const": 2
+            }
+          }
+        },
+        "then": {
+          "properties": {
+            "compImgCambiNumerazione": {
+              "const": "&nbsp;&nbsp;&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/cancellazione.png\">"
+            }
+          }
+        },
+        "else": {
+          "if": {
+            "properties": {
+              "haCambiNumero": {
+                "const": true
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "compImgCambiNumerazione": {
+                "const": "&nbsp;&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/numerazioni.png\">"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "compImgCambiNumerazione": {
+                "const": "&nbsp;&nbsp;"
+              }
+            }
+          }
+        }
+      }
+    ]
+  }
+}
