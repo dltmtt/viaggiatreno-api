@@ -1,4 +1,5 @@
 # /// script
+# requires-python = ">=3.13"
 # dependencies = [
 #     "rich>=13.0.0",
 # ]
