@@ -1,5 +1,6 @@
 {
   "$id": "https://raw.githubusercontent.com/dltmtt/viaggiatreno-api/refs/heads/main/schemas/partenze.schema.json",
+  "title": "Risposta dell'endpoint /partenze",
   "type": "array",
   "items": {
     "type": "object",
@@ -35,15 +36,13 @@
         "examples": [23, 26387, 21007]
       },
       "categoria": {
-        "type": "string",
-        "description": "Categoria del treno. Meno dettagliato di `categoriaDescrizione`: le Frecce vedono questo campo vuoto.",
-        "examples": ["", "EC", "EN", "EXP", "IC", "ICN", "MET", "REG"]
+        "enum": ["", "EC", "EN", "EXP", "IC", "ICN", "MET", "NCL", "REG"],
+        "description": "Categoria del treno. Meno dettagliato di `categoriaDescrizione`: le Frecce vedono questo campo vuoto."
       },
       "categoriaDescrizione": {
-        "$comment": "Lo spazio non è un errore, è così che viene restituito.",
-        "type": "string",
-        "description": "Categoria del treno.",
-        "examples": [
+        "$comment": "Lo spazio non è un errore, è così che viene restituito. Trovato vuoto in un Frecciarossa cancellato.",
+        "enum": [
+          "",
           " FA",
           " FB",
           " FR",
@@ -54,8 +53,10 @@
           "IC",
           "ICN",
           "MET",
+          "NCL",
           "REG"
-        ]
+        ],
+        "description": "Categoria del treno."
       },
       "origine": {
         "const": null
@@ -182,7 +183,7 @@
         "$comment": "Potrebbero esserci altri valori numerici; lasciando la definizione così è possibile rilevare eventuali cambiamenti futuri per ulteriori analisi.",
         "enum": [0, 1, 2, 3],
         "default": 0,
-        "description": "Indica lo stato di cancellazione del treno: 1 = treno completamente cancellato, 2 = cancellato nella tratta finale (arriva in una stazione diversa rispetto a quella programmata), 3 = cancellato nella tratta iniziale (parte da una stazione diversa rispetto a quella programmata)."
+        "description": "Indica lo stato di cancellazione del treno: 1 = treno completamente cancellato, 2 = cancellato nella tratta finale (arriva in una stazione diversa rispetto a quella programmata), 3 = treno deviato (alcune fermate intermedie sono cancellate)."
       },
       "riprogrammazione": {
         "enum": ["N", null],
@@ -469,6 +470,7 @@
         ]
       },
       "compInStazionePartenza": {
+        "$comment": "A quanto pare esiste una rarissima variante che ha un'altra traduzione cinese.",
         "enum": [
           ["", "", "", "", "", "", "", "", ""],
           [
@@ -481,10 +483,22 @@
             "発車済",
             "已出发",
             "отправленный"
+          ],
+          [
+            "Partito",
+            "Departed",
+            "angef&#228;hrt",
+            "Partit",
+            "Salido",
+            "Plecat",
+            "発車済",
+            "出发",
+            "отправленный"
           ]
         ]
       },
       "compInStazioneArrivo": {
+        "$comment": "A quanto pare esiste una rarissima variante che ha un'altra traduzione cinese.",
         "enum": [
           ["", "", "", "", "", "", "", "", ""],
           [
@@ -497,6 +511,28 @@
             "到着済",
             "已到达",
             "прибывший"
+          ],
+          [
+            "Arrivato",
+            "Arrived",
+            "angekommen",
+            "Arriv&eacute;",
+            "Llegado",
+            "Sosit",
+            "着済",
+            "已到达",
+            "прибывший"
+          ],
+          [
+            "Arrivato",
+            "Arrived",
+            "angekommen",
+            "Arriv&eacute;",
+            "Llegado",
+            "Sosit",
+            "到着済",
+            "到达",
+            "прибывший"
           ]
         ]
       },
@@ -507,10 +543,13 @@
         "const": ""
       },
       "compImgCambiNumerazione": {
+        "$comment": "TODO: È plausibile possa esistere un treno che ha sia cambi numero che deviazioni. Magari cambiare in string e cambiare logica finale.",
         "enum": [
           "&nbsp;&nbsp;",
           "&nbsp;&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/numerazioni.png\">",
-          "&nbsp;&nbsp;&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/cancellazione.png\">"
+          "&nbsp;&nbsp;&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/cancellazione.png\">",
+          "&nbsp;&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/numerazioni.png\">&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/cancellazione.png\">",
+          "&nbsp;&nbsp;&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/deviazione.png\">"
         ],
         "contentMediaType": "text/html",
         "description": "HTML per l'immagine del cambio numerazione."
@@ -605,6 +644,24 @@
     "allOf": [
       {
         "if": {
+          "$comment": "Se il treno non ha problemi oppure è stato cancellato nella tratta finale.",
+          "properties": {
+            "provvedimento": {
+              "enum": [0, 2]
+            }
+          }
+        },
+        "then": {
+          "properties": {
+            "riprogrammazione": {
+              "const": "N"
+            }
+          }
+        }
+      },
+      {
+        "if": {
+          "$comment": "Se il treno è stato cancellato completamente.",
           "properties": {
             "provvedimento": {
               "const": 1
@@ -636,17 +693,11 @@
               "const": "/vt_static/img/legenda/icone_legenda/regolare.png"
             }
           }
-        },
-        "else": {
-          "properties": {
-            "riprogrammazione": {
-              "const": "N"
-            }
-          }
         }
       },
       {
         "if": {
+          "$comment": "Se il treno è stato cancellato nella tratta finale.",
           "properties": {
             "provvedimento": {
               "const": 2
@@ -654,14 +705,32 @@
           }
         },
         "then": {
-          "properties": {
-            "compImgCambiNumerazione": {
-              "const": "&nbsp;&nbsp;&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/cancellazione.png\">"
+          "if": {
+            "properties": {
+              "haCambiNumero": {
+                "const": true
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "compImgCambiNumerazione": {
+                "const": "&nbsp;&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/numerazioni.png\">&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/cancellazione.png\">"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "compImgCambiNumerazione": {
+                "const": "&nbsp;&nbsp;&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/cancellazione.png\">"
+              }
             }
           }
         },
         "else": {
+          "$comment": "Se il treno NON è stato cancellato nella tratta finale.",
           "if": {
+            "$comment": "Se il treno cambia numero.",
             "properties": {
               "haCambiNumero": {
                 "const": true
@@ -676,9 +745,26 @@
             }
           },
           "else": {
-            "properties": {
+            "$comment": "Se il treno NON cambia numero.",
+            "if": {
+              "$comment": "Se il treno è deviato.",
+              "properties": {
+                "provvedimento": {
+                  "const": 3
+                }
+              }
+            },
+            "then": {
               "compImgCambiNumerazione": {
-                "const": "&nbsp;&nbsp;"
+                "const": "&nbsp;&nbsp;&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/deviazione.png\">"
+              }
+            },
+            "else": {
+              "$comment": "Se il treno NON è deviato.",
+              "properties": {
+                "compImgCambiNumerazione": {
+                  "const": "&nbsp;&nbsp;"
+                }
               }
             }
           }

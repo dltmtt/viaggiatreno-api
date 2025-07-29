@@ -1,11 +1,12 @@
 {
   "$id": "https://raw.githubusercontent.com/dltmtt/viaggiatreno-api/refs/heads/main/schemas/andamentoTreno.schema.json",
+  "title": "Risposta dell'endpoint /andamentoTreno",
   "type": "object",
   "properties": {
     "tipoTreno": {
       "type": "string",
       "description": "Tipo di treno",
-      "examples": ["PG", "ST", "VO"]
+      "examples": ["PG", "ST", "VO", "DV", "SI"]
     },
     "orientamento": {
       "enum": ["A", "B", "", null],
