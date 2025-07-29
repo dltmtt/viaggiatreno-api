@@ -540,7 +540,8 @@
           "&nbsp;&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/numerazioni.png\">",
           "&nbsp;&nbsp;&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/cancellazione.png\">",
           "&nbsp;&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/numerazioni.png\">&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/cancellazione.png\">",
-          "&nbsp;&nbsp;&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/deviazione.png\">"
+          "&nbsp;&nbsp;&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/deviazione.png\">",
+          "&nbsp;&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/numerazioni.png\">&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/deviazione.png\">"
         ],
         "contentMediaType": "text/html",
         "description": "HTML per l'immagine del cambio numerazione."
@@ -708,6 +709,7 @@
         },
         "then": {
           "if": {
+            "$comment": "Se il treno è stato cancellato nella tratta finale e cambia numero.",
             "properties": {
               "haCambiNumero": {
                 "const": true
@@ -722,6 +724,7 @@
             }
           },
           "else": {
+            "$comment": "Se il treno è stato cancellato nella tratta finale e NON cambia numero.",
             "properties": {
               "compImgCambiNumerazione": {
                 "const": "&nbsp;&nbsp;&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/cancellazione.png\">"
@@ -732,37 +735,57 @@
         "else": {
           "$comment": "Se il treno NON è stato cancellato nella tratta finale.",
           "if": {
-            "$comment": "Se il treno cambia numero.",
+            "$comment": "Se il treno NON è stato cancellato nella tratta finale, bensì è deviato.",
             "properties": {
-              "haCambiNumero": {
-                "const": true
+              "provvedimento": {
+                "const": 3
               }
             }
           },
           "then": {
-            "properties": {
-              "compImgCambiNumerazione": {
-                "const": "&nbsp;&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/numerazioni.png\">"
-              }
-            }
-          },
-          "else": {
-            "$comment": "Se il treno NON cambia numero.",
             "if": {
-              "$comment": "Se il treno è deviato.",
+              "$comment": "Se il treno NON è stato cancellato nella tratta finale, bensì è deviato, e cambia numero.",
               "properties": {
-                "provvedimento": {
-                  "const": 3
+                "haCambiNumero": {
+                  "const": true
                 }
               }
             },
             "then": {
-              "compImgCambiNumerazione": {
-                "const": "&nbsp;&nbsp;&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/deviazione.png\">"
+              "properties": {
+                "compImgCambiNumerazione": {
+                  "const": "&nbsp;&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/numerazioni.png\">&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/deviazione.png\">"
+                }
               }
             },
             "else": {
-              "$comment": "Se il treno NON è deviato.",
+              "$comment": "Se il treno NON è stato cancellato nella tratta finale, bensì è deviato, e NON cambia numero.",
+              "properties": {
+                "compImgCambiNumerazione": {
+                  "const": "&nbsp;&nbsp;&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/deviazione.png\">"
+                }
+              }
+            }
+          },
+          "else": {
+            "$comment": "Se il treno NON è stato cancellato nella tratta finale e NON è deviato.",
+            "if": {
+              "$comment": "Se il treno NON è stato cancellato nella tratta finale, non è deviato e cambia numero.",
+              "properties": {
+                "haCambiNumero": {
+                  "const": true
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "compImgCambiNumerazione": {
+                  "const": "&nbsp;&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/numerazioni.png\">"
+                }
+              }
+            },
+            "else": {
+              "$comment": "Se il treno NON è stato cancellato nella tratta finale, non è deviato e NON cambia numero.",
               "properties": {
                 "compImgCambiNumerazione": {
                   "const": "&nbsp;&nbsp;"
