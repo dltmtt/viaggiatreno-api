@@ -918,6 +918,54 @@ def fetch_station_data(
         }
 
 
+def select_stations_for_sampling(stations, samples, fetch_all):
+    """Select stations for sampling based on flags"""
+    if fetch_all:
+        print(f"Processing all {len(stations)} stations...")
+        return stations
+
+    if len(stations) < samples:
+        print(f"Warning: Only {len(stations)} stations available, sampling all of them")
+        samples = len(stations)
+
+    sampled_stations = random.sample(stations, samples)
+    print(
+        f"Sampling {samples} random stations from {len(stations)} available stations..."
+    )
+    return sampled_stations
+
+
+def process_station_fetch_result(
+    result, futures, partenze_dir, arrivi_dir, iso_datetime
+):
+    """Process the result of a station data fetch"""
+    code, name, data_type = futures[result]
+
+    if not result["success"]:
+        return {"failed": 1, "successful": 0, "skipped": 0}
+
+    # Skip saving if the data is an empty array
+    if result["data"] == []:
+        print(f"⚠ Skipped {data_type} for {name} ({code}): empty data")
+        return {"failed": 0, "successful": 0, "skipped": 1}
+
+    # Create filename: {STATION_CODE}_{ISO_DATETIME}_{TYPE}.json
+    filename = f"{code}_{iso_datetime}_{data_type}.json"
+
+    # Choose output directory
+    if data_type == "partenze":
+        output_path = partenze_dir / filename
+    else:
+        output_path = arrivi_dir / filename
+
+    # Save data
+    with output_path.open("w", encoding="utf-8") as f:
+        json.dump(result["data"], f, indent=2, ensure_ascii=False)
+
+    print(f"✓ Saved {data_type} for {name} ({code}) to {output_path}")
+    return {"failed": 0, "successful": 1, "skipped": 0}
+
+
 @cli.command("sample-stations")
 @click.option(
     "-n",
@@ -933,9 +981,15 @@ def fetch_station_data(
     default="dumps/autocompletaStazione.csv",
     help="Path to stations file (default: dumps/autocompletaStazione.csv)",
 )
+@click.option(
+    "--all",
+    "fetch_all",
+    is_flag=True,
+    help="Fetch departures and arrivals for all stations",
+)
 @click.pass_context
-def sample_stations(ctx, samples, read_from):
-    """Sample random stations and fetch their departures and arrivals.
+def sample_stations(ctx, samples, read_from, fetch_all):
+    """Sample random stations and fetch their departures and arrivals, or use --all to fetch from all stations.
 
     Results are saved to {output}/partenze and {output}/arrivi directories.
     File names follow the format: {STATION_CODE}_{ISO_DATETIME}_{TYPE}.json
@@ -962,15 +1016,7 @@ def sample_stations(ctx, samples, read_from):
         print(f"Error: {e}")
         return
 
-    if len(stations) < samples:
-        print(f"Warning: Only {len(stations)} stations available, sampling all of them")
-        samples = len(stations)
-
-    # Sample random stations
-    sampled_stations = random.sample(stations, samples)
-    print(
-        f"Sampling {samples} random stations from {len(stations)} available stations..."
-    )
+    sampled_stations = select_stations_for_sampling(stations, samples, fetch_all)
 
     # Prepare tasks for both partenze and arrivi
     tasks = []
@@ -1023,7 +1069,10 @@ def sample_stations(ctx, samples, read_from):
                     f"✗ Failed to fetch {data_type} for {name} ({code}): {result['error']}"
                 )
 
-    print("\n✅ Completed sampling:")
+    action_type = (
+        "all stations" if fetch_all else f"{len(sampled_stations)} sampled stations"
+    )
+    print(f"\n✅ Completed processing {action_type}:")
     print(f"  • Successful fetches: {successful_fetches}")
     print(f"  • Failed fetches: {failed_fetches}")
     print(f"  • Skipped empty data: {skipped_empty}")
