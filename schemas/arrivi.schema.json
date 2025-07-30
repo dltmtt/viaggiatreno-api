@@ -794,6 +794,41 @@
             }
           }
         }
+      },
+      {
+        "if": {
+          "$comment": "Se il treno è in stazione.",
+          "properties": {
+            "inStazione": {
+              "const": true
+            }
+          }
+        },
+        "then": {
+          "properties": {
+            "compInStazionePartenza": {
+              "not": {
+                "const": ["", "", "", "", "", "", "", "", ""]
+              }
+            },
+            "compInStazioneArrivo": {
+              "not": {
+                "const": ["", "", "", "", "", "", "", "", ""]
+              }
+            }
+          }
+        },
+        "else": {
+          "$comment": "Se il treno NON è in stazione.",
+          "properties": {
+            "compInStazionePartenza": {
+              "const": ["", "", "", "", "", "", "", "", ""]
+            },
+            "compInStazioneArrivo": {
+              "const": ["", "", "", "", "", "", "", "", ""]
+            }
+          }
+        }
       }
     ]
   }
