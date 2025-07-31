@@ -36,6 +36,7 @@ Una volta ottenuto il codice della stazione, è possibile chiamare `partenze` o 
   - Gli endpoint che richiedono informazioni aggiuntive spesso possono essere chiamati con solo il dato principale (ad esempio, [`andamentoTreno`](#andamentotreno) può essere chiamato con il solo numero del treno, e lo script recupererà automaticamente stazione e data di partenza).
 - L'opzione globale `-o/--output` permette di salvare l'output su file invece che visualizzarlo a schermo per tutti i comandi.
 - Tramite il comando `dump-all` è possibile scaricare i dati di tutte le stazioni in un colpo solo. L'opzione `-o` specifica la cartella di destinazione (default: `dumps`).
+- Tramite il comando `sample-stations` è possibile recuperare partenze e arrivi da un campione di stazioni.
 
 Lo script richiede i pacchetti `requests` e `click`.
 
@@ -44,6 +45,8 @@ Di seguito sono riportati alcuni esempi di utilizzo:
 ```bash
 # Cerca stazioni
 uv run scripts/viaggiatreno-api.py autocompleta-stazione "Milano"
+uv run scripts/viaggiatreno-api.py autocompleta-stazione-nts "Venezia"
+uv run scripts/viaggiatreno-api.py cerca-stazione "Roma"
 
 # Partenze da/arrivi a una stazione (accetta sia nomi che codici stazione)
 uv run scripts/viaggiatreno-api.py partenze S01700
@@ -72,6 +75,18 @@ uv run scripts/viaggiatreno-api.py regione S01700
 
 # Mostra la tabella dei codici regione
 uv run scripts/viaggiatreno-api.py regione --table
+
+# Elenco stazioni in una regione (es. Lombardia)
+uv run scripts/viaggiatreno-api.py elenco-stazioni 1
+
+# Mostra i dettagli di una stazione recuperando codice stazione e codice regione in automatico
+uv run scripts/viaggiatreno-api.py dettaglio-stazione "Milano Centrale"
+
+# Mostra i dettagli di un treno
+uv run scripts/viaggiatreno-api.py cerca-numero-treno 711
+
+# Mostra i treni compatibili con un certo numero treno
+uv run scripts/viaggiatreno-api.py cerca-numero-treno-treno-autocomplete 711
 ```
 
 ## Documentazione degli endpoint

@@ -555,6 +555,74 @@ def dump_elenco_stazioni_all(output_dir="dumps"):
     print(f"  Found {len(all_stations)} stations")
 
 
+def _validate_region_code(region):
+    """Validate region code and raise ClickException if invalid."""
+    if not (0 <= region <= MAX_REGION):
+        msg = f"Region code must be between 0 and {MAX_REGION}"
+        raise click.ClickException(msg)
+
+
+def _parse_region_response(region_response):
+    """Parse region response and raise ClickException if invalid."""
+    try:
+        return int(region_response)
+    except ValueError as exc:
+        msg = f"Unable to parse region code from response: {region_response}"
+        raise click.ClickException(msg) from exc
+
+
+@cli.command("dettaglio-stazione")
+@click.argument("station", type=str)
+@click.option(
+    "--region",
+    type=int,
+    help="Region code (0-22). If not provided, will be retrieved using the regione endpoint.",
+)
+@click.pass_context
+def dettaglio_stazione(ctx, station, region):
+    """Get detailed station information.
+
+    STATION can be either a station name (e.g., 'Milano Centrale') or a station code (e.g., S01700).
+    """
+    output = ctx.obj["output"]
+
+    # Resolve station code if needed
+    station_code = resolve_station_code(station)
+
+    # Get region code if not provided
+    if region is None:
+        print(f"Getting region code for station {station_code}...")
+        try:
+            region_response = get_text("regione", station_code).strip()
+            region = _parse_region_response(region_response)
+            region_name = REGIONS.get(region, "Unknown Region")
+            print(f"Using region: {region} ({region_name})")
+        except requests.RequestException as e:
+            print(f"Error fetching region for station {station}: {e}")
+            return
+    else:
+        _validate_region_code(region)
+
+    try:
+        # Make API call
+        response = get_json("dettaglioStazione", station_code, str(region))
+
+        # Format response as JSON
+        json_output = json.dumps(response, indent=2, ensure_ascii=False)
+
+        # Print or save based on output option
+        if output:
+            Path(output).parent.mkdir(parents=True, exist_ok=True)
+            with Path(output).open("w", encoding="utf-8") as f:
+                f.write(json_output)
+            print(f"✓ Saved station details to {output}")
+        else:
+            print(json_output)
+
+    except requests.RequestException as e:
+        print(f"Error fetching station details for {station}: {e}")
+
+
 @cli.command("regione")
 @click.argument("station", type=str, required=False)
 @click.option(
