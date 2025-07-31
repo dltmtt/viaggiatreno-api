@@ -1,0 +1,61 @@
+{
+  "$id": "https://raw.githubusercontent.com/dltmtt/viaggiatreno-api/refs/heads/main/schemas/cercaNumeroTreno.schema.json",
+  "title": "Risposta dell'endpoint /cercaNumeroTreno",
+  "type": "object",
+  "properties": {
+    "numeroTreno": {
+      "type": "string",
+      "description": "Numero del treno"
+    },
+    "codLocOrig": {
+      "type": "string",
+      "pattern": "^S\\d{5}$",
+      "description": "Codice della stazione di partenza"
+    },
+    "descLocOrig": {
+      "type": "string",
+      "description": "Nome della stazione di partenza"
+    },
+    "dataPartenza": {
+      "type": "string",
+      "format": "date",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+      "description": "Data di partenza del treno",
+      "examples": ["2025-07-22"]
+    },
+    "corsa": {
+      "type": "string",
+      "examples": ["00770A", "03341A"]
+    },
+    "h24": {
+      "type": "boolean"
+    },
+    "tipo": {
+      "type": "string",
+      "description": "Tipo di treno",
+      "examples": ["PG", "ST"]
+    },
+    "millisDataPartenza": {
+      "type": "string",
+      "description": "Data di partenza in millisecondi dalla Unix Epoch"
+    },
+    "formatDataPartenza": {
+      "type": ["string", "null"],
+      "format": "date",
+      "pattern": "^\\s\\d{2}/\\d{2}/\\d{2}$",
+      "examples": [" 22/07/25"],
+      "description": "Data di partenza"
+    }
+  },
+  "required": [
+    "numeroTreno",
+    "codLocOrig",
+    "descLocOrig",
+    "dataPartenza",
+    "corsa",
+    "h24",
+    "tipo",
+    "millisDataPartenza",
+    "formatDataPartenza"
+  ]
+}

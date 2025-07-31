@@ -1,0 +1,28 @@
+{
+  "$id": "https://raw.githubusercontent.com/dltmtt/viaggiatreno-api/refs/heads/main/schemas/cercaStazione.schema.json",
+  "title": "Risposta dell'endpoint /cercaStazione",
+  "type": "array",
+  "items": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string",
+        "pattern": "^S\\d{5}$",
+        "description": "Codice della stazione."
+      },
+      "label": {
+        "type": ["string", "null"],
+        "description": "Nome in title case. Generalmente più corto di nomeBreve."
+      },
+      "nomeBreve": {
+        "type": "string",
+        "description": "Nome breve, tendenzialmente in title case ma talvolta in maiuscolo. Può essere uguale a nomeLungo. In genere contiene qualche abbreviazione."
+      },
+      "nomeLungo": {
+        "type": "string",
+        "description": "Nome lungo in maiuscolo."
+      }
+    },
+    "required": ["id", "label", "nomeBreve", "nomeLungo"]
+  }
+}

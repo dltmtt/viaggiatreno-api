@@ -1,0 +1,191 @@
+{
+  "$id": "https://raw.githubusercontent.com/dltmtt/viaggiatreno-api/refs/heads/main/schemas/dettaglioStazione.schema.json",
+  "title": "Risposta dell'endpoint /dettaglioStazione",
+  "type": "object",
+  "properties": {
+    "key": {
+      "type": "string",
+      "pattern": "^(S|F)\\d{5}_\\d{1,2}$",
+      "description": "Chiave identificativa formata da codice della stazione e codice della regione, separati da un trattino basso.",
+      "examples": ["S01700_1", "F00001_0"]
+    },
+    "codReg": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 22,
+      "description": "Codice della regione, lo stesso della chiamata all'endpoint."
+    },
+    "tipoStazione": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 4
+    },
+    "dettZoomStaz": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "pattern": "^(S|F)\\d{5}_\\d{1,2}$",
+            "description": "Chiave identificativa formata da codice della stazione e codice della regione, separati da un trattino basso.",
+            "examples": ["S01700_1", "F00001_0"]
+          },
+          "codiceStazione": {
+            "const": { "$data": "3/codiceStazione" }
+          },
+          "zoomStartRange": {
+            "enum": [6, 8, 9, 10]
+          },
+          "zoomStopRange": {
+            "enum": [7, 8, 9, 11]
+          },
+          "pinpointVisibile": {
+            "type": "boolean"
+          },
+          "pinpointVisible": {
+            "const": { "$data": "1/pinpointVisibile" }
+          },
+          "labelVisibile": {
+            "type": "boolean"
+          },
+          "labelVisible": {
+            "const": { "$data": "1/labelVisibile" }
+          },
+          "codiceRegione": {
+            "const": { "$data": "3/codReg" }
+          }
+        },
+        "required": [
+          "key",
+          "codiceStazione",
+          "zoomStartRange",
+          "zoomStopRange",
+          "pinpointVisibile",
+          "pinpointVisible",
+          "labelVisibile",
+          "labelVisible",
+          "codiceRegione"
+        ]
+      }
+    },
+    "pstaz": {
+      "const": [],
+      "deprecated": true
+    },
+    "mappaCitta": {
+      "const": {
+        "urlImagePinpoint": "",
+        "urlImageBaloon": ""
+      },
+      "deprecated": true
+    },
+    "codiceStazione": {
+      "type": "string",
+      "pattern": "^(S|F)\\d{5}$",
+      "description": "Codice identificativo della stazione",
+      "examples": ["S01700", "F00001"]
+    },
+    "codStazione": {
+      "const": { "$data": "1/codiceStazione" }
+    },
+    "lat": {
+      "type": "number",
+      "description": "Latitudine della stazione.",
+      "minimum": -90.0,
+      "maximum": 90.0
+    },
+    "lon": {
+      "type": "number",
+      "description": "Longitudine della stazione.",
+      "minimum": -180.0,
+      "maximum": 180.0
+    },
+    "latMappaCitta": {
+      "$comment": "Sempre a 0.0 tranne per l'AV di Reggio Emilia (codice S05254).",
+      "type": "number",
+      "minimum": -90.0,
+      "maximum": 90.0
+    },
+    "lonMappaCitta": {
+      "$comment": "Sempre a 0.0 tranne per l'AV di Reggio Emilia.",
+      "type": "number",
+      "minimum": -180.0,
+      "maximum": 180.0
+    },
+    "localita": {
+      "type": "object",
+      "properties": {
+        "nomeLungo": {
+          "type": "string",
+          "description": "Nome lungo in maiuscolo, rarissime eccezioni in title case."
+        },
+        "nomeBreve": {
+          "type": "string",
+          "description": "Nome breve, può essere uguale a nomeLungo. In rare eccezioni addirittura più lungo di nomeLungo."
+        },
+        "label": {
+          "type": "string"
+        },
+        "id": {
+          "const": { "$data": "2/codiceStazione" }
+        }
+      },
+      "required": ["nomeLungo", "nomeBreve", "label", "id"]
+    },
+    "esterno": {
+      "type": "boolean",
+      "description": "Vero se la stazione non è realmente nella regione indicata da codReg."
+    },
+    "offsetX": {
+      "type": "integer"
+    },
+    "offsetY": {
+      "type": "integer"
+    },
+    "nomeCitta": {
+      "type": "string",
+      "description": "Nome della città della stazione. Non affidabile: in quasi l'80% dei casi è 'A'."
+    }
+  },
+  "required": [
+    "key",
+    "codReg",
+    "tipoStazione",
+    "dettZoomStaz",
+    "pstaz",
+    "mappaCitta",
+    "codiceStazione",
+    "codStazione",
+    "lat",
+    "lon",
+    "latMappaCitta",
+    "lonMappaCitta",
+    "localita",
+    "esterno",
+    "offsetX",
+    "offsetY",
+    "nomeCitta"
+  ],
+  "allOf": [
+    {
+      "if": {
+        "properties": { "codiceStazione": { "pattern": "^F\\d{5}$" } }
+      },
+      "then": {
+        "properties": {
+          "tipoStazione": { "const": 4 },
+          "localita": {
+            "properties": {
+              "nomeLungo": { "const": { "$data": "2/codiceStazione" } },
+              "nomeBreve": { "const": { "$data": "2/codiceStazione" } },
+              "label": { "const": "" },
+              "id": { "const": { "$data": "2/codiceStazione" } }
+            },
+            "nomeCitta": { "const": { "$data": "2/codiceStazione" } }
+          }
+        }
+      }
+    }
+  ]
+}

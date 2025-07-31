@@ -1,0 +1,8 @@
+{
+  "$id": "https://raw.githubusercontent.com/dltmtt/viaggiatreno-api/refs/heads/main/schemas/elencoStazioni.schema.json",
+  "title": "Risposta dell'endpoint /elencoStazioni",
+  "type": "array",
+  "items": {
+    "$ref": "https://raw.githubusercontent.com/dltmtt/viaggiatreno-api/refs/heads/main/schemas/dettaglioStazione.schema.json"
+  }
+}
