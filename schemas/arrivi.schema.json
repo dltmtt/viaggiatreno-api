@@ -178,7 +178,7 @@
         "description": "Indica lo stato di cancellazione del treno: 1 = treno completamente cancellato, 2 = cancellato nella tratta finale (arriva in una stazione diversa rispetto a quella programmata), 3 = treno deviato (alcune fermate intermedie sono cancellate)."
       },
       "riprogrammazione": {
-        "enum": ["N", null],
+        "enum": ["N", "Y", null],
         "default": "N"
       },
       "orarioPartenza": {
@@ -541,7 +541,8 @@
           "&nbsp;&nbsp;&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/cancellazione.png\">",
           "&nbsp;&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/numerazioni.png\">&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/cancellazione.png\">",
           "&nbsp;&nbsp;&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/deviazione.png\">",
-          "&nbsp;&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/numerazioni.png\">&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/deviazione.png\">"
+          "&nbsp;&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/numerazioni.png\">&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/deviazione.png\">",
+          "&nbsp;&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/riprogrammato.png\">"
         ],
         "contentMediaType": "text/html",
         "description": "HTML per l'immagine del cambio numerazione."
@@ -826,6 +827,23 @@
             },
             "compInStazioneArrivo": {
               "const": ["", "", "", "", "", "", "", "", ""]
+            }
+          }
+        }
+      },
+      {
+        "if": {
+          "$comment": "Se il treno è riprogrammato.",
+          "properties": {
+            "riprogrammazione": {
+              "const": "Y"
+            }
+          }
+        },
+        "then": {
+          "properties": {
+            "compImgCambiNumerazione": {
+              "const": "&nbsp;&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/riprogrammato.png\">"
             }
           }
         }
