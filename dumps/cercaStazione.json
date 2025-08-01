@@ -4902,12 +4902,6 @@
     "id": "S01462"
   },
   {
-    "nomeLungo": "CIVIDALE",
-    "nomeBreve": "CIVIDALE",
-    "label": "Cividale",
-    "id": "S03056"
-  },
-  {
     "nomeLungo": "CIVIDATE - MALEGNO",
     "nomeBreve": "Cividate - Male.",
     "label": "Cividate-malegno",
@@ -9790,12 +9784,6 @@
     "nomeBreve": "Moiana",
     "label": "Moiana",
     "id": "S01456"
-  },
-  {
-    "nomeLungo": "MOIMACCO",
-    "nomeBreve": "Moimacco",
-    "label": "Moimacco",
-    "id": "S03058"
   },
   {
     "nomeLungo": "MOJO-ALCANTARA MALVAGNA",

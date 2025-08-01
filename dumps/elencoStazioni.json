@@ -1,105 +1,5 @@
 [
   {
-    "key": "S11420_0",
-    "codReg": 0,
-    "tipoStazione": 3,
-    "dettZoomStaz": [
-      {
-        "key": "S11420_0",
-        "codiceStazione": "S11420",
-        "zoomStartRange": 6,
-        "zoomStopRange": 7,
-        "pinpointVisibile": false,
-        "pinpointVisible": false,
-        "labelVisibile": false,
-        "labelVisible": false,
-        "codiceRegione": 0
-      },
-      {
-        "key": "S11420_0",
-        "codiceStazione": "S11420",
-        "zoomStartRange": 8,
-        "zoomStopRange": 11,
-        "pinpointVisibile": true,
-        "pinpointVisible": true,
-        "labelVisibile": true,
-        "labelVisible": true,
-        "codiceRegione": 0
-      }
-    ],
-    "pstaz": [],
-    "mappaCitta": {
-      "urlImagePinpoint": "",
-      "urlImageBaloon": ""
-    },
-    "codiceStazione": "S11420",
-    "codStazione": "S11420",
-    "lat": 40.629469,
-    "lon": 15.806808,
-    "latMappaCitta": 0.0,
-    "lonMappaCitta": 0.0,
-    "localita": {
-      "nomeLungo": "POTENZA CENTRALE",
-      "nomeBreve": "POTENZA CENTRALE",
-      "label": "Potenza",
-      "id": "S11420"
-    },
-    "esterno": false,
-    "offsetX": -4,
-    "offsetY": 18,
-    "nomeCitta": "Potenza"
-  },
-  {
-    "key": "S01139_0",
-    "codReg": 0,
-    "tipoStazione": 3,
-    "dettZoomStaz": [
-      {
-        "key": "S01139_0",
-        "codiceStazione": "S01139",
-        "zoomStartRange": 6,
-        "zoomStopRange": 7,
-        "pinpointVisibile": true,
-        "pinpointVisible": true,
-        "labelVisibile": false,
-        "labelVisible": false,
-        "codiceRegione": 0
-      },
-      {
-        "key": "S01139_0",
-        "codiceStazione": "S01139",
-        "zoomStartRange": 8,
-        "zoomStopRange": 11,
-        "pinpointVisibile": true,
-        "pinpointVisible": true,
-        "labelVisibile": true,
-        "labelVisible": true,
-        "codiceRegione": 0
-      }
-    ],
-    "pstaz": [],
-    "mappaCitta": {
-      "urlImagePinpoint": "",
-      "urlImageBaloon": ""
-    },
-    "codiceStazione": "S01139",
-    "codStazione": "S01139",
-    "lat": 45.627904,
-    "lon": 8.711085,
-    "latMappaCitta": 0.0,
-    "lonMappaCitta": 0.0,
-    "localita": {
-      "nomeLungo": "MALPENSA AEROPORTO TERMINAL 1",
-      "nomeBreve": "Malpensa Aer.T1",
-      "label": "Malpensa",
-      "id": "S01139"
-    },
-    "esterno": false,
-    "offsetX": 0,
-    "offsetY": 0,
-    "nomeCitta": "Malpensa"
-  },
-  {
     "key": "S05059_0",
     "codReg": 0,
     "tipoStazione": 3,
@@ -248,106 +148,6 @@
     "offsetX": 0,
     "offsetY": 18,
     "nomeCitta": "Reggio Emilia AV"
-  },
-  {
-    "key": "S01003_0",
-    "codReg": 0,
-    "tipoStazione": 2,
-    "dettZoomStaz": [
-      {
-        "key": "S01003_0",
-        "codiceStazione": "S01003",
-        "zoomStartRange": 6,
-        "zoomStopRange": 7,
-        "pinpointVisibile": true,
-        "pinpointVisible": true,
-        "labelVisibile": true,
-        "labelVisible": true,
-        "codiceRegione": 0
-      },
-      {
-        "key": "S01003_0",
-        "codiceStazione": "S01003",
-        "zoomStartRange": 8,
-        "zoomStopRange": 11,
-        "pinpointVisibile": true,
-        "pinpointVisible": true,
-        "labelVisibile": true,
-        "labelVisible": true,
-        "codiceRegione": 0
-      }
-    ],
-    "pstaz": [],
-    "mappaCitta": {
-      "urlImagePinpoint": "",
-      "urlImageBaloon": ""
-    },
-    "codiceStazione": "S01003",
-    "codStazione": "S01003",
-    "lat": 46.115429,
-    "lon": 8.296684,
-    "latMappaCitta": 0.0,
-    "lonMappaCitta": 0.0,
-    "localita": {
-      "nomeLungo": "DOMODOSSOLA",
-      "nomeBreve": "DOMODOSSOLA",
-      "label": "Domodossola",
-      "id": "S01003"
-    },
-    "esterno": false,
-    "offsetX": 80,
-    "offsetY": 20,
-    "nomeCitta": "Domodossola"
-  },
-  {
-    "key": "S05712_0",
-    "codReg": 0,
-    "tipoStazione": 3,
-    "dettZoomStaz": [
-      {
-        "key": "S05712_0",
-        "codiceStazione": "S05712",
-        "zoomStartRange": 6,
-        "zoomStopRange": 7,
-        "pinpointVisibile": false,
-        "pinpointVisible": false,
-        "labelVisibile": false,
-        "labelVisible": false,
-        "codiceRegione": 0
-      },
-      {
-        "key": "S05712_0",
-        "codiceStazione": "S05712",
-        "zoomStartRange": 8,
-        "zoomStopRange": 11,
-        "pinpointVisibile": true,
-        "pinpointVisible": true,
-        "labelVisibile": true,
-        "labelVisible": true,
-        "codiceRegione": 0
-      }
-    ],
-    "pstaz": [],
-    "mappaCitta": {
-      "urlImagePinpoint": "",
-      "urlImageBaloon": ""
-    },
-    "codiceStazione": "S05712",
-    "codStazione": "S05712",
-    "lat": 44.843047,
-    "lon": 11.603594,
-    "latMappaCitta": 0.0,
-    "lonMappaCitta": 0.0,
-    "localita": {
-      "nomeLungo": "FERRARA",
-      "nomeBreve": "FERRARA",
-      "label": "Ferrara",
-      "id": "S05712"
-    },
-    "esterno": false,
-    "offsetX": 0,
-    "offsetY": 0,
-    "nomeCitta": "Ferrara"
   },
   {
     "key": "S03304_0",
@@ -3450,58 +3250,104 @@
     "nomeCitta": "Barletta"
   },
   {
-    "key": "S00885_0",
+    "key": "S11420_0",
     "codReg": 0,
     "tipoStazione": 3,
-    "dettZoomStaz": [],
+    "dettZoomStaz": [
+      {
+        "key": "S11420_0",
+        "codiceStazione": "S11420",
+        "zoomStartRange": 6,
+        "zoomStopRange": 7,
+        "pinpointVisibile": false,
+        "pinpointVisible": false,
+        "labelVisibile": false,
+        "labelVisible": false,
+        "codiceRegione": 0
+      },
+      {
+        "key": "S11420_0",
+        "codiceStazione": "S11420",
+        "zoomStartRange": 8,
+        "zoomStopRange": 11,
+        "pinpointVisibile": true,
+        "pinpointVisible": true,
+        "labelVisibile": true,
+        "labelVisible": true,
+        "codiceRegione": 0
+      }
+    ],
     "pstaz": [],
     "mappaCitta": {
       "urlImagePinpoint": "",
       "urlImageBaloon": ""
     },
-    "codiceStazione": "S00885",
-    "codStazione": "S00885",
-    "lat": 45.337174,
-    "lon": 7.689845,
+    "codiceStazione": "S11420",
+    "codStazione": "S11420",
+    "lat": 40.629469,
+    "lon": 15.806808,
     "latMappaCitta": 0.0,
     "lonMappaCitta": 0.0,
     "localita": {
-      "nomeLungo": "FAVRIA",
-      "nomeBreve": "Favria",
-      "label": "Favria",
-      "id": "S00885"
+      "nomeLungo": "POTENZA CENTRALE",
+      "nomeBreve": "POTENZA CENTRALE",
+      "label": "Potenza",
+      "id": "S11420"
     },
     "esterno": false,
-    "offsetX": 0,
-    "offsetY": 0,
-    "nomeCitta": "A"
+    "offsetX": -4,
+    "offsetY": 18,
+    "nomeCitta": "Potenza"
   },
   {
-    "key": "S00886_0",
+    "key": "S01139_0",
     "codReg": 0,
     "tipoStazione": 3,
-    "dettZoomStaz": [],
+    "dettZoomStaz": [
+      {
+        "key": "S01139_0",
+        "codiceStazione": "S01139",
+        "zoomStartRange": 6,
+        "zoomStopRange": 7,
+        "pinpointVisibile": true,
+        "pinpointVisible": true,
+        "labelVisibile": false,
+        "labelVisible": false,
+        "codiceRegione": 0
+      },
+      {
+        "key": "S01139_0",
+        "codiceStazione": "S01139",
+        "zoomStartRange": 8,
+        "zoomStopRange": 11,
+        "pinpointVisibile": true,
+        "pinpointVisible": true,
+        "labelVisibile": true,
+        "labelVisible": true,
+        "codiceRegione": 0
+      }
+    ],
     "pstaz": [],
     "mappaCitta": {
       "urlImagePinpoint": "",
       "urlImageBaloon": ""
     },
-    "codiceStazione": "S00886",
-    "codStazione": "S00886",
-    "lat": 45.351402,
-    "lon": 7.678572,
+    "codiceStazione": "S01139",
+    "codStazione": "S01139",
+    "lat": 45.627904,
+    "lon": 8.711085,
     "latMappaCitta": 0.0,
     "lonMappaCitta": 0.0,
     "localita": {
-      "nomeLungo": "SALASSA",
-      "nomeBreve": "Salassa",
-      "label": "Salassa",
-      "id": "S00886"
+      "nomeLungo": "MALPENSA AEROPORTO TERMINAL 1",
+      "nomeBreve": "Malpensa Aer.T1",
+      "label": "Malpensa",
+      "id": "S01139"
     },
     "esterno": false,
     "offsetX": 0,
     "offsetY": 0,
-    "nomeCitta": "A"
+    "nomeCitta": "Malpensa"
   },
   {
     "key": "S00887_0",
@@ -6015,6 +5861,106 @@
     "nomeCitta": "Brindisi"
   },
   {
+    "key": "S01003_0",
+    "codReg": 0,
+    "tipoStazione": 2,
+    "dettZoomStaz": [
+      {
+        "key": "S01003_0",
+        "codiceStazione": "S01003",
+        "zoomStartRange": 6,
+        "zoomStopRange": 7,
+        "pinpointVisibile": true,
+        "pinpointVisible": true,
+        "labelVisibile": true,
+        "labelVisible": true,
+        "codiceRegione": 0
+      },
+      {
+        "key": "S01003_0",
+        "codiceStazione": "S01003",
+        "zoomStartRange": 8,
+        "zoomStopRange": 11,
+        "pinpointVisibile": true,
+        "pinpointVisible": true,
+        "labelVisibile": true,
+        "labelVisible": true,
+        "codiceRegione": 0
+      }
+    ],
+    "pstaz": [],
+    "mappaCitta": {
+      "urlImagePinpoint": "",
+      "urlImageBaloon": ""
+    },
+    "codiceStazione": "S01003",
+    "codStazione": "S01003",
+    "lat": 46.115429,
+    "lon": 8.296684,
+    "latMappaCitta": 0.0,
+    "lonMappaCitta": 0.0,
+    "localita": {
+      "nomeLungo": "DOMODOSSOLA",
+      "nomeBreve": "DOMODOSSOLA",
+      "label": "Domodossola",
+      "id": "S01003"
+    },
+    "esterno": false,
+    "offsetX": 80,
+    "offsetY": 20,
+    "nomeCitta": "Domodossola"
+  },
+  {
+    "key": "S05712_0",
+    "codReg": 0,
+    "tipoStazione": 3,
+    "dettZoomStaz": [
+      {
+        "key": "S05712_0",
+        "codiceStazione": "S05712",
+        "zoomStartRange": 6,
+        "zoomStopRange": 7,
+        "pinpointVisibile": false,
+        "pinpointVisible": false,
+        "labelVisibile": false,
+        "labelVisible": false,
+        "codiceRegione": 0
+      },
+      {
+        "key": "S05712_0",
+        "codiceStazione": "S05712",
+        "zoomStartRange": 8,
+        "zoomStopRange": 11,
+        "pinpointVisibile": true,
+        "pinpointVisible": true,
+        "labelVisibile": true,
+        "labelVisible": true,
+        "codiceRegione": 0
+      }
+    ],
+    "pstaz": [],
+    "mappaCitta": {
+      "urlImagePinpoint": "",
+      "urlImageBaloon": ""
+    },
+    "codiceStazione": "S05712",
+    "codStazione": "S05712",
+    "lat": 44.843047,
+    "lon": 11.603594,
+    "latMappaCitta": 0.0,
+    "lonMappaCitta": 0.0,
+    "localita": {
+      "nomeLungo": "FERRARA",
+      "nomeBreve": "FERRARA",
+      "label": "Ferrara",
+      "id": "S05712"
+    },
+    "esterno": false,
+    "offsetX": 0,
+    "offsetY": 0,
+    "nomeCitta": "Ferrara"
+  },
+  {
     "key": "S11781_0",
     "codReg": 0,
     "tipoStazione": 1,
@@ -8131,7 +8077,7 @@
     "nomeCitta": "Metaponto"
   },
   {
-    "key": "S03056_0",
+    "key": "S02719_0",
     "codReg": 0,
     "tipoStazione": 3,
     "dettZoomStaz": [],
@@ -8140,17 +8086,17 @@
       "urlImagePinpoint": "",
       "urlImageBaloon": ""
     },
-    "codiceStazione": "S03056",
-    "codStazione": "S03056",
-    "lat": 46.063393747387,
-    "lon": 13.39777873675,
+    "codiceStazione": "S02719",
+    "codStazione": "S02719",
+    "lat": 45.499546359265,
+    "lon": 12.222967540161,
     "latMappaCitta": 0.0,
     "lonMappaCitta": 0.0,
     "localita": {
-      "nomeLungo": "CIVIDALE",
-      "nomeBreve": "CIVIDALE",
-      "label": "Cividale",
-      "id": "S03056"
+      "nomeLungo": "VENEZIA MESTRE GAZZERA",
+      "nomeBreve": "Mestre Gazzera",
+      "label": "Gazzera",
+      "id": "S02719"
     },
     "esterno": false,
     "offsetX": 0,
@@ -8212,33 +8158,6 @@
     "nomeCitta": "A"
   },
   {
-    "key": "S03058_0",
-    "codReg": 0,
-    "tipoStazione": 3,
-    "dettZoomStaz": [],
-    "pstaz": [],
-    "mappaCitta": {
-      "urlImagePinpoint": "",
-      "urlImageBaloon": ""
-    },
-    "codiceStazione": "S03058",
-    "codStazione": "S03058",
-    "lat": 46.060882901766,
-    "lon": 13.345858655515,
-    "latMappaCitta": 0.0,
-    "lonMappaCitta": 0.0,
-    "localita": {
-      "nomeLungo": "MOIMACCO",
-      "nomeBreve": "Moimacco",
-      "label": "Moimacco",
-      "id": "S03058"
-    },
-    "esterno": false,
-    "offsetX": 0,
-    "offsetY": 0,
-    "nomeCitta": "A"
-  },
-  {
     "key": "S03060_0",
     "codReg": 0,
     "tipoStazione": 3,
@@ -8259,33 +8178,6 @@
       "nomeBreve": "S.Gottardo",
       "label": "S.Gottardo",
       "id": "S03060"
-    },
-    "esterno": false,
-    "offsetX": 0,
-    "offsetY": 0,
-    "nomeCitta": "A"
-  },
-  {
-    "key": "S02719_0",
-    "codReg": 0,
-    "tipoStazione": 3,
-    "dettZoomStaz": [],
-    "pstaz": [],
-    "mappaCitta": {
-      "urlImagePinpoint": "",
-      "urlImageBaloon": ""
-    },
-    "codiceStazione": "S02719",
-    "codStazione": "S02719",
-    "lat": 45.499546359265,
-    "lon": 12.222967540161,
-    "latMappaCitta": 0.0,
-    "lonMappaCitta": 0.0,
-    "localita": {
-      "nomeLungo": "VENEZIA MESTRE GAZZERA",
-      "nomeBreve": "Mestre Gazzera",
-      "label": "Gazzera",
-      "id": "S02719"
     },
     "esterno": false,
     "offsetX": 0,
@@ -8610,6 +8502,60 @@
       "nomeBreve": "PA De Gasperi",
       "label": "Pa",
       "id": "S12065"
+    },
+    "esterno": false,
+    "offsetX": 0,
+    "offsetY": 0,
+    "nomeCitta": "A"
+  },
+  {
+    "key": "S00885_0",
+    "codReg": 0,
+    "tipoStazione": 3,
+    "dettZoomStaz": [],
+    "pstaz": [],
+    "mappaCitta": {
+      "urlImagePinpoint": "",
+      "urlImageBaloon": ""
+    },
+    "codiceStazione": "S00885",
+    "codStazione": "S00885",
+    "lat": 45.337174,
+    "lon": 7.689845,
+    "latMappaCitta": 0.0,
+    "lonMappaCitta": 0.0,
+    "localita": {
+      "nomeLungo": "FAVRIA",
+      "nomeBreve": "Favria",
+      "label": "Favria",
+      "id": "S00885"
+    },
+    "esterno": false,
+    "offsetX": 0,
+    "offsetY": 0,
+    "nomeCitta": "A"
+  },
+  {
+    "key": "S00886_0",
+    "codReg": 0,
+    "tipoStazione": 3,
+    "dettZoomStaz": [],
+    "pstaz": [],
+    "mappaCitta": {
+      "urlImagePinpoint": "",
+      "urlImageBaloon": ""
+    },
+    "codiceStazione": "S00886",
+    "codStazione": "S00886",
+    "lat": 45.351402,
+    "lon": 7.678572,
+    "latMappaCitta": 0.0,
+    "lonMappaCitta": 0.0,
+    "localita": {
+      "nomeLungo": "SALASSA",
+      "nomeBreve": "Salassa",
+      "label": "Salassa",
+      "id": "S00886"
     },
     "esterno": false,
     "offsetX": 0,
