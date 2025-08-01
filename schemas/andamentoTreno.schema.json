@@ -178,8 +178,7 @@
             "examples": [0, 3]
           },
           "materiale_label": {
-            "type": ["string", "null"],
-            "description": "Etichetta del materiale rotabile"
+            "enum": ["business", null]
           }
         },
         "required": [
