@@ -373,7 +373,9 @@ def handle_autocompleta_command(endpoint_name, output, download_all, prefix):
 @click.pass_context
 def autocompleta_stazione(ctx, download_all, prefix):
     """Search for stations with a specific prefix, or use --all to download from all letters"""
-    handle_autocompleta_command("autocompletaStazione", ctx.obj["output"], download_all, prefix)
+    handle_autocompleta_command(
+        "autocompletaStazione", ctx.obj["output"], download_all, prefix
+    )
 
 
 @cli.command("autocompleta-stazione-imposta-viaggio")
@@ -387,7 +389,9 @@ def autocompleta_stazione(ctx, download_all, prefix):
 @click.pass_context
 def autocompleta_stazione_imposta_viaggio(ctx, download_all, prefix):
     """Search for stations with a specific prefix, or use --all to download from all letters"""
-    handle_autocompleta_command("autocompletaStazioneImpostaViaggio", ctx.obj["output"], download_all, prefix)
+    handle_autocompleta_command(
+        "autocompletaStazioneImpostaViaggio", ctx.obj["output"], download_all, prefix
+    )
 
 
 @cli.command("autocompleta-stazione-nts")
@@ -401,7 +405,9 @@ def autocompleta_stazione_imposta_viaggio(ctx, download_all, prefix):
 @click.pass_context
 def autocompleta_stazione_nts(ctx, download_all, prefix):
     """Search for stations with a specific prefix, or use --all to download from all letters"""
-    handle_autocompleta_command("autocompletaStazioneNTS", ctx.obj["output"], download_all, prefix)
+    handle_autocompleta_command(
+        "autocompletaStazioneNTS", ctx.obj["output"], download_all, prefix
+    )
 
 
 def dump_cerca_stazione_all(output_dir="dumps"):
@@ -657,7 +663,9 @@ def cerca_numero_treno_treno_autocomplete(ctx, numero_treno):
     """Get autocomplete suggestions for a train number"""
     try:
         response = get_text("cercaNumeroTrenoTrenoAutocomplete", str(numero_treno))
-        output_data(response, ctx.obj["output"], "Saved train number autocomplete results")
+        output_data(
+            response, ctx.obj["output"], "Saved train number autocomplete results"
+        )
     except requests.RequestException as e:
         print(f"Error fetching autocomplete for train number {numero_treno}: {e}")
 
@@ -699,7 +707,9 @@ def andamento_treno(ctx, departure_station, date_str, numero_treno):
 
             if not departure_station:
                 departure_station = train_info["codLocOrig"]
-                print(f"Using departure station: {departure_station} ({train_info['descLocOrig']})")
+                print(
+                    f"Using departure station: {departure_station} ({train_info['descLocOrig']})"
+                )
             else:
                 departure_station = resolve_station_code(departure_station)
 
@@ -708,15 +718,23 @@ def andamento_treno(ctx, departure_station, date_str, numero_treno):
                 date_str = train_info["dataPartenza"]
                 print(f"Using departure date: {date_str}")
             else:
-                user_date = datetime.strptime(date_str, "%Y-%m-%d").replace(tzinfo=ZoneInfo("UTC"))
+                user_date = datetime.strptime(date_str, "%Y-%m-%d").replace(
+                    tzinfo=ZoneInfo("UTC")
+                )
                 millis = str(int(user_date.timestamp() * 1000))
         else:
             departure_station = resolve_station_code(departure_station)
-            user_date = datetime.strptime(date_str, "%Y-%m-%d").replace(tzinfo=ZoneInfo("UTC"))
+            user_date = datetime.strptime(date_str, "%Y-%m-%d").replace(
+                tzinfo=ZoneInfo("UTC")
+            )
             millis = str(int(user_date.timestamp() * 1000))
 
-        print(f"Fetching train status for train {numero_treno} departing from {departure_station} on {date_str}...")
-        response = get_json("andamentoTreno", departure_station, str(numero_treno), str(millis))
+        print(
+            f"Fetching train status for train {numero_treno} departing from {departure_station} on {date_str}..."
+        )
+        response = get_json(
+            "andamentoTreno", departure_station, str(numero_treno), str(millis)
+        )
         output_data(response, ctx.obj["output"], "Saved train status")
 
     except requests.RequestException as e:
@@ -902,7 +920,9 @@ def select_stations_for_sampling(stations, samples, fetch_all):
         samples = len(stations)
 
     sampled_stations = random.sample(stations, samples)
-    print(f"Sampling {samples} random stations from {len(stations)} available stations...")
+    print(
+        f"Sampling {samples} random stations from {len(stations)} available stations..."
+    )
     return sampled_stations
 
 
@@ -988,7 +1008,9 @@ def sample_stations(ctx, samples, read_from, fetch_all):
 
                 # Create filename: {STATION_CODE}_{ISO_DATETIME}_{TYPE}.json
                 filename = f"{code}_{iso_datetime}_{data_type}.json"
-                output_path = (partenze_dir if data_type == "partenze" else arrivi_dir) / filename
+                output_path = (
+                    partenze_dir if data_type == "partenze" else arrivi_dir
+                ) / filename
 
                 # Save data
                 with output_path.open("w", encoding="utf-8") as f:
@@ -998,9 +1020,13 @@ def sample_stations(ctx, samples, read_from, fetch_all):
                 print(f"✓ Saved {data_type} for {name} ({code}) to {output_path}")
             else:
                 stats["failed"] += 1
-                print(f"✗ Failed to fetch {data_type} for {name} ({code}): {result['error']}")
+                print(
+                    f"✗ Failed to fetch {data_type} for {name} ({code}): {result['error']}"
+                )
 
-    action_type = "all stations" if fetch_all else f"{len(sampled_stations)} sampled stations"
+    action_type = (
+        "all stations" if fetch_all else f"{len(sampled_stations)} sampled stations"
+    )
     print(f"\n✅ Completed processing {action_type}:")
     print(f"  • Successful fetches: {stats['successful']}")
     print(f"  • Failed fetches: {stats['failed']}")
@@ -1041,7 +1067,7 @@ def save_train_data(result, train_number, endpoint, output_dirs):
     # Choose output directory and file extension
     dir_map = {
         "cercaNumeroTreno": (cerca_numero_dir, ".json"),
-        "cercaNumeroTrenoTrenoAutocomplete": (autocomplete_dir, ".txt"),
+        "cercaNumeroTrenoTrenoAutocomplete": (autocomplete_dir, ".csv"),
         "andamentoTreno": (andamento_dir, ".json"),
         "dettaglioStazione": (dettaglio_dir, ".json"),
     }
@@ -1139,7 +1165,9 @@ def populate_train_info_cache(train_numbers, output_dirs, existing_train_numbers
 
     with ThreadPoolExecutor(max_workers=10) as executor:
         cerca_futures = {
-            executor.submit(fetch_train_data, train_number, "cercaNumeroTreno"): train_number
+            executor.submit(
+                fetch_train_data, train_number, "cercaNumeroTreno"
+            ): train_number
             for train_number in train_numbers
         }
 
@@ -1147,7 +1175,11 @@ def populate_train_info_cache(train_numbers, output_dirs, existing_train_numbers
             train_number = cerca_futures[future]
             result = future.result()
 
-            if result["success"] and isinstance(result["data"], dict) and result["data"]:
+            if (
+                result["success"]
+                and isinstance(result["data"], dict)
+                and result["data"]
+            ):
                 train_info_cache[train_number] = result["data"]
                 existing_train_numbers.add(train_number)
 
@@ -1155,13 +1187,17 @@ def populate_train_info_cache(train_numbers, output_dirs, existing_train_numbers
                 output_path = cerca_numero_dir / f"{train_number}.json"
                 with output_path.open("w", encoding="utf-8") as f:
                     json.dump(result["data"], f, indent=2, ensure_ascii=False)
-                print(f"✓ Saved cercaNumeroTreno for train {train_number} to {output_path}")
+                print(
+                    f"✓ Saved cercaNumeroTreno for train {train_number} to {output_path}"
+                )
                 successful_cerca_calls += 1
 
     return train_info_cache, successful_cerca_calls
 
 
-def manage_train_numbers_file(train_numbers_file, new_train_numbers, *, skip_save=False):
+def manage_train_numbers_file(
+    train_numbers_file, new_train_numbers, *, skip_save=False
+):
     """Manage the train numbers file with deduplication and appending"""
     if skip_save:
         return
@@ -1174,11 +1210,14 @@ def manage_train_numbers_file(train_numbers_file, new_train_numbers, *, skip_sav
         try:
             content = train_numbers_path.read_text(encoding="utf-8")
             existing_train_numbers = {
-                int(line.strip()) for line in content.splitlines()
+                int(line.strip())
+                for line in content.splitlines()
                 if line.strip().isdigit()
             }
         except (OSError, UnicodeError) as e:
-            print(f"Warning: Could not read existing train numbers file {train_numbers_file}: {e}")
+            print(
+                f"Warning: Could not read existing train numbers file {train_numbers_file}: {e}"
+            )
 
     # Combine existing and new train numbers (set automatically deduplicates)
     all_train_numbers = existing_train_numbers | new_train_numbers
@@ -1221,7 +1260,7 @@ def sample_trains(ctx, samples, fetch_all, no_keep_track):
     """Sample random train numbers and fetch their data from cerca-numero-treno, cerca-numero-treno-treno-autocomplete, andamento-treno, and dettaglio-stazione endpoints, or use --all to fetch from all train numbers.
 
     Results are saved to {output}/cercaNumeroTreno, {output}/cercaNumeroTrenoTrenoAutocomplete, {output}/andamentoTreno, and {output}/dettaglioStazione directories.
-    File names follow the format: {TRAIN_NUMBER}.json or {TRAIN_NUMBER}.txt
+    File names follow the format: {TRAIN_NUMBER}.json or {TRAIN_NUMBER}.csv
 
     Train numbers file:
     - Default: saves to {output}/train_numbers.txt with deduplication and appending
