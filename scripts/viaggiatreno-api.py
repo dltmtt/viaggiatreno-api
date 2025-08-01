@@ -23,6 +23,7 @@ from functools import partial
 from io import StringIO
 from itertools import chain
 from pathlib import Path
+from typing import TextIO
 from zoneinfo import ZoneInfo
 
 import click
@@ -142,7 +143,7 @@ def resolve_station_code(station_input: str) -> str:
 
 def output_data(
     data: list | dict | None,
-    output_path: str | None = None,
+    output: str | TextIO | None = None,
     success_message: str = "Data saved",
 ) -> None:
     """Output data either to console or file, unless it's empty."""
@@ -151,10 +152,15 @@ def output_data(
         or (isinstance(data, (list, dict)) and len(data) == 0)
         or (isinstance(data, str) and not data.strip())
     ):
-        if output_path:
-            click.echo(
-                f"⚠ Skipping empty data - not writing to {click.format_filename(output_path)}"
-            )
+        if output:
+            if isinstance(output, str):
+                click.echo(
+                    f"⚠ Skipping empty data - not writing to {click.format_filename(output)}"
+                )
+            else:
+                click.echo(
+                    f"⚠ Skipping empty data - not writing to {click.format_filename(output.name)}"
+                )
         else:
             click.echo("⚠ No data to display")
         return
@@ -164,11 +170,17 @@ def output_data(
     else:
         formatted_data = str(data)
 
-    if output_path:
-        output_file = Path(output_path)
-        output_file.parent.mkdir(parents=True, exist_ok=True)
-        output_file.write_text(formatted_data, encoding="utf-8")
-        click.echo(f"✓ {success_message} to {click.format_filename(output_path)}")
+    if output:
+        if isinstance(output, str):
+            # Handle legacy string path case (used in bulk operations)
+            output_file = Path(output)
+            output_file.parent.mkdir(parents=True, exist_ok=True)
+            output_file.write_text(formatted_data, encoding="utf-8")
+            click.echo(f"✓ {success_message} to {click.format_filename(output)}")
+        else:
+            # Handle click.File() object
+            output.write(formatted_data)
+            click.echo(f"✓ {success_message} to {click.format_filename(output.name)}")
     else:
         click.echo(formatted_data)
 
@@ -184,12 +196,12 @@ def output_data(
 @click.option(
     "-o",
     "--output",
-    type=click.Path(),
+    type=click.File("w"),
     help="Save output to file.",
 )
 @click.argument("region", type=int, required=False)
 def elenco_stazioni(
-    region: int | None, output: str | None, *, download_all: bool
+    region: int | None, output: TextIO | None, *, download_all: bool
 ) -> None:
     """Get all stations from a given region or from all regions."""
     if download_all:
@@ -226,12 +238,12 @@ def elenco_stazioni(
 @click.option(
     "-o",
     "--output",
-    type=click.Path(),
+    type=click.File("w"),
     help="Save output to file.",
 )
 @click.argument("prefix", type=str, required=False)
 def cerca_stazione(
-    prefix: str | None, output: str | None, *, download_all: bool
+    prefix: str | None, output: TextIO | None, *, download_all: bool
 ) -> None:
     """Search for stations with a specific prefix or download all stations using the cercaStazione endpoint."""
     if download_all:
@@ -251,7 +263,11 @@ def cerca_stazione(
 
 
 def autocompleta_stazione_handler(
-    endpoint_name: str, output: str | None, prefix: str | None, *, download_all: bool
+    endpoint_name: str,
+    output: TextIO | None,
+    prefix: str | None,
+    *,
+    download_all: bool,
 ) -> None:
     """Search for stations with a specific prefix or download all stations using the specified autocompleta* endpoint."""
     if download_all:
@@ -285,12 +301,12 @@ def autocompleta_stazione_handler(
 @click.option(
     "-o",
     "--output",
-    type=click.Path(),
+    type=click.File("w"),
     help="Save output to file.",
 )
 @click.argument("prefix", type=str, required=False)
 def autocompleta_stazione(
-    prefix: str | None, output: str | None, *, download_all: bool
+    prefix: str | None, output: TextIO | None, *, download_all: bool
 ) -> None:
     """Search for stations with a specific prefix or download all stations using the autocompletaStazione endpoint."""
     autocompleta_stazione_handler(
@@ -309,12 +325,12 @@ def autocompleta_stazione(
 @click.option(
     "-o",
     "--output",
-    type=click.Path(),
+    type=click.File("w"),
     help="Save output to file.",
 )
 @click.argument("prefix", type=str, required=False)
 def autocompleta_stazione_imposta_viaggio(
-    prefix: str | None, output: str | None, *, download_all: bool
+    prefix: str | None, output: TextIO | None, *, download_all: bool
 ) -> None:
     """Search for stations with a specific prefix or download all stations using the autocompletaStazioneImpostaViaggio endpoint."""
     autocompleta_stazione_handler(
@@ -336,12 +352,12 @@ def autocompleta_stazione_imposta_viaggio(
 @click.option(
     "-o",
     "--output",
-    type=click.Path(),
+    type=click.File("w"),
     help="Save output to file.",
 )
 @click.argument("prefix", type=str, required=False)
 def autocompleta_stazione_nts(
-    prefix: str | None, output: str | None, *, download_all: bool
+    prefix: str | None, output: TextIO | None, *, download_all: bool
 ) -> None:
     """Search for stations with a specific prefix or download all stations using the autocompletaStazioneNTS endpoint."""
     autocompleta_stazione_handler(
@@ -369,9 +385,6 @@ def regione(station: str | None, *, table: bool) -> None:
     STATION can be either a station name (e.g., 'Milano Centrale') or a station code (e.g., S01700).
     Use --table to show the correspondence between region codes and names.
     """
-    # For regione command, we'll use None as output to always print to console
-    output = None
-
     if table:
         # Show the table of region codes and names
         table_data = (
@@ -379,7 +392,7 @@ def regione(station: str | None, *, table: bool) -> None:
         )
         table_data += "\n".join(f"{code:>6}\t{name}" for code, name in REGIONS.items())
 
-        output_data(table_data.strip(), output, "Saved region table")
+        output_data(table_data.strip(), None, "Saved region table")
         return
 
     if not station:
@@ -398,7 +411,7 @@ def regione(station: str | None, *, table: bool) -> None:
             region = -1
             click.echo(f"Cannot retrieve region code for station {station_code}")
 
-        output_data(region, output, f"Saved region code for station {station_code}")
+        output_data(region, None, f"Saved region code for station {station_code}")
     except requests.RequestException as e:
         click.echo(f"Error fetching region for station {station}: {e}", err=True)
     except click.ClickException:
@@ -415,10 +428,10 @@ def regione(station: str | None, *, table: bool) -> None:
 @click.option(
     "-o",
     "--output",
-    type=click.Path(),
+    type=click.File("w"),
     help="Save output to file.",
 )
-def dettaglio_stazione(station: str, region: int | None, output: str | None) -> None:
+def dettaglio_stazione(station: str, region: int | None, output: TextIO | None) -> None:
     """Get detailed station information.
 
     STATION can be either a station name (e.g., 'Milano Centrale') or a station code (e.g., S01700).
@@ -454,28 +467,22 @@ def dettaglio_stazione(station: str, region: int | None, output: str | None) -> 
         click.echo(f"Error fetching station details for {station}: {e}", err=True)
 
 
-def get_stations_from_file(stations_file: str) -> list[dict[str, str]]:
+def get_stations_from_file(stations_file: TextIO) -> list[dict[str, str]]:
     """Get list of stations from a stations file."""
-    stations_path = Path(stations_file)
-    if not stations_path.exists():
-        error_msg = (
-            f"Stations file not found: {click.format_filename(stations_file)}. "
-            "Please run 'autocompletaStazione --all --output dumps/autocompletaStazione.csv' to create it."
-        )
-        raise click.ClickException(error_msg)
-
     stations = []
-    with stations_path.open("r", encoding="utf-8") as f:
-        csv_reader = csv.reader(f, delimiter="|")
+
+    try:
+        csv_reader = csv.reader(stations_file, delimiter="|")
         for row in csv_reader:
             if len(row) >= MIN_CSV_COLUMNS:
                 name, code = row[0], row[1]
                 stations.append({"name": name, "code": code})
+    except Exception as e:
+        error_msg = f"Error reading stations file {click.format_filename(stations_file.name)}: {e}"
+        raise click.ClickException(error_msg) from e
 
     if not stations:
-        error_msg = (
-            f"No valid station data found in {click.format_filename(stations_file)}"
-        )
+        error_msg = f"No valid station data found in {click.format_filename(stations_file.name)}"
         raise click.ClickException(error_msg)
 
     return stations
@@ -501,7 +508,7 @@ def partenze_arrivi_handler(
 
 
 def partenze_arrivi_all_handler(
-    endpoint: str, search_datetime: datetime, read_from: str, output: str | None
+    endpoint: str, search_datetime: datetime, read_from: TextIO, output: str | None
 ) -> None:
     """Handle fetching station schedule data (partenze or arrivi) for all stations."""
     # Create output directory
@@ -510,7 +517,7 @@ def partenze_arrivi_all_handler(
 
     formatted_datetime = search_datetime.strftime("%a %b %-d %Y %H:%M:%S")
 
-    click.echo(f"Loading station data from {click.format_filename(read_from)}...")
+    click.echo(f"Loading station data from {click.format_filename(read_from.name)}...")
     try:
         stations = get_stations_from_file(read_from)
     except click.ClickException as e:
@@ -595,7 +602,7 @@ def partenze_arrivi_all_handler(
 @click.option(
     "-r",
     "--read-from",
-    type=click.Path(exists=True),
+    type=click.File("r"),
     default="dumps/autocompletaStazione.csv",
     help="Path to stations file (default: dumps/autocompletaStazione.csv). Only used with --all.",
 )
@@ -608,7 +615,7 @@ def partenze_arrivi_all_handler(
 def partenze(
     station: str,
     search_datetime: datetime | None,
-    read_from: str,
+    read_from: TextIO,
     output: str | None,
     *,
     fetch_all: bool,
@@ -652,7 +659,7 @@ def partenze(
 @click.option(
     "-r",
     "--read-from",
-    type=click.Path(exists=True),
+    type=click.File("r"),
     default="dumps/autocompletaStazione.csv",
     help="Path to stations file (default: dumps/autocompletaStazione.csv). Only used with --all.",
 )
@@ -665,7 +672,7 @@ def partenze(
 def arrivi(
     station: str,
     search_datetime: datetime | None,
-    read_from: str,
+    read_from: TextIO,
     output: str | None,
     *,
     fetch_all: bool,
@@ -690,7 +697,7 @@ def arrivi(
                 "Error: STATION argument is required when not using -a/--all", err=True
             )
             return
-        partenze_arrivi_handler("arrivi", station, search_datetime.isoformat(), output)
+        partenze_arrivi_handler("arrivi", station, search_datetime, output)
 
 
 @cli.command("cercaNumeroTrenoTrenoAutocomplete")
@@ -698,11 +705,11 @@ def arrivi(
 @click.option(
     "-o",
     "--output",
-    type=click.Path(),
+    type=click.File("w"),
     help="Save output to file.",
 )
 def cerca_numero_treno_treno_autocomplete(
-    numero_treno: int, output: str | None
+    numero_treno: int, output: TextIO | None
 ) -> None:
     """Get autocomplete suggestions for a train number."""
     try:
@@ -720,10 +727,10 @@ def cerca_numero_treno_treno_autocomplete(
 @click.option(
     "-o",
     "--output",
-    type=click.Path(),
+    type=click.File("w"),
     help="Save output to file.",
 )
-def cerca_numero_treno(numero_treno: int, output: str | None) -> None:
+def cerca_numero_treno(numero_treno: int, output: TextIO | None) -> None:
     """Get detailed information for a train number."""
     try:
         response = get_json("cercaNumeroTreno", str(numero_treno))
@@ -750,7 +757,7 @@ def cerca_numero_treno(numero_treno: int, output: str | None) -> None:
 @click.option(
     "-o",
     "--output",
-    type=click.Path(),
+    type=click.File("w"),
     help="Save output to file.",
 )
 @click.argument("numero_treno", type=int)
@@ -758,7 +765,7 @@ def andamento_treno(
     departure_station: str | None,
     search_date: datetime | None,
     numero_treno: int,
-    output: str | None,
+    output: TextIO | None,
 ) -> None:
     """Get detailed train status and journey information."""
     try:
