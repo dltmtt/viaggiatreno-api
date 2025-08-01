@@ -1,13 +1,3 @@
-#!/usr/bin/env -S uv run --script
-#
-# /// script
-# requires-python = ">=3.13"
-# dependencies = [
-#     "click",
-#     "requests",
-# ]
-# ///
-
 """ViaggiaTreno API command-line utilities.
 
 This script provides tools for querying train and station data from the ViaggiaTreno API, including station search, train status, and data export features.
