@@ -755,7 +755,10 @@ def cerca_numero_treno(numero_treno: int, output: str | None) -> None:
 )
 @click.argument("numero_treno", type=int)
 def andamento_treno(
-    departure_station: str, search_date: datetime, numero_treno: int, output: str | None
+    departure_station: str | None,
+    search_date: datetime | None,
+    numero_treno: int,
+    output: str | None,
 ) -> None:
     """Get detailed train status and journey information."""
     try:
