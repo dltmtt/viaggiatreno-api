@@ -184,6 +184,7 @@ def output_data(
 
 @cli.command("elencoStazioni")
 @click.option(
+    "-a",
     "--all",
     "download_all",
     is_flag=True,
@@ -219,12 +220,13 @@ def elenco_stazioni(
         )
     else:
         click.echo(
-            f"Error: Specify a region number (0-{len(REGIONS) - 1}) or use --all"
+            f"Error: Specify a region number (0-{len(REGIONS) - 1}) or use -a/--all"
         )
 
 
 @cli.command("cercaStazione")
 @click.option(
+    "-a",
     "--all",
     "download_all",
     is_flag=True,
@@ -254,7 +256,7 @@ def cerca_stazione(
         stations = get_json("cercaStazione", prefix)
         output_data(stations, output, f"Saved {len(stations)} results")
     else:
-        click.echo("Error: Specify a prefix or use --all")
+        click.echo("Error: Specify a prefix or use -a/--all")
 
 
 def autocompleta_stazione_handler(
@@ -278,11 +280,12 @@ def autocompleta_stazione_handler(
 
         output_data(stations, output, f"Saved {count} results")
     else:
-        click.echo("Error: Specify a prefix or use --all")
+        click.echo("Error: Specify a prefix or use -a/--all")
 
 
 @cli.command("autocompletaStazione")
 @click.option(
+    "-a",
     "--all",
     "download_all",
     is_flag=True,
@@ -306,6 +309,7 @@ def autocompleta_stazione(
 
 @cli.command("autocompletaStazioneImpostaViaggio")
 @click.option(
+    "-a",
     "--all",
     "download_all",
     is_flag=True,
@@ -332,6 +336,7 @@ def autocompleta_stazione_imposta_viaggio(
 
 @cli.command("autocompletaStazioneNTS")
 @click.option(
+    "-a",
     "--all",
     "download_all",
     is_flag=True,
@@ -464,7 +469,7 @@ def get_stations_from_file(stations_file: str) -> list[dict[str, str]]:
     if not stations_path.exists():
         error_msg = (
             f"Stations file not found: {click.format_filename(stations_file)}. "
-            "Please run 'autocompletaStazione --all' to create it."
+            "Please run 'autocompletaStazione --all --output dumps/autocompletaStazione.csv' to create it."
         )
         raise click.ClickException(error_msg)
 
@@ -593,11 +598,12 @@ def partenze_arrivi_all_handler(
 @click.argument("station", type=str, required=False)
 @click.option(
     "--datetime",
-    "datetime_str",
+    "iso_datetime",
     type=str,
     help="ISO datetime string (defaults to current time). Example: 2024-06-02T20:00:00.",
 )
 @click.option(
+    "-a",
     "--all",
     "fetch_all",
     is_flag=True,
@@ -618,7 +624,7 @@ def partenze_arrivi_all_handler(
 )
 def partenze(
     station: str,
-    datetime_str: str,
+    iso_datetime: str,
     read_from: str,
     output: str | None,
     *,
@@ -632,25 +638,26 @@ def partenze(
     if fetch_all:
         if station:
             click.echo("Warning: STATION argument ignored when using --all", err=True)
-        partenze_arrivi_all_handler("partenze", datetime_str, read_from, output)
+        partenze_arrivi_all_handler("partenze", iso_datetime, read_from, output)
     else:
         if not station:
             click.echo(
                 "Error: STATION argument is required when not using --all", err=True
             )
             return
-        partenze_arrivi_handler("partenze", station, datetime_str, output)
+        partenze_arrivi_handler("partenze", station, iso_datetime, output)
 
 
 @cli.command("arrivi")
 @click.argument("station", type=str, required=False)
 @click.option(
     "--datetime",
-    "datetime_str",
+    "iso_datetime",
     type=str,
     help="ISO datetime string (defaults to current time). Example: 2024-06-02T20:00:00.",
 )
 @click.option(
+    "-a",
     "--all",
     "fetch_all",
     is_flag=True,
@@ -671,7 +678,7 @@ def partenze(
 )
 def arrivi(
     station: str,
-    datetime_str: str,
+    iso_datetime: str,
     read_from: str,
     output: str | None,
     *,
@@ -680,19 +687,21 @@ def arrivi(
     """Get arrivals at a station at a specific date and time.
 
     STATION can be either a station name (e.g., 'Roma Termini') or a station code (e.g., S05000).
-    Use --all to fetch arrivals for all stations in the stations file.
+    Use -a/--all to fetch arrivals for all stations in the stations file.
     """
     if fetch_all:
         if station:
-            click.echo("Warning: STATION argument ignored when using --all", err=True)
-        partenze_arrivi_all_handler("arrivi", datetime_str, read_from, output)
+            click.echo(
+                "Warning: STATION argument ignored when using -a/--all", err=True
+            )
+        partenze_arrivi_all_handler("arrivi", iso_datetime, read_from, output)
     else:
         if not station:
             click.echo(
-                "Error: STATION argument is required when not using --all", err=True
+                "Error: STATION argument is required when not using -a/--all", err=True
             )
             return
-        partenze_arrivi_handler("arrivi", station, datetime_str, output)
+        partenze_arrivi_handler("arrivi", station, iso_datetime, output)
 
 
 @cli.command("cercaNumeroTrenoTrenoAutocomplete")
