@@ -140,15 +140,6 @@ def resolve_station_code(station_input: str) -> str:
         return station_code
 
 
-def format_datetime_for_api(iso_string: str) -> str:
-    """Convert ISO datetime string to format expected by ViaggiaTreno API.
-
-    This is similar to JavaScript's Date.toUTCString() format.
-    For example, "2025-08-01T20:00:00Z" becomes "Fri Aug 1 2025 20:00:00."
-    """
-    return datetime.fromisoformat(iso_string).strftime("%a %b %-d %Y %H:%M:%S")
-
-
 def output_data(
     data: list | dict | None,
     output_path: str | None = None,
@@ -491,17 +482,13 @@ def get_stations_from_file(stations_file: str) -> list[dict[str, str]]:
 
 
 def partenze_arrivi_handler(
-    endpoint: str, station: str, iso_datetime: str | None, output: str | None
+    endpoint: str, station: str, search_datetime: datetime, output: str | None
 ) -> None:
     """Handle fetching station schedule data (partenze or arrivi)."""
     try:
         station_code = resolve_station_code(station)
 
-        # Use current time if iso_datetime is not provided
-        if iso_datetime is None:
-            iso_datetime = datetime.now(tz=ZoneInfo("Europe/Rome")).isoformat()
-
-        formatted_datetime = format_datetime_for_api(iso_datetime)
+        formatted_datetime = search_datetime.strftime("%a %b %-d %Y %H:%M:%S")
 
         response = get_json(endpoint, station_code, formatted_datetime)
         output_data(response, output, f"Saved {endpoint}")
@@ -514,18 +501,14 @@ def partenze_arrivi_handler(
 
 
 def partenze_arrivi_all_handler(
-    endpoint: str, iso_datetime: str | None, read_from: str, output: str | None
+    endpoint: str, search_datetime: datetime, read_from: str, output: str | None
 ) -> None:
     """Handle fetching station schedule data (partenze or arrivi) for all stations."""
     # Create output directory
     output_dir_path = Path(output or "dumps") / endpoint
     output_dir_path.mkdir(parents=True, exist_ok=True)
 
-    # Use provided datetime or current time
-    if not iso_datetime:
-        iso_datetime = datetime.now(tz=ZoneInfo("Europe/Rome")).isoformat()
-
-    formatted_datetime = format_datetime_for_api(iso_datetime)
+    formatted_datetime = search_datetime.strftime("%a %b %-d %Y %H:%M:%S")
 
     click.echo(f"Loading station data from {click.format_filename(read_from)}...")
     try:
@@ -568,7 +551,7 @@ def partenze_arrivi_all_handler(
                     )
                     continue
 
-                filename = f"{station_code}_{iso_datetime}_{endpoint}.json"
+                filename = f"{station_code}_{search_datetime.replace(microsecond=0).isoformat()}_{endpoint}.json"
                 output_path = output_dir_path / filename
 
                 output_data(
@@ -598,9 +581,9 @@ def partenze_arrivi_all_handler(
 @click.argument("station", type=str, required=False)
 @click.option(
     "--datetime",
-    "iso_datetime",
-    type=str,
-    help="ISO datetime string (defaults to current time). Example: 2024-06-02T20:00:00.",
+    "search_datetime",
+    type=click.DateTime(["%Y-%m-%dT%H:%M:%S"]),
+    help="Date and time to search for (defaults to current date and time). Example: 2024-06-02T20:00:00.",
 )
 @click.option(
     "-a",
@@ -624,7 +607,7 @@ def partenze_arrivi_all_handler(
 )
 def partenze(
     station: str,
-    iso_datetime: str,
+    search_datetime: datetime | None,
     read_from: str,
     output: str | None,
     *,
@@ -635,26 +618,29 @@ def partenze(
     STATION can be either a station name (e.g., 'Milano Centrale') or a station code (e.g., S01700).
     Use --all to fetch departures for all stations in the stations file.
     """
+    if search_datetime is None:
+        search_datetime = datetime.now(tz=ZoneInfo("Europe/Rome"))
+
     if fetch_all:
         if station:
             click.echo("Warning: STATION argument ignored when using --all", err=True)
-        partenze_arrivi_all_handler("partenze", iso_datetime, read_from, output)
+        partenze_arrivi_all_handler("partenze", search_datetime, read_from, output)
     else:
         if not station:
             click.echo(
                 "Error: STATION argument is required when not using --all", err=True
             )
             return
-        partenze_arrivi_handler("partenze", station, iso_datetime, output)
+        partenze_arrivi_handler("partenze", station, search_datetime, output)
 
 
 @cli.command("arrivi")
 @click.argument("station", type=str, required=False)
 @click.option(
     "--datetime",
-    "iso_datetime",
-    type=str,
-    help="ISO datetime string (defaults to current time). Example: 2024-06-02T20:00:00.",
+    "search_datetime",
+    type=click.DateTime(["%Y-%m-%dT%H:%M:%S"]),
+    help="Date and time to search for (defaults to current date and time). Example: 2024-06-02T20:00:00.",
 )
 @click.option(
     "-a",
@@ -678,7 +664,7 @@ def partenze(
 )
 def arrivi(
     station: str,
-    iso_datetime: str,
+    search_datetime: datetime | None,
     read_from: str,
     output: str | None,
     *,
@@ -689,19 +675,22 @@ def arrivi(
     STATION can be either a station name (e.g., 'Roma Termini') or a station code (e.g., S05000).
     Use -a/--all to fetch arrivals for all stations in the stations file.
     """
+    if search_datetime is None:
+        search_datetime = datetime.now(tz=ZoneInfo("Europe/Rome"))
+
     if fetch_all:
         if station:
             click.echo(
                 "Warning: STATION argument ignored when using -a/--all", err=True
             )
-        partenze_arrivi_all_handler("arrivi", iso_datetime, read_from, output)
+        partenze_arrivi_all_handler("arrivi", search_datetime, read_from, output)
     else:
         if not station:
             click.echo(
                 "Error: STATION argument is required when not using -a/--all", err=True
             )
             return
-        partenze_arrivi_handler("arrivi", station, iso_datetime, output)
+        partenze_arrivi_handler("arrivi", station, search_datetime.isoformat(), output)
 
 
 @cli.command("cercaNumeroTrenoTrenoAutocomplete")
@@ -754,9 +743,9 @@ def cerca_numero_treno(numero_treno: int, output: str | None) -> None:
 )
 @click.option(
     "--date",
-    "date_str",
-    type=str,
-    help="Departure date in YYYY-MM-DD format (e.g., 2025-07-22). If not provided, it will be retrieved using cercaNumeroTreno.",
+    "search_date",
+    type=click.DateTime(["%Y-%m-%d"]),
+    help="Train departure date (e.g., 2025-07-22). If not provided, it will be retrieved using cercaNumeroTreno.",
 )
 @click.option(
     "-o",
@@ -766,12 +755,12 @@ def cerca_numero_treno(numero_treno: int, output: str | None) -> None:
 )
 @click.argument("numero_treno", type=int)
 def andamento_treno(
-    departure_station: str, date_str: str, numero_treno: int, output: str | None
+    departure_station: str, search_date: datetime, numero_treno: int, output: str | None
 ) -> None:
     """Get detailed train status and journey information."""
     try:
         # If station or date not provided, get them from cercaNumeroTreno
-        if not departure_station or not date_str:
+        if not departure_station or not search_date:
             click.echo(f"Fetching train details for train {numero_treno}...")
             train_info = get_json("cercaNumeroTreno", str(numero_treno))
 
@@ -783,24 +772,20 @@ def andamento_treno(
             else:
                 departure_station = resolve_station_code(departure_station)
 
-            if not date_str:
+            if not search_date:
                 millis = train_info["millisDataPartenza"]
-                date_str = train_info["dataPartenza"]
-                click.echo(f"Using departure date: {date_str}")
+                search_date = train_info["dataPartenza"]
+                click.echo(f"Using departure date: {search_date}")
             else:
-                user_date = datetime.strptime(date_str, "%Y-%m-%d").replace(
-                    tzinfo=ZoneInfo("UTC")
-                )
+                user_date = search_date.replace(tzinfo=ZoneInfo("UTC"))
                 millis = str(int(user_date.timestamp() * 1000))
         else:
             departure_station = resolve_station_code(departure_station)
-            user_date = datetime.strptime(date_str, "%Y-%m-%d").replace(
-                tzinfo=ZoneInfo("UTC")
-            )
+            user_date = search_date.replace(tzinfo=ZoneInfo("UTC"))
             millis = str(int(user_date.timestamp() * 1000))
 
         click.echo(
-            f"Fetching train status for train {numero_treno} departing from {departure_station} on {date_str}..."
+            f"Fetching train status for train {numero_treno} departing from {departure_station} on {search_date}..."
         )
         response = get_json(
             "andamentoTreno", departure_station, str(numero_treno), str(millis)
