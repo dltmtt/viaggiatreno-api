@@ -160,7 +160,9 @@ def output_data(
         or (isinstance(data, str) and not data.strip())
     ):
         if output_path:
-            click.echo(f"⚠ Skipping empty data - not writing to {output_path}")
+            click.echo(
+                f"⚠ Skipping empty data - not writing to {click.format_filename(output_path)}"
+            )
         else:
             click.echo("⚠ No data to display")
         return
@@ -174,7 +176,7 @@ def output_data(
         output_file = Path(output_path)
         output_file.parent.mkdir(parents=True, exist_ok=True)
         output_file.write_text(formatted_data, encoding="utf-8")
-        click.echo(f"✓ {success_message} to {output_path}")
+        click.echo(f"✓ {success_message} to {click.format_filename(output_path)}")
     else:
         click.echo(formatted_data)
 
@@ -460,7 +462,7 @@ def get_stations_from_file(stations_file: str) -> list[dict[str, str]]:
     stations_path = Path(stations_file)
     if not stations_path.exists():
         error_msg = (
-            f"Stations file not found: {stations_file}. "
+            f"Stations file not found: {click.format_filename(stations_file)}. "
             "Please run 'autocompletaStazione --all' to create it."
         )
         raise click.ClickException(error_msg)
@@ -474,7 +476,9 @@ def get_stations_from_file(stations_file: str) -> list[dict[str, str]]:
                 stations.append({"name": name, "code": code})
 
     if not stations:
-        error_msg = f"No valid station data found in {stations_file}"
+        error_msg = (
+            f"No valid station data found in {click.format_filename(stations_file)}"
+        )
         raise click.ClickException(error_msg)
 
     return stations
@@ -530,7 +534,7 @@ def partenze_arrivi_all_handler(
             now.replace(microsecond=0).isoformat().replace(":", "-").replace("+", "_")
         )
 
-    click.echo(f"Loading station data from {read_from}...")
+    click.echo(f"Loading station data from {click.format_filename(read_from)}...")
     try:
         stations = get_stations_from_file(read_from)
     except click.ClickException as e:
@@ -587,7 +591,7 @@ def partenze_arrivi_all_handler(
     click.echo(f"  • Successful fetches: {stats['successful']}")
     click.echo(f"  • Failed fetches: {stats['failed']}")
     click.echo(f"  • Skipped empty data: {stats['skipped']}")
-    click.echo(f"  • Results saved in {output_dir_path}")
+    click.echo(f"  • Results saved in {click.format_filename(str(output_dir_path))}")
 
 
 @cli.command("partenze")
