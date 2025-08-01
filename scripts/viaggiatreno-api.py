@@ -199,7 +199,7 @@ def output_data(
     type=click.File("w"),
     help="Save output to file.",
 )
-@click.argument("region", type=int, required=False)
+@click.argument("region", type=click.IntRange(0, len(REGIONS) - 1), required=False)
 def elenco_stazioni(
     region: int | None, output: TextIO | None, *, download_all: bool
 ) -> None:
@@ -214,7 +214,6 @@ def elenco_stazioni(
             stations, output, f"Saved {len(stations)} stations from all regions"
         )
     elif region is not None:
-        _validate_region_code(region)
         stations = get_json("elencoStazioni", str(region))
         output_data(
             stations,
@@ -365,13 +364,6 @@ def autocompleta_stazione_nts(
     )
 
 
-def _validate_region_code(region: int) -> None:
-    """Validate region code and raise ClickException if invalid."""
-    if not (0 <= region < len(REGIONS)):
-        msg = f"Region code must be between 0 and {len(REGIONS) - 1}"
-        raise click.ClickException(msg)
-
-
 @cli.command("regione")
 @click.argument("station", type=str, required=False)
 @click.option(
@@ -422,7 +414,7 @@ def regione(station: str | None, *, table: bool) -> None:
 @click.argument("station", type=str)
 @click.option(
     "--region",
-    type=int,
+    type=click.IntRange(0, len(REGIONS) - 1),
     help=f"Region code (0-{len(REGIONS) - 1}). If not provided, it will be retrieved using the regione endpoint.",
 )
 @click.option(
@@ -457,8 +449,6 @@ def dettaglio_stazione(station: str, region: int | None, output: TextIO | None) 
         except requests.RequestException as e:
             click.echo(f"Error fetching region for station {station}: {e}", err=True)
             return
-    else:
-        _validate_region_code(region)
 
     try:
         response = get_json("dettaglioStazione", station_code, str(region))
