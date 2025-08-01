@@ -169,7 +169,8 @@
             "type": "boolean"
           },
           "nextTrattaType": {
-            "type": "integer"
+            "$comment": "Potrebbero esserci altri valori numerici; lasciando la definizione così è possibile rilevare eventuali cambiamenti futuri per ulteriori analisi.",
+            "enum": [0, 1, 2]
           },
           "actualFermataType": {
             "type": "integer",
