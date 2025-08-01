@@ -29,14 +29,12 @@ Una volta ottenuto il codice della stazione, è possibile chiamare `partenze` o 
 
 È disponibile uno script Python CLI in [`scripts/viaggiatreno-api.py`](scripts/viaggiatreno-api.py) che fornisce accesso semplificato agli endpoint documentati:
 
-- I nomi degli endpoint sono in _kebab-case_ invece che in _title-case_.
 - I parametri sono passati come argomenti dalla linea di comando, con alcune semplificazioni:
   - Si possono passare direttamente i nomi delle stazioni al posto dei codici.
   - Le date sono accettate in formato YYYY-MM-DD e hanno come default la data corrente.
   - Gli endpoint che richiedono informazioni aggiuntive spesso possono essere chiamati con solo il dato principale (ad esempio, [`andamentoTreno`](#andamentotreno) può essere chiamato con il solo numero del treno, e lo script recupererà automaticamente stazione e data di partenza).
 - L'opzione globale `-o/--output` permette di salvare l'output su file invece che visualizzarlo a schermo per tutti i comandi.
-- Tramite il comando `dump-all` è possibile scaricare i dati di tutte le stazioni in un colpo solo. L'opzione `-o` specifica la cartella di destinazione (default: `dumps`).
-- Tramite il comando `sample-stations` è possibile recuperare partenze e arrivi da un campione di stazioni.
+- Tramite l'argomento `--all` è possibile scaricare i dati di tutte le stazioni in un colpo solo di un dato endpoint. L'opzione `-o` specifica il nome del file in cui salvare i dati. Se non specificato, il file sarà salvato nella cartella `dumps` con il nome dell'endpoint.
 
 Lo script richiede i pacchetti `requests` e `click`.
 
@@ -44,9 +42,9 @@ Di seguito sono riportati alcuni esempi di utilizzo:
 
 ```bash
 # Cerca stazioni
-uv run scripts/viaggiatreno-api.py autocompleta-stazione "Milano"
-uv run scripts/viaggiatreno-api.py autocompleta-stazione-nts "Venezia"
-uv run scripts/viaggiatreno-api.py cerca-stazione "Roma"
+uv run scripts/viaggiatreno-api.py autocompletaStazione "Milano"
+uv run scripts/viaggiatreno-api.py autocompletaStazioneNTS "Venezia"
+uv run scripts/viaggiatreno-api.py cercaStazione "Roma"
 
 # Partenze da/arrivi a una stazione (accetta sia nomi che codici stazione)
 uv run scripts/viaggiatreno-api.py partenze S01700
@@ -59,15 +57,14 @@ uv run scripts/viaggiatreno-api.py -o partenze.json partenze "Milano Centrale"
 uv run scripts/viaggiatreno-api.py partenze "Tortona" --datetime 2025-07-22T15:30:00
 
 # Andamento di un treno (recupera stazione e data di partenza in automatico)
-uv run scripts/viaggiatreno-api.py andamento-treno 9685
+uv run scripts/viaggiatreno-api.py andamentoTreno 9685
 
 # Andamento con parametri specifici (accetta sia nomi che codici stazione)
-uv run scripts/viaggiatreno-api.py andamento-treno 3041 --departure-station "Milano Centrale" --date 2025-07-22
-uv run scripts/viaggiatreno-api.py andamento-treno 3041 --departure-station S01700 --date 2025-07-22
+uv run scripts/viaggiatreno-api.py andamentoTreno 3041 --departure-station "Milano Centrale" --date 2025-07-22
+uv run scripts/viaggiatreno-api.py andamentoTreno 3041 --departure-station S01700 --date 2025-07-22
 
-# Scarica tutti i dati delle stazioni
-uv run scripts/viaggiatreno-api.py dump-all
-uv run scripts/viaggiatreno-api.py -o my_data dump-all  # Salva nella cartella "my_data"
+# Scarica tutti i dati di cercaStazione
+uv run scripts/viaggiatreno-api.py -o data/stations.json cercaStazione --all
 
 # Trova la regione di una stazione
 uv run scripts/viaggiatreno-api.py regione "Milano Centrale"
@@ -77,16 +74,16 @@ uv run scripts/viaggiatreno-api.py regione S01700
 uv run scripts/viaggiatreno-api.py regione --table
 
 # Elenco stazioni in una regione (es. Lombardia)
-uv run scripts/viaggiatreno-api.py elenco-stazioni 1
+uv run scripts/viaggiatreno-api.py elencoStazioni 1
 
 # Mostra i dettagli di una stazione recuperando codice stazione e codice regione in automatico
-uv run scripts/viaggiatreno-api.py dettaglio-stazione "Milano Centrale"
+uv run scripts/viaggiatreno-api.py dettaglioStazione "Milano Centrale"
 
 # Mostra i dettagli di un treno
-uv run scripts/viaggiatreno-api.py cerca-numero-treno 711
+uv run scripts/viaggiatreno-api.py cercaNumeroTreno 711
 
 # Mostra i treni compatibili con un certo numero treno
-uv run scripts/viaggiatreno-api.py cerca-numero-treno-treno-autocomplete 711
+uv run scripts/viaggiatreno-api.py cercaNumeroTrenoTrenoAutocomplete 711
 ```
 
 ## Documentazione degli endpoint
