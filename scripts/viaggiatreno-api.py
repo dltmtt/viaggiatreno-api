@@ -143,7 +143,7 @@ def resolve_station_code(station_input: str) -> str:
 
 def output_data(
     data: list | dict | None,
-    output: str | TextIO | None = None,
+    output: str | TextIO | None,
     success_message: str = "Data saved",
 ) -> None:
     """Output data either to console or file, unless it's empty."""
