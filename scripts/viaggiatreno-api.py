@@ -60,19 +60,9 @@ REGIONS = {
 }
 
 
-@click.group()
-@click.option(
-    "-o",
-    "--output",
-    type=str,
-    help="Save output to file or directory (behavior depends on command).",
-)
-@click.pass_context
-def cli(ctx: click.Context, output: str) -> None:
+@click.group(context_settings={"help_option_names": ["-h", "--help"]})
+def cli() -> None:
     """ViaggiaTreno API tools."""
-    # Ensure that ctx.obj exists and store the output option
-    ctx.ensure_object(dict)
-    ctx.obj["output"] = output
 
 
 def get_json(endpoint: str, *args: str) -> dict | list:
@@ -196,14 +186,17 @@ def output_data(
     is_flag=True,
     help="Download all stations from all regions.",
 )
+@click.option(
+    "-o",
+    "--output",
+    type=click.Path(),
+    help="Save output to file.",
+)
 @click.argument("region", type=int, required=False)
-@click.pass_context
 def elenco_stazioni(
-    ctx: click.Context, region: int | None, *, download_all: bool
+    region: int | None, output: str | None, *, download_all: bool
 ) -> None:
     """Get all stations from a given region or from all regions."""
-    output = ctx.obj["output"]
-
     if download_all:
         with ThreadPoolExecutor(max_workers=len(REGIONS)) as executor:
             fetch_stations_by_region = partial(get_json, "elencoStazioni")
@@ -234,13 +227,17 @@ def elenco_stazioni(
     is_flag=True,
     help="Download all stations from all letters.",
 )
+@click.option(
+    "-o",
+    "--output",
+    type=click.Path(),
+    help="Save output to file.",
+)
 @click.argument("prefix", type=str, required=False)
-@click.pass_context
 def cerca_stazione(
-    ctx: click.Context, prefix: str | None, *, download_all: bool
+    prefix: str | None, output: str | None, *, download_all: bool
 ) -> None:
     """Search for stations with a specific prefix or download all stations using the cercaStazione endpoint."""
-    output = ctx.obj["output"]
     if download_all:
         with ThreadPoolExecutor(max_workers=len(string.ascii_uppercase)) as executor:
             fetch_stations_by_letter = partial(get_json, "cercaStazione")
@@ -258,7 +255,7 @@ def cerca_stazione(
 
 
 def autocompleta_stazione_handler(
-    endpoint_name: str, output: str, prefix: str | None, *, download_all: bool
+    endpoint_name: str, output: str | None, prefix: str | None, *, download_all: bool
 ) -> None:
     """Search for stations with a specific prefix or download all stations using the specified autocompleta* endpoint."""
     if download_all:
@@ -288,14 +285,19 @@ def autocompleta_stazione_handler(
     is_flag=True,
     help="Download all stations from all letters.",
 )
+@click.option(
+    "-o",
+    "--output",
+    type=click.Path(),
+    help="Save output to file.",
+)
 @click.argument("prefix", type=str, required=False)
-@click.pass_context
 def autocompleta_stazione(
-    ctx: click.Context, prefix: str | None, *, download_all: bool
+    prefix: str | None, output: str | None, *, download_all: bool
 ) -> None:
     """Search for stations with a specific prefix or download all stations using the autocompletaStazione endpoint."""
     autocompleta_stazione_handler(
-        "autocompletaStazione", ctx.obj["output"], prefix, download_all=download_all
+        "autocompletaStazione", output, prefix, download_all=download_all
     )
 
 
@@ -306,15 +308,20 @@ def autocompleta_stazione(
     is_flag=True,
     help="Download all stations from all letters.",
 )
+@click.option(
+    "-o",
+    "--output",
+    type=click.Path(),
+    help="Save output to file.",
+)
 @click.argument("prefix", type=str, required=False)
-@click.pass_context
 def autocompleta_stazione_imposta_viaggio(
-    ctx: click.Context, prefix: str | None, *, download_all: bool
+    prefix: str | None, output: str | None, *, download_all: bool
 ) -> None:
     """Search for stations with a specific prefix or download all stations using the autocompletaStazioneImpostaViaggio endpoint."""
     autocompleta_stazione_handler(
         "autocompletaStazioneImpostaViaggio",
-        ctx.obj["output"],
+        output,
         prefix,
         download_all=download_all,
     )
@@ -327,14 +334,19 @@ def autocompleta_stazione_imposta_viaggio(
     is_flag=True,
     help="Download all stations from all letters.",
 )
+@click.option(
+    "-o",
+    "--output",
+    type=click.Path(),
+    help="Save output to file.",
+)
 @click.argument("prefix", type=str, required=False)
-@click.pass_context
 def autocompleta_stazione_nts(
-    ctx: click.Context, prefix: str | None, *, download_all: bool
+    prefix: str | None, output: str | None, *, download_all: bool
 ) -> None:
     """Search for stations with a specific prefix or download all stations using the autocompletaStazioneNTS endpoint."""
     autocompleta_stazione_handler(
-        "autocompletaStazioneNTS", ctx.obj["output"], prefix, download_all=download_all
+        "autocompletaStazioneNTS", output, prefix, download_all=download_all
     )
 
 
@@ -352,14 +364,14 @@ def _validate_region_code(region: int) -> None:
     is_flag=True,
     help="Show table of region codes and names.",
 )
-@click.pass_context
-def regione(ctx: click.Context, station: str | None, *, table: bool) -> None:
+def regione(station: str | None, *, table: bool) -> None:
     """Get the region code for a station or show the region code table.
 
     STATION can be either a station name (e.g., 'Milano Centrale') or a station code (e.g., S01700).
     Use --table to show the correspondence between region codes and names.
     """
-    output = ctx.obj["output"]
+    # For regione command, we'll use None as output to always print to console
+    output = None
 
     if table:
         # Show the table of region codes and names
@@ -401,14 +413,17 @@ def regione(ctx: click.Context, station: str | None, *, table: bool) -> None:
     type=int,
     help=f"Region code (0-{len(REGIONS) - 1}). If not provided, it will be retrieved using the regione endpoint.",
 )
-@click.pass_context
-def dettaglio_stazione(ctx: click.Context, station: str, region: int | None) -> None:
+@click.option(
+    "-o",
+    "--output",
+    type=click.Path(),
+    help="Save output to file.",
+)
+def dettaglio_stazione(station: str, region: int | None, output: str | None) -> None:
     """Get detailed station information.
 
     STATION can be either a station name (e.g., 'Milano Centrale') or a station code (e.g., S01700).
     """
-    output = ctx.obj["output"]
-
     station_code = resolve_station_code(station)
 
     # Get region code if not provided
@@ -466,7 +481,7 @@ def get_stations_from_file(stations_file: str) -> list[dict[str, str]]:
 
 
 def partenze_arrivi_handler(
-    endpoint: str, station: str, datetime_str: str, output: str
+    endpoint: str, station: str, datetime_str: str, output: str | None
 ) -> None:
     """Handle fetching station schedule data (partenze or arrivi)."""
     try:
@@ -490,11 +505,12 @@ def partenze_arrivi_handler(
 
 
 def partenze_arrivi_all_handler(
-    endpoint: str, datetime_str: str, read_from: str, output: str = "dumps"
+    endpoint: str, datetime_str: str, read_from: str, output: str | None = "dumps"
 ) -> None:
     """Handle fetching station schedule data (partenze or arrivi) for all stations."""
     # Create output directory
-    output_dir_path = Path(output) / endpoint
+    output_base = output or "dumps"
+    output_dir_path = Path(output_base) / endpoint
     output_dir_path.mkdir(parents=True, exist_ok=True)
 
     # Get current datetime for API and filename
@@ -591,16 +607,21 @@ def partenze_arrivi_all_handler(
 @click.option(
     "-r",
     "--read-from",
-    type=str,
+    type=click.Path(exists=True),
     default="dumps/autocompletaStazione.csv",
     help="Path to stations file (default: dumps/autocompletaStazione.csv). Only used with --all.",
 )
-@click.pass_context
+@click.option(
+    "-o",
+    "--output",
+    type=click.Path(),
+    help="Save output to file, or directory when using --all (default: dumps).",
+)
 def partenze(
-    ctx: click.Context,
     station: str,
     datetime_str: str,
     read_from: str,
+    output: str | None,
     *,
     fetch_all: bool,
 ) -> None:
@@ -612,16 +633,14 @@ def partenze(
     if fetch_all:
         if station:
             click.echo("Warning: STATION argument ignored when using --all", err=True)
-        partenze_arrivi_all_handler(
-            "partenze", datetime_str, read_from, ctx.obj["output"]
-        )
+        partenze_arrivi_all_handler("partenze", datetime_str, read_from, output)
     else:
         if not station:
             click.echo(
                 "Error: STATION argument is required when not using --all", err=True
             )
             return
-        partenze_arrivi_handler("partenze", station, datetime_str, ctx.obj["output"])
+        partenze_arrivi_handler("partenze", station, datetime_str, output)
 
 
 @cli.command("arrivi")
@@ -641,16 +660,21 @@ def partenze(
 @click.option(
     "-r",
     "--read-from",
-    type=str,
+    type=click.Path(exists=True),
     default="dumps/autocompletaStazione.csv",
     help="Path to stations file (default: dumps/autocompletaStazione.csv). Only used with --all.",
 )
-@click.pass_context
+@click.option(
+    "-o",
+    "--output",
+    type=click.Path(),
+    help="Save output to file, or directory when using --all (default: dumps).",
+)
 def arrivi(
-    ctx: click.Context,
     station: str,
     datetime_str: str,
     read_from: str,
+    output: str | None,
     *,
     fetch_all: bool,
 ) -> None:
@@ -662,30 +686,31 @@ def arrivi(
     if fetch_all:
         if station:
             click.echo("Warning: STATION argument ignored when using --all", err=True)
-        partenze_arrivi_all_handler(
-            "arrivi", datetime_str, read_from, ctx.obj["output"]
-        )
+        partenze_arrivi_all_handler("arrivi", datetime_str, read_from, output)
     else:
         if not station:
             click.echo(
                 "Error: STATION argument is required when not using --all", err=True
             )
             return
-        partenze_arrivi_handler("arrivi", station, datetime_str, ctx.obj["output"])
+        partenze_arrivi_handler("arrivi", station, datetime_str, output)
 
 
 @cli.command("cercaNumeroTrenoTrenoAutocomplete")
 @click.argument("numero_treno", type=int)
-@click.pass_context
+@click.option(
+    "-o",
+    "--output",
+    type=click.Path(),
+    help="Save output to file.",
+)
 def cerca_numero_treno_treno_autocomplete(
-    ctx: click.Context, numero_treno: int
+    numero_treno: int, output: str | None
 ) -> None:
     """Get autocomplete suggestions for a train number."""
     try:
         response = get_text("cercaNumeroTrenoTrenoAutocomplete", str(numero_treno))
-        output_data(
-            response, ctx.obj["output"], "Saved train number autocomplete results"
-        )
+        output_data(response, output, "Saved train number autocomplete results")
     except requests.RequestException as e:
         click.echo(
             f"Error fetching autocomplete for train number {numero_treno}: {e}",
@@ -695,12 +720,17 @@ def cerca_numero_treno_treno_autocomplete(
 
 @cli.command("cercaNumeroTreno")
 @click.argument("numero_treno", type=int)
-@click.pass_context
-def cerca_numero_treno(ctx: click.Context, numero_treno: int) -> None:
+@click.option(
+    "-o",
+    "--output",
+    type=click.Path(),
+    help="Save output to file.",
+)
+def cerca_numero_treno(numero_treno: int, output: str | None) -> None:
     """Get detailed information for a train number."""
     try:
         response = get_json("cercaNumeroTreno", str(numero_treno))
-        output_data(response, ctx.obj["output"], "Saved train number details")
+        output_data(response, output, "Saved train number details")
     except requests.RequestException as e:
         click.echo(
             f"Error fetching details for train number {numero_treno}: {e}", err=True
@@ -720,10 +750,15 @@ def cerca_numero_treno(ctx: click.Context, numero_treno: int) -> None:
     type=str,
     help="Departure date in YYYY-MM-DD format (e.g., 2025-07-22). If not provided, it will be retrieved using cercaNumeroTreno.",
 )
+@click.option(
+    "-o",
+    "--output",
+    type=click.Path(),
+    help="Save output to file.",
+)
 @click.argument("numero_treno", type=int)
-@click.pass_context
 def andamento_treno(
-    ctx: click.Context, departure_station: str, date_str: str, numero_treno: int
+    departure_station: str, date_str: str, numero_treno: int, output: str | None
 ) -> None:
     """Get detailed train status and journey information."""
     try:
@@ -762,7 +797,7 @@ def andamento_treno(
         response = get_json(
             "andamentoTreno", departure_station, str(numero_treno), str(millis)
         )
-        output_data(response, ctx.obj["output"], "Saved train status")
+        output_data(response, output, "Saved train status")
 
     except requests.RequestException as e:
         click.echo(
