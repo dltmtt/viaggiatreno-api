@@ -16,6 +16,7 @@ This script provides tools for querying train and station data from the ViaggiaT
 import csv
 import json
 import string
+import textwrap
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 from functools import partial
@@ -485,18 +486,17 @@ def get_stations_from_file(stations_file: str) -> list[dict[str, str]]:
 
 
 def partenze_arrivi_handler(
-    endpoint: str, station: str, datetime_str: str, output: str | None
+    endpoint: str, station: str, iso_datetime: str | None, output: str | None
 ) -> None:
     """Handle fetching station schedule data (partenze or arrivi)."""
     try:
         station_code = resolve_station_code(station)
 
-        # Use current time if datetime_str is not provided
-        if datetime_str is None:
-            now = datetime.now(tz=ZoneInfo("Europe/Rome"))
-            formatted_datetime = format_datetime_for_api(now.isoformat())
-        else:
-            formatted_datetime = format_datetime_for_api(datetime_str)
+        # Use current time if iso_datetime is not provided
+        if iso_datetime is None:
+            iso_datetime = datetime.now(tz=ZoneInfo("Europe/Rome")).isoformat()
+
+        formatted_datetime = format_datetime_for_api(iso_datetime)
 
         response = get_json(endpoint, station_code, formatted_datetime)
         output_data(response, output, f"Saved {endpoint}")
@@ -509,30 +509,18 @@ def partenze_arrivi_handler(
 
 
 def partenze_arrivi_all_handler(
-    endpoint: str, datetime_str: str, read_from: str, output: str | None = "dumps"
+    endpoint: str, iso_datetime: str | None, read_from: str, output: str | None
 ) -> None:
     """Handle fetching station schedule data (partenze or arrivi) for all stations."""
     # Create output directory
-    output_base = output or "dumps"
-    output_dir_path = Path(output_base) / endpoint
+    output_dir_path = Path(output or "dumps") / endpoint
     output_dir_path.mkdir(parents=True, exist_ok=True)
 
-    # Get current datetime for API and filename
-    if datetime_str:
-        user_datetime = datetime.fromisoformat(datetime_str)
-        formatted_datetime = format_datetime_for_api(datetime_str)
-        iso_datetime = (
-            user_datetime.replace(microsecond=0)
-            .isoformat()
-            .replace(":", "-")
-            .replace("+", "_")
-        )
-    else:
-        now = datetime.now(tz=ZoneInfo("Europe/Rome"))
-        formatted_datetime = format_datetime_for_api(now.isoformat())
-        iso_datetime = (
-            now.replace(microsecond=0).isoformat().replace(":", "-").replace("+", "_")
-        )
+    # Use provided datetime or current time
+    if not iso_datetime:
+        iso_datetime = datetime.now(tz=ZoneInfo("Europe/Rome")).isoformat()
+
+    formatted_datetime = format_datetime_for_api(iso_datetime)
 
     click.echo(f"Loading station data from {click.format_filename(read_from)}...")
     try:
@@ -543,27 +531,26 @@ def partenze_arrivi_all_handler(
 
     click.echo(f"Processing all {len(stations)} stations for {endpoint}...")
 
-    # Prepare tasks
-    tasks = [
-        (station["code"], station["name"], endpoint, formatted_datetime)
-        for station in stations
-    ]
-
     # Fetch data in parallel
     stats = {"successful": 0, "failed": 0, "skipped": 0}
 
     with ThreadPoolExecutor() as executor:
+        # Map used to keep track of futures and their corresponding station info
         futures = {
-            executor.submit(get_json, data_type, code, formatted_datetime): (
-                code,
-                name,
-                data_type,
-            )
-            for code, name, data_type, formatted_datetime in tasks
+            executor.submit(
+                get_json,
+                endpoint,
+                station["code"],
+                formatted_datetime,
+            ): station
+            for station in stations
         }
 
         for future in as_completed(futures):
-            code, name, data_type = futures[future]
+            station_code, station_name = (
+                futures[future]["code"],
+                futures[future]["name"],
+            )
 
             try:
                 result = future.result()
@@ -571,27 +558,35 @@ def partenze_arrivi_all_handler(
                 # Skip saving if the data is an empty array
                 if result == []:
                     stats["skipped"] += 1
-                    click.echo(f"⚠ Skipped {data_type} for {name} ({code}): empty data")
+                    click.echo(
+                        f"⚠ Skipped {endpoint} for {station_name} ({station_code}): empty data"
+                    )
                     continue
 
-                # Create filename: {STATION_CODE}_{ISO_DATETIME}_{TYPE}.json
-                filename = f"{code}_{iso_datetime}_{data_type}.json"
+                filename = f"{station_code}_{iso_datetime}_{endpoint}.json"
                 output_path = output_dir_path / filename
 
                 output_data(
-                    result, str(output_path), f"Saved {data_type} for {name} ({code})"
+                    result,
+                    str(output_path),
+                    f"Saved {endpoint} for {station_name} ({station_code})",
                 )
 
                 stats["successful"] += 1
             except requests.RequestException as e:
                 stats["failed"] += 1
-                click.echo(f"✗ Failed to fetch {data_type} for {name} ({code}): {e}")
+                click.echo(
+                    f"✗ Failed to fetch {endpoint} for {station_name} ({station_code}): {e}"
+                )
 
-    click.echo(f"\n✅ Completed processing all stations for {endpoint}:")
-    click.echo(f"  • Successful fetches: {stats['successful']}")
-    click.echo(f"  • Failed fetches: {stats['failed']}")
-    click.echo(f"  • Skipped empty data: {stats['skipped']}")
-    click.echo(f"  • Results saved in {click.format_filename(str(output_dir_path))}")
+    summary = textwrap.dedent(f"""
+    ✅ Completed processing all stations for {endpoint}:
+       • Successful fetches: {stats["successful"]}
+       • Failed fetches: {stats["failed"]}
+       • Skipped empty data: {stats["skipped"]}
+       • Results saved in {click.format_filename(str(output_dir_path))}
+    """)
+    click.echo(summary)
 
 
 @cli.command("partenze")
