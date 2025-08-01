@@ -179,7 +179,8 @@
       },
       "riprogrammazione": {
         "enum": ["N", "Y", null],
-        "default": "N"
+        "default": "N",
+        "description": "Indica se il treno è riprogrammato. Se `Y`, il treno parte da un stazione diversa rispetto a quella di partenza (le fermate iniziali sono cancellate)."
       },
       "orarioPartenza": {
         "const": null

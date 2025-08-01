@@ -186,8 +186,9 @@
         "description": "Indica lo stato di cancellazione del treno: 1 = treno completamente cancellato, 2 = cancellato nella tratta finale (arriva in una stazione diversa rispetto a quella programmata), 3 = treno deviato (alcune fermate intermedie sono cancellate)."
       },
       "riprogrammazione": {
-        "enum": ["N", null],
-        "default": "N"
+        "enum": ["N", "Y", null],
+        "default": "N",
+        "description": "Indica se il treno è riprogrammato. Se `Y`, il treno parte da un stazione diversa rispetto a quella di partenza (le fermate iniziali sono cancellate)."
       },
       "orarioPartenza": {
         "type": "integer",
