@@ -72,7 +72,7 @@ class UnreachableCodeReachedError(RuntimeError):
         super().__init__("Unreachable code reached")
 
 
-def api_request(endpoint: str, *args: str) -> dict | list | str:
+def api_request(endpoint: str, *args: str | int) -> dict | list | str:
     """Make API call returning JSON or text based on content headers with exponential backoff on 403."""
     url = f"{BASE_URI}/{endpoint}/{'/'.join(str(arg) for arg in args)}"
 
@@ -166,6 +166,85 @@ def resolve_station_code(station_input: str) -> str:
         return station_code
 
 
+def resolve_train_details(train_number: int) -> tuple[str, datetime]:
+    """Associate train number with departure station code and departure date.
+
+    Uses cercaNumeroTrenoTrenoAutocomplete to handle ambiguous train numbers.
+
+    Args:
+        train_number (int): The train number to resolve.
+
+    Returns:
+        tuple[str, datetime]: A tuple containing the departure station code and departure date as a datetime object.
+
+    """
+    try:
+        response = api_request("cercaNumeroTrenoTrenoAutocomplete", train_number)
+    except requests.RequestException as e:
+        msg = f"Error searching for train {train_number}: {e}"
+        raise click.ClickException(msg) from e
+
+    # Parse response as CSV with pipe delimiter
+    # Each line format: "TRAIN_NUMBER - STATION_NAME - DATE|TRAIN_NUMBER-STATION_CODE-UNIX_TIMESTAMP"
+    trains = list(csv.reader(StringIO(response), delimiter="|"))
+
+    if not trains:
+        msg = f"No trains found with number {train_number}"
+        raise click.ClickException(msg)
+
+    # If only one result, use it
+    if len(trains) == 1:
+        human_readable_part, machine_readable_part = trains[0]
+        station_name = human_readable_part.split(" - ")[1]
+        _, station_code, unix_timestamp_millis = machine_readable_part.split("-")
+        departure_date = datetime.fromtimestamp(
+            int(unix_timestamp_millis) / 1000, tz=ZoneInfo("Europe/Rome")
+        )
+
+        click.echo(
+            f"Using train: {train_number} departing from {station_name} ({station_code}) on {departure_date.date()}"
+        )
+
+        return station_code, departure_date
+
+    # Multiple results - show options
+    click.echo(f"Multiple trains found with number {train_number}:")
+    for i, train in enumerate(trains[:MAX_RESULTS_TO_SHOW], 1):
+        human_readable_part, machine_readable_part = train
+        station_name = human_readable_part.split(" - ")[1]
+        _, station_code, unix_timestamp_millis = machine_readable_part.split("-")
+        departure_date = datetime.fromtimestamp(
+            int(unix_timestamp_millis) / 1000, tz=ZoneInfo("Europe/Rome")
+        )
+
+        click.echo(
+            f"  {i}. Train {train_number} from {station_name} ({station_code}) on {departure_date.date()}"
+        )
+
+    if len(trains) > MAX_RESULTS_TO_SHOW:
+        remaining_count = len(trains) - MAX_RESULTS_TO_SHOW
+        click.echo(f"  ... and {remaining_count} more results")
+
+    # Ask user to choose
+    choice = click.prompt("Please choose a train number (or 0 to cancel)", type=int)
+    if choice == 0 or choice > len(trains):
+        msg = "Selection cancelled or invalid"
+        raise click.ClickException(msg)
+
+    selected_train = trains[choice - 1]
+    human_readable_part, machine_readable_part = selected_train
+    station_name = human_readable_part.split(" - ")[1]
+    _, station_code, unix_timestamp_millis = machine_readable_part.split("-")
+    departure_date = datetime.fromtimestamp(
+        int(unix_timestamp_millis) / 1000, tz=ZoneInfo("Europe/Rome")
+    )
+
+    click.echo(
+        f"Selected: Train {train_number} departing from {station_name} ({station_code}) on {departure_date.date()}"
+    )
+    return station_code, departure_date
+
+
 def output_data(
     data: list | dict | None,
     output: str | TextIO | None,
@@ -239,7 +318,7 @@ def elenco_stazioni(
             stations, output, f"Saved {len(stations)} stations from all regions"
         )
     elif region is not None:
-        stations = api_request("elencoStazioni", str(region))
+        stations = api_request("elencoStazioni", region)
         output_data(
             stations,
             output,
@@ -476,7 +555,7 @@ def dettaglio_stazione(station: str, region: int | None, output: TextIO | None) 
             return
 
     try:
-        response = api_request("dettaglioStazione", station_code, str(region))
+        response = api_request("dettaglioStazione", station_code, region)
         output_data(response, output, "Saved station details")
     except requests.RequestException as e:
         click.echo(f"Error fetching station details for {station}: {e}", err=True)
@@ -710,7 +789,7 @@ def cerca_numero_treno_treno_autocomplete(
 ) -> None:
     """Get autocomplete suggestions for a train number."""
     try:
-        response = api_request("cercaNumeroTrenoTrenoAutocomplete", str(train_number))
+        response = api_request("cercaNumeroTrenoTrenoAutocomplete", train_number)
         output_data(response, output, "Saved train number autocomplete results")
     except requests.RequestException as e:
         click.echo(
@@ -730,7 +809,7 @@ def cerca_numero_treno_treno_autocomplete(
 def cerca_numero_treno(train_number: int, output: TextIO | None) -> None:
     """Get detailed information for a train number."""
     try:
-        response = api_request("cercaNumeroTreno", str(train_number))
+        response = api_request("cercaNumeroTreno", train_number)
         output_data(response, output, "Saved train number details")
     except requests.RequestException as e:
         click.echo(
@@ -743,14 +822,14 @@ def cerca_numero_treno(train_number: int, output: TextIO | None) -> None:
     "-s",
     "--departure-station",
     type=str,
-    help="Either a station name (e.g., 'Milano Centrale') or a station code (e.g., S01700). If not provided, it will be retrieved using cercaNumeroTreno.",
+    help="Either a station name (e.g., 'Milano Centrale') or a station code (e.g., S01700). If not provided, it will be retrieved using cercaNumeroTrenoTrenoAutocomplete.",
     metavar="STATION",
 )
 @click.option(
     "--date",
     "search_date",
     type=click.DateTime(["%Y-%m-%d"]),
-    help="Train departure date. If not provided, it will be retrieved using cercaNumeroTreno.",
+    help="Train departure date. If not provided, it will be retrieved using cercaNumeroTrenoTrenoAutocomplete.",
 )
 @click.option(
     "-o",
@@ -758,51 +837,44 @@ def cerca_numero_treno(train_number: int, output: TextIO | None) -> None:
     type=click.File("w"),
     help="Save output to file.",
 )
-@click.argument("numero_treno", type=int)
+@click.argument("train_number", type=int)
 def andamento_treno(
     departure_station: str | None,
     search_date: datetime | None,
-    numero_treno: int,
+    train_number: int,
     output: TextIO | None,
 ) -> None:
     """Get detailed train status and journey information."""
     try:
-        # If station or date not provided, get them from cercaNumeroTreno
+        # If station or date not provided, resolve them using cercaNumeroTrenoTrenoAutocomplete
         if not departure_station or not search_date:
-            click.echo(f"Fetching train details for train {numero_treno}...")
-            train_info = api_request("cercaNumeroTreno", str(numero_treno))
+            click.echo(f"Resolving train details for train {train_number}...")
+            station_code, departure_date = resolve_train_details(train_number)
 
             if not departure_station:
-                departure_station = train_info["codLocOrig"]
-                click.echo(
-                    f"Using departure station: {departure_station} ({train_info['descLocOrig']})"
-                )
+                departure_station = station_code
             else:
                 departure_station = resolve_station_code(departure_station)
 
             if not search_date:
-                millis = train_info["millisDataPartenza"]
-                search_date = train_info["dataPartenza"]
-                click.echo(f"Using departure date: {search_date}")
-            else:
-                user_date = search_date.replace(tzinfo=ZoneInfo("UTC"))
-                millis = str(int(user_date.timestamp() * 1000))
+                search_date = departure_date
         else:
             departure_station = resolve_station_code(departure_station)
-            user_date = search_date.replace(tzinfo=ZoneInfo("UTC"))
-            millis = str(int(user_date.timestamp() * 1000))
 
         click.echo(
-            f"Fetching train status for train {numero_treno} departing from {departure_station} on {search_date}..."
+            f"Fetching train status for train {train_number} departing from {departure_station} on {search_date.date()}..."
         )
         response = api_request(
-            "andamentoTreno", departure_station, str(numero_treno), str(millis)
+            "andamentoTreno",
+            departure_station,
+            train_number,
+            int(search_date.timestamp() * 1000),
         )
         output_data(response, output, "Saved train status")
 
     except requests.RequestException as e:
         click.echo(
-            f"Error fetching train status for train {numero_treno}: {e}", err=True
+            f"Error fetching train status for train {train_number}: {e}", err=True
         )
     except ValueError as e:
         click.echo(f"Error parsing date: {e}", err=True)
