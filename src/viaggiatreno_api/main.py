@@ -73,8 +73,8 @@ class UnreachableCodeReachedError(RuntimeError):
         super().__init__("Unreachable code reached")
 
 
-def get_json(endpoint: str, *args: str) -> dict | list:
-    """Make API call expecting JSON response with exponential backoff on 403."""
+def api_request(endpoint: str, *args: str) -> dict | list | str:
+    """Make API call returning JSON or text based on content headers with exponential backoff on 403."""
     url = f"{BASE_URI}/{endpoint}/{'/'.join(str(arg) for arg in args)}"
 
     for attempt in range(MAX_RETRIES + 1):
@@ -99,41 +99,12 @@ def get_json(endpoint: str, *args: str) -> dict | list:
                 and e.response.status_code != HTTPStatus.FORBIDDEN
             ):
                 raise
-        else:
+
+        # Determine response type based on content headers
+        content_type = r.headers.get("Content-Type", "").lower()
+        if "application/json" in content_type:
             return r.json()
-
-    # This should never be reached
-    raise UnreachableCodeReachedError
-
-
-def get_text(endpoint: str, *args: str) -> str:
-    """Make API call expecting text response with exponential backoff."""
-    url = f"{BASE_URI}/{endpoint}/{'/'.join(str(arg) for arg in args)}"
-
-    for attempt in range(MAX_RETRIES + 1):
-        try:
-            r = requests.get(url, timeout=30)
-            if r.status_code == HTTPStatus.FORBIDDEN and attempt < MAX_RETRIES:
-                delay = min(
-                    INITIAL_BACKOFF_DELAY * (BACKOFF_MULTIPLIER**attempt),
-                    MAX_BACKOFF_DELAY,
-                )
-                click.echo(
-                    f"Temporarily banned, retrying in {delay:.1f}s... "
-                    f"(attempt {attempt + 1}/{MAX_RETRIES})"
-                )
-                time.sleep(delay)
-                continue
-            r.raise_for_status()
-        except requests.RequestException as e:
-            # Retry only if it's the last attempt or not a 403
-            if attempt == MAX_RETRIES or (
-                hasattr(e.response, "status_code")
-                and e.response.status_code != HTTPStatus.FORBIDDEN
-            ):
-                raise
-        else:
-            return r.text
+        return r.text
 
     # This should never be reached
     raise UnreachableCodeReachedError
@@ -155,7 +126,7 @@ def resolve_station_code(station_input: str) -> str:
 
     # Search for station by name
     try:
-        response = get_text("autocompletaStazione", station_input)
+        response = api_request("autocompletaStazione", station_input)
     except requests.RequestException as e:
         msg = f"Error searching for station '{station_input}': {e}"
         raise click.ClickException(msg) from e
@@ -262,7 +233,7 @@ def elenco_stazioni(
     """Get all stations from a given region or from all regions."""
     if download_all:
         with ThreadPoolExecutor(max_workers=len(REGIONS)) as executor:
-            fetch_stations_by_region = partial(get_json, "elencoStazioni")
+            fetch_stations_by_region = partial(api_request, "elencoStazioni")
             results = list(executor.map(fetch_stations_by_region, REGIONS))
 
         stations = list(chain.from_iterable(filter(None, results)))
@@ -270,7 +241,7 @@ def elenco_stazioni(
             stations, output, f"Saved {len(stations)} stations from all regions"
         )
     elif region is not None:
-        stations = get_json("elencoStazioni", str(region))
+        stations = api_request("elencoStazioni", str(region))
         output_data(
             stations,
             output,
@@ -303,7 +274,7 @@ def cerca_stazione(
     """Search for stations with a specific prefix or download all stations using the cercaStazione endpoint."""
     if download_all:
         with ThreadPoolExecutor(max_workers=len(string.ascii_uppercase)) as executor:
-            fetch_stations_by_letter = partial(get_json, "cercaStazione")
+            fetch_stations_by_letter = partial(api_request, "cercaStazione")
             results = list(
                 executor.map(fetch_stations_by_letter, string.ascii_uppercase)
             )
@@ -311,7 +282,7 @@ def cerca_stazione(
         stations = list(chain.from_iterable(filter(None, results)))
         output_data(stations, output, f"Saved {len(stations)} results")
     elif prefix:
-        stations = get_json("cercaStazione", prefix)
+        stations = api_request("cercaStazione", prefix)
         output_data(stations, output, f"Saved {len(stations)} results")
     else:
         click.echo("Error: Specify a prefix or use -a/--all")
@@ -327,7 +298,7 @@ def autocompleta_stazione_handler(
     """Search for stations with a specific prefix or download all stations using the specified autocompleta* endpoint."""
     if download_all:
         with ThreadPoolExecutor(max_workers=len(string.ascii_uppercase)) as executor:
-            fetch_stations_by_letter = partial(get_text, endpoint_name)
+            fetch_stations_by_letter = partial(api_request, endpoint_name)
             results = list(
                 executor.map(fetch_stations_by_letter, string.ascii_uppercase)
             )
@@ -337,7 +308,7 @@ def autocompleta_stazione_handler(
 
         output_data(stations, output, f"Saved {count} results")
     elif prefix:
-        stations = get_text(endpoint_name, prefix).strip()
+        stations = api_request(endpoint_name, prefix).strip()
         count = stations.count("\n") + 1 if stations else 0
 
         output_data(stations, output, f"Saved {count} results")
@@ -451,7 +422,7 @@ def regione(station: str | None, *, table: bool) -> None:
 
     try:
         station_code = resolve_station_code(station)
-        region = get_text("regione", station_code).strip()
+        region = api_request("regione", station_code).strip()
 
         try:
             region = int(region)
@@ -490,7 +461,7 @@ def dettaglio_stazione(station: str, region: int | None, output: TextIO | None) 
     if region is None:
         click.echo(f"Getting region code for station {station_code}...")
         try:
-            region = get_text("regione", station_code).strip()
+            region = api_request("regione", station_code).strip()
 
             try:
                 region = int(region)
@@ -507,7 +478,7 @@ def dettaglio_stazione(station: str, region: int | None, output: TextIO | None) 
             return
 
     try:
-        response = get_json("dettaglioStazione", station_code, str(region))
+        response = api_request("dettaglioStazione", station_code, str(region))
         output_data(response, output, "Saved station details")
     except requests.RequestException as e:
         click.echo(f"Error fetching station details for {station}: {e}", err=True)
@@ -543,7 +514,7 @@ def partenze_arrivi_handler(
 
         formatted_datetime = search_datetime.strftime("%a %b %-d %Y %H:%M:%S")
 
-        response = get_json(endpoint, station_code, formatted_datetime)
+        response = api_request(endpoint, station_code, formatted_datetime)
         output_data(response, output, f"Saved {endpoint}")
     except requests.RequestException as e:
         click.echo(f"Error fetching {endpoint} for station {station}: {e}", err=True)
@@ -579,7 +550,7 @@ def partenze_arrivi_all_handler(
         # Map used to keep track of futures and their corresponding station info
         futures = {
             executor.submit(
-                get_json,
+                api_request,
                 endpoint,
                 station["code"],
                 formatted_datetime,
@@ -759,7 +730,7 @@ def cerca_numero_treno_treno_autocomplete(
 ) -> None:
     """Get autocomplete suggestions for a train number."""
     try:
-        response = get_text("cercaNumeroTrenoTrenoAutocomplete", str(numero_treno))
+        response = api_request("cercaNumeroTrenoTrenoAutocomplete", str(numero_treno))
         output_data(response, output, "Saved train number autocomplete results")
     except requests.RequestException as e:
         click.echo(
@@ -779,7 +750,7 @@ def cerca_numero_treno_treno_autocomplete(
 def cerca_numero_treno(numero_treno: int, output: TextIO | None) -> None:
     """Get detailed information for a train number."""
     try:
-        response = get_json("cercaNumeroTreno", str(numero_treno))
+        response = api_request("cercaNumeroTreno", str(numero_treno))
         output_data(response, output, "Saved train number details")
     except requests.RequestException as e:
         click.echo(
@@ -818,7 +789,7 @@ def andamento_treno(
         # If station or date not provided, get them from cercaNumeroTreno
         if not departure_station or not search_date:
             click.echo(f"Fetching train details for train {numero_treno}...")
-            train_info = get_json("cercaNumeroTreno", str(numero_treno))
+            train_info = api_request("cercaNumeroTreno", str(numero_treno))
 
             if not departure_station:
                 departure_station = train_info["codLocOrig"]
@@ -843,7 +814,7 @@ def andamento_treno(
         click.echo(
             f"Fetching train status for train {numero_treno} departing from {departure_station} on {search_date}..."
         )
-        response = get_json(
+        response = api_request(
             "andamentoTreno", departure_station, str(numero_treno), str(millis)
         )
         output_data(response, output, "Saved train status")
