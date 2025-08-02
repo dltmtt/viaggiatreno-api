@@ -22,7 +22,6 @@ import click
 import requests
 
 BASE_URI = "http://www.viaggiatreno.it/infomobilita/resteasy/viaggiatreno"
-MIN_CSV_COLUMNS = 2
 STATION_CODE_LENGTH = 6
 MAX_RESULTS_TO_SHOW = 10
 
@@ -441,7 +440,7 @@ def regione(station: str | None, *, table: bool) -> None:
 @click.option(
     "--region",
     type=click.IntRange(0, len(REGIONS) - 1),
-    help=f"Region code (0-{len(REGIONS) - 1}). If not provided, it will be retrieved using the regione endpoint.",
+    help="Region code. If not provided, it will be retrieved using the regione endpoint.",
 )
 @click.option(
     "-o",
@@ -699,7 +698,7 @@ def arrivi(
 
 
 @cli.command("cercaNumeroTrenoTrenoAutocomplete")
-@click.argument("numero_treno", type=int)
+@click.argument("train_number", type=int)
 @click.option(
     "-o",
     "--output",
@@ -707,35 +706,35 @@ def arrivi(
     help="Save output to file.",
 )
 def cerca_numero_treno_treno_autocomplete(
-    numero_treno: int, output: TextIO | None
+    train_number: int, output: TextIO | None
 ) -> None:
     """Get autocomplete suggestions for a train number."""
     try:
-        response = api_request("cercaNumeroTrenoTrenoAutocomplete", str(numero_treno))
+        response = api_request("cercaNumeroTrenoTrenoAutocomplete", str(train_number))
         output_data(response, output, "Saved train number autocomplete results")
     except requests.RequestException as e:
         click.echo(
-            f"Error fetching autocomplete for train number {numero_treno}: {e}",
+            f"Error fetching autocomplete for train number {train_number}: {e}",
             err=True,
         )
 
 
 @cli.command("cercaNumeroTreno")
-@click.argument("numero_treno", type=int)
+@click.argument("train_number", type=int)
 @click.option(
     "-o",
     "--output",
     type=click.File("w"),
     help="Save output to file.",
 )
-def cerca_numero_treno(numero_treno: int, output: TextIO | None) -> None:
+def cerca_numero_treno(train_number: int, output: TextIO | None) -> None:
     """Get detailed information for a train number."""
     try:
-        response = api_request("cercaNumeroTreno", str(numero_treno))
+        response = api_request("cercaNumeroTreno", str(train_number))
         output_data(response, output, "Saved train number details")
     except requests.RequestException as e:
         click.echo(
-            f"Error fetching details for train number {numero_treno}: {e}", err=True
+            f"Error fetching details for train number {train_number}: {e}", err=True
         )
 
 
@@ -744,13 +743,14 @@ def cerca_numero_treno(numero_treno: int, output: TextIO | None) -> None:
     "-s",
     "--departure-station",
     type=str,
-    help="Departure station name or code in format S##### (e.g., 'Milano Centrale' or S01700). If not provided, it will be retrieved using cercaNumeroTreno.",
+    help="Either a station name (e.g., 'Milano Centrale') or a station code (e.g., S01700). If not provided, it will be retrieved using cercaNumeroTreno.",
+    metavar="STATION",
 )
 @click.option(
     "--date",
     "search_date",
     type=click.DateTime(["%Y-%m-%d"]),
-    help="Train departure date (e.g., 2025-07-22). If not provided, it will be retrieved using cercaNumeroTreno.",
+    help="Train departure date. If not provided, it will be retrieved using cercaNumeroTreno.",
 )
 @click.option(
     "-o",
