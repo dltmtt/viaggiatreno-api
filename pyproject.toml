@@ -1,15 +1,11 @@
 [project]
 name = "viaggiatreno-api"
 version = "0.1.0"
+description = "Command-line tools for interacting with the ViaggiaTreno API."
 readme = "README.md"
-authors = [
-    { name = "Matteo Delton", email = "deltonmatteo@gmail.com" }
-]
+authors = [{ name = "Matteo Delton", email = "deltonmatteo@gmail.com" }]
 requires-python = ">=3.13"
-dependencies = [
-    "click>=8.2.1",
-    "requests>=2.32.4",
-]
+dependencies = ["click>=8.2.2", "requests>=2.32.4"]
 
 [project.scripts]
 vt-api = "viaggiatreno_api.main:cli"

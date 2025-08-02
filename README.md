@@ -25,65 +25,69 @@ Una volta ottenuto il codice della stazione, è possibile chiamare `partenze` o 
 
 [`andamentoTreno`](#andamentotreno) ci permette di ottenere informazioni più dettagliate e accurate sullo stato di un treno in viaggio, come il suo itinerario, le fermate effettuate, i ritardi e altre informazioni utili. Questo endpoint è particolarmente utile per verificare lo stato effettivo del treno e per ottenere informazioni sulle fermate intermedie.
 
-### Script CLI
+### CLI
 
-È disponibile uno script Python CLI in [`scripts/viaggiatreno-api.py`](scripts/viaggiatreno-api.py) che fornisce accesso semplificato agli endpoint documentati:
+È disponibile un'interfaccia a riga di comando (CLI) che fornisce accesso semplificato agli endpoint documentati. La CLI è accessibile tramite il comando `vt-api` dopo l'installazione del package, oppure tramite `uv run vt-api` per eseguirla direttamente senza installazione.
+
+#### Caratteristiche principali
 
 - I parametri sono passati come argomenti dalla linea di comando, con alcune semplificazioni:
   - Si possono passare direttamente i nomi delle stazioni al posto dei codici.
   - Le date sono accettate in formato YYYY-MM-DD e hanno come default la data corrente.
-  - Gli endpoint che richiedono informazioni aggiuntive spesso possono essere chiamati con solo il dato principale (ad esempio, [`andamentoTreno`](#andamentotreno) può essere chiamato con il solo numero del treno, e lo script recupererà automaticamente stazione e data di partenza).
-- L'opzione globale `-o/--output` permette di salvare l'output su file invece che visualizzarlo a schermo per tutti i comandi.
-- Tramite l'argomento `--all` è possibile scaricare i dati di tutte le stazioni in un colpo solo di un dato endpoint. L'opzione `-o` specifica il nome del file in cui salvare i dati. Se non specificato, il file sarà salvato nella cartella `dumps` con il nome dell'endpoint.
+  - Gli endpoint che richiedono informazioni aggiuntive spesso possono essere chiamati con solo il dato principale (ad esempio, [`andamentoTreno`](#andamentotreno) può essere chiamato con il solo numero del treno, e la CLI recupererà automaticamente stazione e data di partenza).
+- L'opzione `-o/--output` permette di salvare l'output su file invece che visualizzarlo a schermo.
+- Tramite l'opzione `-a/--all` è possibile scaricare i dati di tutte le stazioni in un colpo solo per alcuni endpoint. Quando usata con `-o/--output`, quest'ultima specifica il nome della cartella in cui salvare i dati.
 
-Lo script richiede i pacchetti `requests` e `click`.
-
-Di seguito sono riportati alcuni esempi di utilizzo:
+#### Esempi di utilizzo
 
 ```bash
 # Cerca stazioni
-uv run scripts/viaggiatreno-api.py autocompletaStazione "Milano"
-uv run scripts/viaggiatreno-api.py autocompletaStazioneNTS "Venezia"
-uv run scripts/viaggiatreno-api.py cercaStazione "Roma"
+uv run vt-api autocompletaStazione "Milano"
+uv run vt-api autocompletaStazioneNTS "Venezia"
+uv run vt-api cercaStazione "Roma"
 
 # Partenze da/arrivi a una stazione (accetta sia nomi che codici stazione)
-uv run scripts/viaggiatreno-api.py partenze S01700
-uv run scripts/viaggiatreno-api.py arrivi "Roma Termini"
+uv run vt-api partenze S01700
+uv run vt-api arrivi "Roma Termini"
 
-# Salva output su file usando l'opzione globale -o
-uv run scripts/viaggiatreno-api.py -o partenze.json partenze "Milano Centrale"
+# Salva output su file usando l'opzione -o
+uv run vt-api partenze "Milano Centrale" -o partenze.json
 
 # Specifica data e ora (default: adesso)
-uv run scripts/viaggiatreno-api.py partenze "Tortona" --datetime 2025-07-22T15:30:00
+uv run vt-api partenze "Tortona" --datetime 2025-08-02T15:30:00
 
 # Andamento di un treno (recupera stazione e data di partenza in automatico)
-uv run scripts/viaggiatreno-api.py andamentoTreno 9685
+uv run vt-api andamentoTreno 9685
 
 # Andamento con parametri specifici (accetta sia nomi che codici stazione)
-uv run scripts/viaggiatreno-api.py andamentoTreno 3041 --departure-station "Milano Centrale" --date 2025-07-22
-uv run scripts/viaggiatreno-api.py andamentoTreno 3041 --departure-station S01700 --date 2025-07-22
+uv run vt-api andamentoTreno 3041 --departure-station "Milano Centrale" --date 2025-08-02
+uv run vt-api andamentoTreno 3041 --departure-station S01700 --date 2025-08-02
 
 # Scarica tutti i dati di cercaStazione
-uv run scripts/viaggiatreno-api.py -o data/stations.json cercaStazione --all
+uv run vt-api cercaStazione --all -o data/stations.json
 
 # Trova la regione di una stazione
-uv run scripts/viaggiatreno-api.py regione "Milano Centrale"
-uv run scripts/viaggiatreno-api.py regione S01700
+uv run vt-api regione "Milano Centrale"
+uv run vt-api regione S01700
 
 # Mostra la tabella dei codici regione
-uv run scripts/viaggiatreno-api.py regione --table
+uv run vt-api regione --table
 
 # Elenco stazioni in una regione (es. Lombardia)
-uv run scripts/viaggiatreno-api.py elencoStazioni 1
+uv run vt-api elencoStazioni 1
 
 # Mostra i dettagli di una stazione recuperando codice stazione e codice regione in automatico
-uv run scripts/viaggiatreno-api.py dettaglioStazione "Milano Centrale"
+uv run vt-api dettaglioStazione "Milano Centrale"
 
 # Mostra i dettagli di un treno
-uv run scripts/viaggiatreno-api.py cercaNumeroTreno 711
+uv run vt-api cercaNumeroTreno 711
 
 # Mostra i treni compatibili con un certo numero treno
-uv run scripts/viaggiatreno-api.py cercaNumeroTrenoTrenoAutocomplete 711
+uv run vt-api cercaNumeroTrenoTrenoAutocomplete 711
+
+# Scarica partenze/arrivi per tutte le stazioni
+uv run vt-api partenze --all
+uv run vt-api arrivi --all --output tmp
 ```
 
 ## Documentazione degli endpoint
@@ -102,7 +106,7 @@ I [JSON Schema](https://json-schema.org/) riportati sono frutto di reverse engin
   - [`elencoStazioni`](#elencostazioni)
 - [Partenze e arrivi](#partenze-e-arrivi)
   - [`partenze`](#partenze)
-  - [`arrivi`](#partenze)
+  - [`arrivi`](#arrivi)
 - [Stato treni](#stato-treni)
   - [`cercaNumeroTrenoTrenoAutocomplete`](#cercanumerotrenotrenoautocomplete)
   - [`cercaNumeroTreno`](#cercanumerotreno)
@@ -422,9 +426,9 @@ Le maggior parte delle immagini che indicano ritardi o cancellazioni sono visibi
 - `codiceStazione`: codice della stazione di cui si vogliono sapere le partenze nel formato `^S\d{5}$` (es. `S01700` per Milano Centrale)
 - `dataOra`: data e ora in cui si vogliono vedere le partenze un formato simile a quello prodotto dalla funzione `Date.toUTCString()` di JavaScript, ad esempio:
 
-  - `Sun Jun 2 2024 20:00:00`
-  - `Fri, Jul 11 2025 13:20:00 GMT+0100 (Central European Time)`
-  - `Mon, Feb 10 2025 06:30:00 UTC-0100`
+  - `Fri Aug 2 2025 20:00:00`
+  - `Fri, Aug 2 2025 13:20:00 GMT+0100 (Central European Time)`
+  - `Fri, Aug 2 2025 06:30:00 UTC-0100`
 
 **Risposta:**
 
@@ -442,9 +446,9 @@ Si noti il gran numero di campi `const` che sono presenti in questo schema. Ques
 - `codiceStazione`: codice della stazione di cui si vogliono sapere gli arrivi nel formato `^S\d{5}$` (es. `S01700` per Milano Centrale)
 - `dataOra`: data e ora in cui si vogliono vedere gli arrivi un formato simile a quello prodotto dalla funzione `Date.toUTCString()` di JavaScript, ad esempio:
 
-  - `Sun Jun 2 2024 20:00:00`
-  - `Fri, Jul 11 2025 13:20:00 GMT+0100 (Central European Time)`
-  - `Mon, Feb 10 2025 06:30:00 UTC-0100`
+  - `Fri Aug 2 2025 20:00:00`
+  - `Fri, Aug 2 2025 13:20:00 GMT+0100 (Central European Time)`
+  - `Fri, Aug 2 2025 06:30:00 UTC-0100`
 
 **Risposta:**
 

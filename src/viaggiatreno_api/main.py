@@ -621,7 +621,7 @@ def partenze_arrivi_all_handler(
     "--read-from",
     type=click.File("r"),
     default="dumps/autocompletaStazione.csv",
-    help="Path to stations file (default: dumps/autocompletaStazione.csv). Only used with --all.",
+    help="Path to stations file (default: dumps/autocompletaStazione.csv). Only used with -a/--all.",
 )
 @click.option(
     "-o",
@@ -640,7 +640,7 @@ def partenze(
     """Get departures from a station at a specific date and time.
 
     STATION can be either a station name (e.g., 'Milano Centrale') or a station code (e.g., S01700).
-    Use --all to fetch departures for all stations in the stations file.
+    Use -a/--all to fetch departures for all stations in the stations file.
     """
     if search_datetime is None:
         search_datetime = datetime.now(tz=ZoneInfo("Europe/Rome"))
