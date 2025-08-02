@@ -9,7 +9,7 @@ import string
 import textwrap
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
-from datetime import datetime
+from datetime import date, datetime
 from functools import partial
 from http import HTTPStatus
 from io import StringIO
@@ -571,7 +571,7 @@ def partenze_arrivi_all_handler(
 @click.option(
     "--datetime",
     "search_datetime",
-    type=click.DateTime(["%Y-%m-%dT%H:%M:%S"]),
+    type=click.DateTime(["%Y-%m-%dT%H:%M:%S", "%H:%M"]),
     help="Date and time to search for (defaults to current date and time). Example: 2024-06-02T20:00:00.",
 )
 @click.option(
@@ -607,8 +607,16 @@ def partenze(
     STATION can be either a station name (e.g., 'Milano Centrale') or a station code (e.g., S01700).
     Use -a/--all to fetch departures for all stations in the stations file.
     """
+    # If no datetime was provided, default to current date and time
     if search_datetime is None:
         search_datetime = datetime.now(tz=ZoneInfo("Europe/Rome"))
+
+    # If no date was provided, default to today's date
+    if search_datetime.date() == date(1900, 1, 1):
+        today = datetime.now(tz=ZoneInfo("Europe/Rome")).date()
+        search_datetime = search_datetime.replace(
+            year=today.year, month=today.month, day=today.day
+        )
 
     if fetch_all:
         if station:
@@ -628,8 +636,8 @@ def partenze(
 @click.option(
     "--datetime",
     "search_datetime",
-    type=click.DateTime(["%Y-%m-%dT%H:%M:%S"]),
-    help="Date and time to search for (defaults to current date and time). Example: 2024-06-02T20:00:00.",
+    type=click.DateTime(["%Y-%m-%dT%H:%M:%S", "%H:%M"]),
+    help="Date and time to search for (defaults to current date and time).",
 )
 @click.option(
     "-a",
@@ -664,8 +672,16 @@ def arrivi(
     STATION can be either a station name (e.g., 'Roma Termini') or a station code (e.g., S05000).
     Use -a/--all to fetch arrivals for all stations in the stations file.
     """
+    # If no datetime was provided, default to current date and time
     if search_datetime is None:
         search_datetime = datetime.now(tz=ZoneInfo("Europe/Rome"))
+
+    # If no date was provided, default to today's date
+    if search_datetime.date() == date(1900, 1, 1):
+        today = datetime.now(tz=ZoneInfo("Europe/Rome")).date()
+        search_datetime = search_datetime.replace(
+            year=today.year, month=today.month, day=today.day
+        )
 
     if fetch_all:
         if station:
