@@ -7,9 +7,11 @@ import csv
 import json
 import string
 import textwrap
+import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 from functools import partial
+from http import HTTPStatus
 from io import StringIO
 from itertools import chain
 from pathlib import Path
@@ -23,6 +25,12 @@ BASE_URI = "http://www.viaggiatreno.it/infomobilita/resteasy/viaggiatreno"
 MIN_CSV_COLUMNS = 2
 STATION_CODE_LENGTH = 6
 MAX_RESULTS_TO_SHOW = 10
+
+# Rate limiting and retry configuration
+MAX_RETRIES = 5
+INITIAL_BACKOFF_DELAY = 1.0  # seconds
+BACKOFF_MULTIPLIER = 2.0
+MAX_BACKOFF_DELAY = 60.0  # seconds
 
 # Region code to name mapping
 REGIONS = {
@@ -57,20 +65,78 @@ def cli() -> None:
     """ViaggiaTreno API tools."""
 
 
+class UnreachableCodeReachedError(RuntimeError):
+    """Exception raised when unreachable code is executed."""
+
+    def __init__(self) -> None:
+        """Initialize the UnreachableCodeReachedError exception."""
+        super().__init__("Unreachable code reached")
+
+
 def get_json(endpoint: str, *args: str) -> dict | list:
-    """Make API call expecting JSON response."""
+    """Make API call expecting JSON response with exponential backoff on 403."""
     url = f"{BASE_URI}/{endpoint}/{'/'.join(str(arg) for arg in args)}"
-    r = requests.get(url, timeout=30)
-    r.raise_for_status()
-    return r.json()
+
+    for attempt in range(MAX_RETRIES + 1):
+        try:
+            r = requests.get(url, timeout=30)
+            if r.status_code == HTTPStatus.FORBIDDEN and attempt < MAX_RETRIES:
+                delay = min(
+                    INITIAL_BACKOFF_DELAY * (BACKOFF_MULTIPLIER**attempt),
+                    MAX_BACKOFF_DELAY,
+                )
+                click.echo(
+                    f"Temporarily banned, retrying in {delay:.1f}s... "
+                    f"(attempt {attempt + 1}/{MAX_RETRIES})"
+                )
+                time.sleep(delay)
+                continue
+            r.raise_for_status()
+        except requests.RequestException as e:
+            # Retry only if it's the last attempt or not a 403
+            if attempt == MAX_RETRIES or (
+                hasattr(e.response, "status_code")
+                and e.response.status_code != HTTPStatus.FORBIDDEN
+            ):
+                raise
+        else:
+            return r.json()
+
+    # This should never be reached
+    raise UnreachableCodeReachedError
 
 
 def get_text(endpoint: str, *args: str) -> str:
-    """Make API call expecting text response."""
+    """Make API call expecting text response with exponential backoff."""
     url = f"{BASE_URI}/{endpoint}/{'/'.join(str(arg) for arg in args)}"
-    r = requests.get(url, timeout=30)
-    r.raise_for_status()
-    return r.text
+
+    for attempt in range(MAX_RETRIES + 1):
+        try:
+            r = requests.get(url, timeout=30)
+            if r.status_code == HTTPStatus.FORBIDDEN and attempt < MAX_RETRIES:
+                delay = min(
+                    INITIAL_BACKOFF_DELAY * (BACKOFF_MULTIPLIER**attempt),
+                    MAX_BACKOFF_DELAY,
+                )
+                click.echo(
+                    f"Temporarily banned, retrying in {delay:.1f}s... "
+                    f"(attempt {attempt + 1}/{MAX_RETRIES})"
+                )
+                time.sleep(delay)
+                continue
+            r.raise_for_status()
+        except requests.RequestException as e:
+            # Retry only if it's the last attempt or not a 403
+            if attempt == MAX_RETRIES or (
+                hasattr(e.response, "status_code")
+                and e.response.status_code != HTTPStatus.FORBIDDEN
+            ):
+                raise
+        else:
+            return r.text
+
+    # This should never be reached
+    raise UnreachableCodeReachedError
 
 
 def resolve_station_code(station_input: str) -> str:
