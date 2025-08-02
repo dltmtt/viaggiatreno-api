@@ -506,12 +506,6 @@ def partenze_arrivi_all_handler(
     endpoint: str, search_datetime: datetime, read_from: TextIO, output: str | None
 ) -> None:
     """Handle fetching station schedule data (partenze or arrivi) for all stations."""
-    # Create output directory
-    output_dir_path = Path(output or "dumps") / endpoint
-    output_dir_path.mkdir(parents=True, exist_ok=True)
-
-    formatted_datetime = search_datetime.strftime("%a %b %-d %Y %H:%M:%S")
-
     click.echo(f"Loading station data from {click.format_filename(read_from.name)}...")
 
     stations = list(
@@ -520,10 +514,11 @@ def partenze_arrivi_all_handler(
 
     click.echo(f"Processing all {len(stations)} stations for {endpoint}...")
 
-    # Fetch data in parallel
-    stats = {"successful": 0, "failed": 0, "skipped": 0}
+    stats = {"successful": 0, "failed": 0}
 
     with ThreadPoolExecutor() as executor:
+        formatted_datetime = search_datetime.strftime("%a %b %-d %Y %H:%M:%S")
+
         # Map used to keep track of futures and their corresponding station info
         futures = {
             executor.submit(
@@ -544,16 +539,9 @@ def partenze_arrivi_all_handler(
             try:
                 result = future.result()
 
-                # Skip saving if the data is an empty array
-                if result == []:
-                    stats["skipped"] += 1
-                    click.echo(
-                        f"⚠ Skipped {endpoint} for {station_name} ({station_code}): empty data"
-                    )
-                    continue
-
                 filename = f"{station_code}_{search_datetime.replace(microsecond=0).isoformat()}_{endpoint}.json"
-                output_path = output_dir_path / filename
+                output_dir = Path(output or "dumps") / endpoint
+                output_path = output_dir / filename
 
                 output_data(
                     result,
@@ -572,8 +560,8 @@ def partenze_arrivi_all_handler(
     ✅ Completed processing all stations for {endpoint}:
        • Successful fetches: {stats["successful"]}
        • Failed fetches: {stats["failed"]}
-       • Skipped empty data: {stats["skipped"]}
-       • Results saved in {click.format_filename(str(output_dir_path))}
+       • Skipped empty data: {len(stations) - stats["successful"] - stats["failed"]}
+       • Results saved in {output_dir}
     """)
     click.echo(summary)
 
