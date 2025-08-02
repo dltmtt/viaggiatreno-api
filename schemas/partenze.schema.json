@@ -471,7 +471,7 @@
         ]
       },
       "compInStazionePartenza": {
-        "$comment": "A quanto pare esiste una rarissima variante che ha un'altra traduzione cinese.",
+        "$comment": "A quanto pare esistono rarissime varianti con altre traduzioni.",
         "enum": [
           ["", "", "", "", "", "", "", "", ""],
           [
@@ -492,6 +492,17 @@
             "Partit",
             "Salido",
             "Plecat",
+            "車済",
+            "已出发",
+            "отправленный"
+          ],
+          [
+            "Partito",
+            "Departed",
+            "angef&#228;hrt",
+            "Partit",
+            "Salido",
+            "Plecat",
             "発車済",
             "出发",
             "отправленный"
@@ -499,7 +510,7 @@
         ]
       },
       "compInStazioneArrivo": {
-        "$comment": "A quanto pare esiste una rarissima variante che ha un'altra traduzione cinese.",
+        "$comment": "A quanto pare esistono rarissime varianti con altre traduzioni.",
         "enum": [
           ["", "", "", "", "", "", "", "", ""],
           [
