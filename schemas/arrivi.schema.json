@@ -84,10 +84,14 @@
         "const": null
       },
       "destinazioneEstera": {
-        "const": null
+        "type": ["string", "null"],
+        "default": null,
+        "examples": ["BASEL SBB", null]
       },
       "oraPartenzaEstera": {
-        "const": null
+        "type": ["integer", "null"],
+        "default": null,
+        "examples": [41280000, null]
       },
       "oraArrivoEstera": {
         "const": null
