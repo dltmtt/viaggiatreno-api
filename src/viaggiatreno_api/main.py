@@ -132,38 +132,37 @@ def resolve_station_code(station_input: str) -> str:
         raise click.ClickException(msg) from e
     else:
         # Parse response data
-        csv_reader = csv.reader(StringIO(response), delimiter="|")
-        lines = [row for row in csv_reader if len(row) >= MIN_CSV_COLUMNS]
+        stations = list(csv.reader(StringIO(response), delimiter="|"))
 
-        if not lines:
+        if not stations:
             msg = f"No stations found matching '{station_input}'"
             raise click.ClickException(msg)
 
         # If only one result, use it
-        if len(lines) == 1:
-            station_name, station_code = lines[0][0], lines[0][1]
+        if len(stations) == 1:
+            station_name, station_code = stations[0][0], stations[0][1]
             click.echo(f"Using station: {station_name} ({station_code})")
             return station_code
 
         # Multiple results - show options
         click.echo(f"Multiple stations found matching '{station_input}':")
-        for i, row in enumerate(lines[:MAX_RESULTS_TO_SHOW], 1):
+        for i, row in enumerate(stations[:MAX_RESULTS_TO_SHOW], 1):
             station_name, station_code = row[0], row[1]
             click.echo(f"  {i}. {station_name} ({station_code})")
 
-        if len(lines) > MAX_RESULTS_TO_SHOW:
-            remaining_count = len(lines) - MAX_RESULTS_TO_SHOW
+        if len(stations) > MAX_RESULTS_TO_SHOW:
+            remaining_count = len(stations) - MAX_RESULTS_TO_SHOW
             click.echo(f"  ... and {remaining_count} more results")
 
         # Ask user to choose
         choice = click.prompt(
             "Please choose a station number (or 0 to cancel)", type=int
         )
-        if choice == 0 or choice > len(lines):
+        if choice == 0 or choice > len(stations):
             msg = "Selection cancelled or invalid"
             raise click.ClickException(msg)
 
-        station_name, station_code = lines[choice - 1][0], lines[choice - 1][1]
+        station_name, station_code = stations[choice - 1][0], stations[choice - 1][1]
         click.echo(f"Selected: {station_name} ({station_code})")
         return station_code
 
@@ -484,27 +483,6 @@ def dettaglio_stazione(station: str, region: int | None, output: TextIO | None) 
         click.echo(f"Error fetching station details for {station}: {e}", err=True)
 
 
-def get_stations_from_file(stations_file: TextIO) -> list[dict[str, str]]:
-    """Get list of stations from a stations file."""
-    stations = []
-
-    try:
-        csv_reader = csv.reader(stations_file, delimiter="|")
-        for row in csv_reader:
-            if len(row) >= MIN_CSV_COLUMNS:
-                name, code = row[0], row[1]
-                stations.append({"name": name, "code": code})
-    except Exception as e:
-        error_msg = f"Error reading stations file {click.format_filename(stations_file.name)}: {e}"
-        raise click.ClickException(error_msg) from e
-
-    if not stations:
-        error_msg = f"No valid station data found in {click.format_filename(stations_file.name)}"
-        raise click.ClickException(error_msg)
-
-    return stations
-
-
 def partenze_arrivi_handler(
     endpoint: str, station: str, search_datetime: datetime, output: str | None
 ) -> None:
@@ -535,11 +513,10 @@ def partenze_arrivi_all_handler(
     formatted_datetime = search_datetime.strftime("%a %b %-d %Y %H:%M:%S")
 
     click.echo(f"Loading station data from {click.format_filename(read_from.name)}...")
-    try:
-        stations = get_stations_from_file(read_from)
-    except click.ClickException as e:
-        click.echo(f"Error: {e}")
-        return
+
+    stations = list(
+        csv.DictReader(read_from, delimiter="|", fieldnames=["name", "code"])
+    )
 
     click.echo(f"Processing all {len(stations)} stations for {endpoint}...")
 
