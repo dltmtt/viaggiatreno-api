@@ -108,7 +108,8 @@ class API:
             except requests.RequestException as e:
                 # Retry only if it's the last attempt or not a 403
                 if attempt == cls.MAX_RETRIES or (
-                    hasattr(e.response, "status_code")
+                    hasattr(e, "response")
+                    and e.response
                     and e.response.status_code != HTTPStatus.FORBIDDEN
                 ):
                     raise
@@ -261,7 +262,7 @@ def resolve_train_details(train_number: int) -> tuple[str, datetime]:
 
 def output_data(
     data: list | dict | None,
-    output: str | TextIO | None,
+    output: str | TextIO | None = None,
     success_message: str = "Data saved",
 ) -> None:
     """Output data either to console or file, unless it's empty."""
@@ -301,6 +302,14 @@ def output_data(
             click.echo(f"✓ {success_message} to {click.format_filename(output.name)}")
     else:
         click.echo(formatted_data)
+
+
+@cli.command("statistiche")
+def statistiche() -> None:
+    """Show statistics about the ViaggiaTreno API."""
+    now = int(time.time_ns() / 1_000_000)  # Convert to milliseconds
+    response = API.call("statistiche", now)
+    output_data(response)
 
 
 @cli.command("elencoStazioni")
@@ -521,7 +530,7 @@ def regione(station: str | None, *, table: bool) -> None:
             region = -1
             click.echo(f"Cannot retrieve region code for station {station_code}")
 
-        output_data(region, None, f"Saved region code for station {station_code}")
+        output_data(region)
     except requests.RequestException as e:
         click.echo(f"Error fetching region for station {station}: {e}", err=True)
     except click.ClickException:

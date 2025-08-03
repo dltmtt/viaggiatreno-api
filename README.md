@@ -111,6 +111,8 @@ I [JSON Schema](https://json-schema.org/) riportati sono frutto di reverse engin
   - [`cercaNumeroTrenoTrenoAutocomplete`](#cercanumerotrenotrenoautocomplete)
   - [`cercaNumeroTreno`](#cercanumerotreno)
   - [`andamentoTreno`](#andamentotreno)
+- [Altro](#altro)
+  - [`statistiche`](#statistiche)
 
 ### Stazioni
 
@@ -561,6 +563,32 @@ I seguenti esempi sono stati ottenuti chiamando l'endpoint nella notte tra il 21
 > La documentazione di questo endpoint è un _work in progress_.
 > È quasi sicuro che il JSON Schema attuale della risposta contenga errori.
 > Per il momento, si può solo fare affidamento sul nome dei campi.
+
+### Altro
+
+#### statistiche
+
+**Metodo e percorso:** `GET /statistiche/{timestamp}`
+
+**Parametri:**
+
+- `timestamp`: timestamp in millisecondi dalla Unix Epoch. In realtà può essere qualsiasi valore (anche una stringa), ma è obbligatorio passarlo.
+
+**Risposta:**
+
+- **Content-Type:** `application/json`
+- **Formato:** [statistiche.schema.json](schemas/statistiche.schema.json)
+
+**Esempi:**
+
+- Chiamando `/statistiche/1754263735490`, ovvero all'1:28 del 4 agosto 2025, otteniamo:
+  ```json
+  {
+    "treniGiorno": 86,
+    "ultimoAggiornamento": 1754263735490,
+    "treniCircolanti": 42
+  }
+  ```
 
 [API]: http://www.viaggiatreno.it/infomobilita/rest-jsapi
 [location code]: https://uic.org/support-activities/it/location-codes-enee

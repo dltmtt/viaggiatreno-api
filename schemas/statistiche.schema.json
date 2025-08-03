@@ -1,0 +1,23 @@
+{
+  "$id": "https://raw.githubusercontent.com/dltmtt/viaggiatreno-api/refs/heads/main/schemas/statistiche.schema.json",
+  "title": "Risposta dell'endpoint /statistiche",
+  "type": "object",
+  "properties": {
+    "treniGiorno": {
+      "type": "integer",
+      "description": "Numero totale di treni programmati per il giorno.",
+      "examples": [85]
+    },
+    "ultimoAggiornamento": {
+      "type": "integer",
+      "description": "Ultimo aggiornamento delle statistiche in millisecondi dalla Unix Epoch.",
+      "examples": [1754263156524]
+    },
+    "treniCircolanti": {
+      "type": "integer",
+      "description": "Numero di treni attualmente in circolazione.",
+      "examples": [42]
+    }
+  },
+  "required": ["treniGiorno", "ultimoAggiornamento", "treniCircolanti"]
+}
