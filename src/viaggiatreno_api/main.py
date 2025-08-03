@@ -7,6 +7,7 @@ import csv
 import json
 import string
 import textwrap
+import threading
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import date, datetime
@@ -21,17 +22,8 @@ from zoneinfo import ZoneInfo
 import click
 import requests
 
-BASE_URI = "http://www.viaggiatreno.it/infomobilita/resteasy/viaggiatreno"
-STATION_CODE_LENGTH = 6
 MAX_RESULTS_TO_SHOW = 10
-
-# Rate limiting and retry configuration
-MAX_RETRIES = 5
-INITIAL_BACKOFF_DELAY = 1.0  # seconds
-BACKOFF_MULTIPLIER = 2.0
-MAX_BACKOFF_DELAY = 60.0  # seconds
-
-# Region code to name mapping
+STATION_CODE_LENGTH = 6
 REGIONS = {
     0: "Italia",
     1: "Lombardia",
@@ -72,41 +64,63 @@ class UnreachableCodeReachedError(RuntimeError):
         super().__init__("Unreachable code reached")
 
 
-def api_request(endpoint: str, *args: str | int) -> dict | list | str:
-    """Make API call returning JSON or text based on content headers with exponential backoff on 403."""
-    url = f"{BASE_URI}/{endpoint}/{'/'.join(str(arg) for arg in args)}"
+class API:
+    """Class for making API calls to the ViaggiaTreno service with exponential backoff on 403 errors."""
 
-    for attempt in range(MAX_RETRIES + 1):
-        try:
-            r = requests.get(url, timeout=30)
-            if r.status_code == HTTPStatus.FORBIDDEN and attempt < MAX_RETRIES:
-                delay = min(
-                    INITIAL_BACKOFF_DELAY * (BACKOFF_MULTIPLIER**attempt),
-                    MAX_BACKOFF_DELAY,
-                )
-                click.echo(
-                    f"Temporarily banned, retrying in {delay:.1f}s... "
-                    f"(attempt {attempt + 1}/{MAX_RETRIES})"
-                )
-                time.sleep(delay)
-                continue
-            r.raise_for_status()
-        except requests.RequestException as e:
-            # Retry only if it's the last attempt or not a 403
-            if attempt == MAX_RETRIES or (
-                hasattr(e.response, "status_code")
-                and e.response.status_code != HTTPStatus.FORBIDDEN
-            ):
-                raise
+    _BASE_URI = "http://www.viaggiatreno.it/infomobilita/resteasy/viaggiatreno"
 
-        # Determine response type based on content headers
-        content_type = r.headers.get("Content-Type", "").lower()
-        if "application/json" in content_type:
-            return r.json()
-        return r.text
+    _lock = threading.Lock()
+    _backoff_until = 0.0  # Monotonic time
 
-    # This should never be reached
-    raise UnreachableCodeReachedError
+    MAX_RETRIES = 6
+    INITIAL_BACKOFF = 4.0
+    BACKOFF_FACTOR = 2.0
+
+    @classmethod
+    def call(cls, endpoint: str, *args: str | int) -> dict | list | str:
+        """Make API call returning JSON or text based on content headers with exponential backoff on 403."""
+        url = f"{cls._BASE_URI}/{endpoint}/{'/'.join(str(arg) for arg in args)}"
+
+        for attempt in range(cls.MAX_RETRIES + 1):
+            # Wait if currently under global backoff
+            with cls._lock:
+                wait_time = cls._backoff_until - time.monotonic()
+            if wait_time > 0:
+                time.sleep(wait_time)
+
+            try:
+                r = requests.get(url, timeout=30)
+                if r.status_code == HTTPStatus.FORBIDDEN and attempt < cls.MAX_RETRIES:
+                    delay = cls.INITIAL_BACKOFF * (cls.BACKOFF_FACTOR**attempt)
+
+                    with cls._lock:
+                        now = time.monotonic()
+                        if cls._backoff_until <= now:
+                            cls._backoff_until = now + delay
+                            click.echo(
+                                f"Temporarily banned, retrying in {delay:.1f}s... "
+                                f"(attempt {attempt + 1}/{cls.MAX_RETRIES})"
+                            )
+                    time.sleep(delay)
+                    continue
+
+                r.raise_for_status()
+            except requests.RequestException as e:
+                # Retry only if it's the last attempt or not a 403
+                if attempt == cls.MAX_RETRIES or (
+                    hasattr(e.response, "status_code")
+                    and e.response.status_code != HTTPStatus.FORBIDDEN
+                ):
+                    raise
+
+            # Determine response type based on content headers
+            content_type = r.headers.get("Content-Type", "").lower()
+            if "application/json" in content_type:
+                return r.json()
+            return r.text
+
+        # This should never be reached
+        raise UnreachableCodeReachedError
 
 
 def resolve_station_code(station_input: str) -> str:
@@ -125,7 +139,7 @@ def resolve_station_code(station_input: str) -> str:
 
     # Search for station by name
     try:
-        response = api_request("autocompletaStazione", station_input)
+        response = API.call("autocompletaStazione", station_input)
     except requests.RequestException as e:
         msg = f"Error searching for station '{station_input}': {e}"
         raise click.ClickException(msg) from e
@@ -179,7 +193,7 @@ def resolve_train_details(train_number: int) -> tuple[str, datetime]:
 
     """
     try:
-        response = api_request("cercaNumeroTrenoTrenoAutocomplete", train_number)
+        response = API.call("cercaNumeroTrenoTrenoAutocomplete", train_number)
     except requests.RequestException as e:
         msg = f"Error searching for train {train_number}: {e}"
         raise click.ClickException(msg) from e
@@ -310,7 +324,7 @@ def elenco_stazioni(
     """Get all stations from a given region or from all regions."""
     if download_all:
         with ThreadPoolExecutor(max_workers=len(REGIONS)) as executor:
-            fetch_stations_by_region = partial(api_request, "elencoStazioni")
+            fetch_stations_by_region = partial(API.call, "elencoStazioni")
             results = list(executor.map(fetch_stations_by_region, REGIONS))
 
         stations = list(chain.from_iterable(filter(None, results)))
@@ -318,7 +332,7 @@ def elenco_stazioni(
             stations, output, f"Saved {len(stations)} stations from all regions"
         )
     elif region is not None:
-        stations = api_request("elencoStazioni", region)
+        stations = API.call("elencoStazioni", region)
         output_data(
             stations,
             output,
@@ -351,7 +365,7 @@ def cerca_stazione(
     """Search for stations with a specific prefix or download all stations using the cercaStazione endpoint."""
     if download_all:
         with ThreadPoolExecutor(max_workers=len(string.ascii_uppercase)) as executor:
-            fetch_stations_by_letter = partial(api_request, "cercaStazione")
+            fetch_stations_by_letter = partial(API.call, "cercaStazione")
             results = list(
                 executor.map(fetch_stations_by_letter, string.ascii_uppercase)
             )
@@ -359,7 +373,7 @@ def cerca_stazione(
         stations = list(chain.from_iterable(filter(None, results)))
         output_data(stations, output, f"Saved {len(stations)} results")
     elif prefix:
-        stations = api_request("cercaStazione", prefix)
+        stations = API.call("cercaStazione", prefix)
         output_data(stations, output, f"Saved {len(stations)} results")
     else:
         click.echo("Error: Specify a prefix or use -a/--all")
@@ -375,7 +389,7 @@ def autocompleta_stazione_handler(
     """Search for stations with a specific prefix or download all stations using the specified autocompleta* endpoint."""
     if download_all:
         with ThreadPoolExecutor(max_workers=len(string.ascii_uppercase)) as executor:
-            fetch_stations_by_letter = partial(api_request, endpoint_name)
+            fetch_stations_by_letter = partial(API.call, endpoint_name)
             results = list(
                 executor.map(fetch_stations_by_letter, string.ascii_uppercase)
             )
@@ -385,7 +399,7 @@ def autocompleta_stazione_handler(
 
         output_data(stations, output, f"Saved {count} results")
     elif prefix:
-        stations = api_request(endpoint_name, prefix).strip()
+        stations = API.call(endpoint_name, prefix).strip()
         count = stations.count("\n") + 1 if stations else 0
 
         output_data(stations, output, f"Saved {count} results")
@@ -499,7 +513,7 @@ def regione(station: str | None, *, table: bool) -> None:
 
     try:
         station_code = resolve_station_code(station)
-        region = api_request("regione", station_code).strip()
+        region = API.call("regione", station_code).strip()
 
         try:
             region = int(region)
@@ -538,7 +552,7 @@ def dettaglio_stazione(station: str, region: int | None, output: TextIO | None) 
     if region is None:
         click.echo(f"Getting region code for station {station_code}...")
         try:
-            region = api_request("regione", station_code).strip()
+            region = API.call("regione", station_code).strip()
 
             try:
                 region = int(region)
@@ -555,7 +569,7 @@ def dettaglio_stazione(station: str, region: int | None, output: TextIO | None) 
             return
 
     try:
-        response = api_request("dettaglioStazione", station_code, region)
+        response = API.call("dettaglioStazione", station_code, region)
         output_data(response, output, "Saved station details")
     except requests.RequestException as e:
         click.echo(f"Error fetching station details for {station}: {e}", err=True)
@@ -570,7 +584,7 @@ def partenze_arrivi_handler(
 
         formatted_datetime = search_datetime.strftime("%a %b %-d %Y %H:%M:%S")
 
-        response = api_request(endpoint, station_code, formatted_datetime)
+        response = API.call(endpoint, station_code, formatted_datetime)
         output_data(response, output, f"Saved {endpoint}")
     except requests.RequestException as e:
         click.echo(f"Error fetching {endpoint} for station {station}: {e}", err=True)
@@ -582,8 +596,13 @@ def partenze_arrivi_handler(
 
 def partenze_arrivi_all_handler(
     endpoint: str, search_datetime: datetime, read_from: TextIO, output: str | None
-) -> None:
-    """Handle fetching station schedule data (partenze or arrivi) for all stations."""
+) -> dict[str, list]:
+    """Handle fetching station schedule data (partenze or arrivi) for all stations.
+
+    Returns:
+        dict[str, list]: A dictionary mapping station codes to their departures or arrivals.
+
+    """
     click.echo(f"Loading station data from {click.format_filename(read_from.name)}...")
 
     stations = list(
@@ -592,7 +611,8 @@ def partenze_arrivi_all_handler(
 
     click.echo(f"Processing all {len(stations)} stations for {endpoint}...")
 
-    stats = {"successful": 0, "failed": 0}
+    stats = {"successful": 0, "failed": 0, "empty": 0}
+    departures_or_arrivals = {}
 
     with ThreadPoolExecutor() as executor:
         formatted_datetime = search_datetime.strftime("%a %b %-d %Y %H:%M:%S")
@@ -600,7 +620,7 @@ def partenze_arrivi_all_handler(
         # Map used to keep track of futures and their corresponding station info
         futures = {
             executor.submit(
-                api_request,
+                API.call,
                 endpoint,
                 station["code"],
                 formatted_datetime,
@@ -621,11 +641,16 @@ def partenze_arrivi_all_handler(
                 output_dir = Path(output or "dumps") / endpoint
                 output_path = output_dir / filename
 
+                if not result:
+                    stats["empty"] += 1
+
                 output_data(
                     result,
                     str(output_path),
                     f"Saved {endpoint} for {station_name} ({station_code})",
                 )
+
+                departures_or_arrivals[station_code] = result
 
                 stats["successful"] += 1
             except requests.RequestException as e:
@@ -637,11 +662,14 @@ def partenze_arrivi_all_handler(
     summary = textwrap.dedent(f"""
     ✅ Completed processing all stations for {endpoint}:
        • Successful fetches: {stats["successful"]}
+         - {stats["successful"]} results saved
+         - {stats["empty"]} empty results not saved
        • Failed fetches: {stats["failed"]}
-       • Skipped empty data: {len(stations) - stats["successful"] - stats["failed"]}
        • Results saved in {output_dir}
     """)
     click.echo(summary)
+
+    return departures_or_arrivals
 
 
 @cli.command("partenze")
@@ -789,7 +817,7 @@ def cerca_numero_treno_treno_autocomplete(
 ) -> None:
     """Get autocomplete suggestions for a train number."""
     try:
-        response = api_request("cercaNumeroTrenoTrenoAutocomplete", train_number)
+        response = API.call("cercaNumeroTrenoTrenoAutocomplete", train_number)
         output_data(response, output, "Saved train number autocomplete results")
     except requests.RequestException as e:
         click.echo(
@@ -809,12 +837,325 @@ def cerca_numero_treno_treno_autocomplete(
 def cerca_numero_treno(train_number: int, output: TextIO | None) -> None:
     """Get detailed information for a train number."""
     try:
-        response = api_request("cercaNumeroTreno", train_number)
+        response = API.call("cercaNumeroTreno", train_number)
         output_data(response, output, "Saved train number details")
     except requests.RequestException as e:
         click.echo(
             f"Error fetching details for train number {train_number}: {e}", err=True
         )
+
+
+def extract_trains_from_schedule(
+    schedule_data: list[dict],
+) -> set[tuple[int, str, int]]:
+    """Extract unique train information from partenze/arrivi response data.
+
+    Returns a set of tuples: (train_number, departure_station_code, departure_timestamp_millis)
+    """
+    trains = set()
+
+    if not isinstance(schedule_data, list):
+        return trains
+
+    for train in schedule_data:
+        if not isinstance(train, dict):
+            continue
+
+        # Extract required fields
+        train_number = train.get("numeroTreno")
+        departure_station = train.get("codOrigine")
+        departure_timestamp_millis = train.get("dataPartenzaTreno")
+
+        if train_number and departure_station and departure_timestamp_millis:
+            try:
+                trains.add(
+                    (
+                        int(train_number),
+                        str(departure_station),
+                        int(departure_timestamp_millis),
+                    )
+                )
+            except (ValueError, TypeError):
+                continue
+
+    return trains
+
+
+def fetch_andamento_treno_bulk(
+    trains: set[tuple[int, str, int]], output_dir: str
+) -> None:
+    """Fetch andamentoTreno data for multiple trains in parallel."""
+    if not trains:
+        click.echo("No valid trains found to fetch andamentoTreno data")
+        return
+
+    click.echo(f"Processing andamentoTreno for {len(trains)} unique trains...")
+
+    output_path = Path(output_dir)
+    stats = {"successful": 0, "failed": 0}
+
+    with ThreadPoolExecutor() as executor:
+        # Map used to keep track of futures and their corresponding train info
+        futures = {
+            executor.submit(
+                API.call,
+                "andamentoTreno",
+                departure_station,
+                train_number,
+                departure_timestamp,
+            ): (train_number, departure_station, departure_timestamp)
+            for train_number, departure_station, departure_timestamp in trains
+        }
+
+        for future in as_completed(futures):
+            train_number, departure_station, departure_timestamp = futures[future]
+
+            try:
+                result = future.result()
+
+                # Create filename based on train info
+                departure_date = datetime.fromtimestamp(
+                    departure_timestamp / 1000, tz=ZoneInfo("Europe/Rome")
+                ).date()
+                filename = f"{train_number}_{departure_station}_{departure_date}_andamentoTreno.json"
+                output_file_path = output_path / filename
+
+                output_data(
+                    result,
+                    str(output_file_path),
+                    f"Saved andamentoTreno for train {train_number} from {departure_station}",
+                )
+
+                stats["successful"] += 1
+            except requests.RequestException as e:
+                stats["failed"] += 1
+                click.echo(
+                    f"✗ Failed to fetch andamentoTreno for train {train_number} from {departure_station}: {e}"
+                )
+
+    summary = textwrap.dedent(f"""
+    ✅ Completed processing andamentoTreno:
+       • Successful fetches: {stats["successful"]}
+       • Failed fetches: {stats["failed"]}
+       • Results saved in {output_path}
+    """)
+    click.echo(summary)
+
+
+def read_schedule_data_from_files(data_dir: Path, endpoint: str) -> dict[str, list]:
+    """Read partenze or arrivi data from JSON files in a directory.
+
+    Args:
+        data_dir: Directory containing the JSON files
+        endpoint: Either "partenze" or "arrivi"
+
+    Returns:
+        dict[str, list]: A dictionary mapping station codes to their schedule data.
+
+    """
+    schedule_data = {}
+    json_files = list(data_dir.glob(f"*_{endpoint}.json"))
+
+    if not json_files:
+        click.echo(f"⚠ No {endpoint} JSON files found in {data_dir}")
+        return schedule_data
+
+    click.echo(f"Reading {len(json_files)} {endpoint} JSON files from {data_dir}...")
+
+    # Minimum filename parts for format: STATION_CODE_datetime_endpoint.json
+    min_filename_parts = 3
+
+    for json_file in json_files:
+        try:
+            # Extract station code from filename (format: STATION_CODE_datetime_endpoint.json)
+            filename_parts = json_file.stem.split("_")
+            if len(filename_parts) >= min_filename_parts:
+                station_code = filename_parts[0]
+
+                with json_file.open("r", encoding="utf-8") as f:
+                    data = json.load(f)
+                    schedule_data[station_code] = data
+
+        except (json.JSONDecodeError, OSError) as e:
+            click.echo(f"✗ Failed to read {json_file}: {e}")
+
+    click.echo(f"✓ Successfully read {endpoint} data for {len(schedule_data)} stations")
+    return schedule_data
+
+
+def _handle_train_status_only_mode(read_from: str | None, output: str) -> None:
+    """Handle the --only-train-status mode of dynamic_dump."""
+    data_dir = Path(read_from or "dumps")
+
+    click.echo(f"Starting train status dump (reading from {data_dir})...")
+
+    # Read partenze data from JSON files
+    partenze_dir = data_dir / "partenze"
+    if partenze_dir.exists():
+        partenze_data = read_schedule_data_from_files(partenze_dir, "partenze")
+    else:
+        click.echo(f"⚠ Partenze directory not found: {partenze_dir}")
+        partenze_data = {}
+
+    # Read arrivi data from JSON files
+    arrivi_dir = data_dir / "arrivi"
+    if arrivi_dir.exists():
+        arrivi_data = read_schedule_data_from_files(arrivi_dir, "arrivi")
+    else:
+        click.echo(f"⚠ Arrivi directory not found: {arrivi_dir}")
+        arrivi_data = {}
+
+    # Extract train information from loaded data
+    all_trains = set()
+    for data in (partenze_data, arrivi_data):
+        for schedule_data in data.values():
+            all_trains.update(extract_trains_from_schedule(schedule_data))
+
+    # Fetch andamentoTreno for all unique trains
+    andamento_output = str(Path(output) / "andamentoTreno")
+    fetch_andamento_treno_bulk(all_trains, andamento_output)
+
+    # Final summary for train status only mode
+    partenze_loaded = len(partenze_data)
+    arrivi_loaded = len(arrivi_data)
+
+    summary = textwrap.dedent(f"""
+    🎉 Train status dump completed successfully!
+
+    Partenze:
+       • Loaded from JSON files: {partenze_loaded} stations
+       • Data read from: {partenze_dir}
+
+    Arrivi:
+       • Loaded from JSON files: {arrivi_loaded} stations
+       • Data read from: {arrivi_dir}
+
+    AndamentoTreno:
+       • Unique trains processed: {len(all_trains)}
+       • Results saved in: {andamento_output}
+    """)
+    click.echo(summary)
+
+
+def _handle_default_mode(
+    read_from: str | None, output: str, search_datetime: datetime
+) -> None:
+    """Handle the default mode of dynamic_dump."""
+    stations_file_path = read_from or "dumps/autocompletaStazione.csv"
+
+    click.echo(
+        f"Starting dynamic dump for {search_datetime.strftime('%Y-%m-%d %H:%M:%S')}..."
+    )
+
+    # Open the stations file
+    try:
+        stations_path = Path(stations_file_path)
+        with stations_path.open(encoding="utf-8") as stations_file:
+            # Fetch partenze for all stations and collect data
+            click.echo("Fetching partenze for all stations...")
+            partenze_data = partenze_arrivi_all_handler(
+                "partenze", search_datetime, stations_file, output
+            )
+
+            # Reset file position for second read
+            stations_file.seek(0)
+
+            # Fetch arrivi for all stations and collect data
+            click.echo("Fetching arrivi for all stations...")
+            arrivi_data = partenze_arrivi_all_handler(
+                "arrivi", search_datetime, stations_file, output
+            )
+
+    except (OSError, FileNotFoundError) as e:
+        click.echo(f"Error reading stations file '{stations_file_path}': {e}", err=True)
+        return
+
+    # Extract train information from collected data
+    all_trains = set()
+    for data in (partenze_data or {}, arrivi_data or {}):
+        for schedule_data in data.values():
+            all_trains.update(extract_trains_from_schedule(schedule_data))
+
+    # Fetch andamentoTreno for all unique trains
+    andamento_output = str(Path(output) / "andamentoTreno")
+    fetch_andamento_treno_bulk(all_trains, andamento_output)
+
+    # Final summary for default mode
+    partenze_successful = len(partenze_data) if partenze_data else 0
+    arrivi_successful = len(arrivi_data) if arrivi_data else 0
+
+    summary = textwrap.dedent(f"""
+    🎉 Dynamic dump completed successfully!
+
+    Partenze:
+       • Successful fetches: {partenze_successful}
+       • Results saved in: {Path(output) / "partenze"}
+
+    Arrivi:
+       • Successful fetches: {arrivi_successful}
+       • Results saved in: {Path(output) / "arrivi"}
+
+    AndamentoTreno:
+       • Unique trains processed: {len(all_trains)}
+       • Results saved in: {andamento_output}
+    """)
+    click.echo(summary)
+
+
+@cli.command("dynamic-dump")
+@click.option(
+    "--datetime",
+    "search_datetime",
+    type=click.DateTime(["%Y-%m-%dT%H:%M:%S", "%H:%M"]),
+    help="Date and time to search for (defaults to current date and time).",
+)
+@click.option(
+    "-r",
+    "--read-from",
+    help="With --only-train-status: directory containing partenze/arrivi folders (default: dumps). Otherwise: path to stations CSV file (default: dumps/autocompletaStazione.csv).",
+)
+@click.option(
+    "-o",
+    "--output",
+    type=click.Path(),
+    help="Output directory for all data (default: dumps).",
+)
+@click.option(
+    "--only-train-status",
+    is_flag=True,
+    help="Skip fetching partenze/arrivi and read existing JSON files instead, then fetch only andamentoTreno data.",
+)
+def dynamic_dump(
+    search_datetime: datetime | None,
+    read_from: str | None,
+    output: str | None,
+    *,
+    only_train_status: bool,
+) -> None:
+    """Comprehensive data dump: fetch partenze, arrivi, and andamentoTreno for all stations.
+
+    This command can operate in two modes:
+    1. Default mode: Fetch departures and arrivals for all stations from the API, then extract train
+       information to fetch detailed train status data via andamentoTreno.
+    2. With --only-train-status: Read existing partenze/arrivi JSON files and fetch only andamentoTreno data.
+    """
+    output = output or "dumps"
+
+    # If no datetime was provided, default to current date and time
+    if search_datetime is None:
+        search_datetime = datetime.now(tz=ZoneInfo("Europe/Rome"))
+
+    # If no date was provided, default to today's date
+    if search_datetime.date() == date(1900, 1, 1):
+        today = datetime.now(tz=ZoneInfo("Europe/Rome")).date()
+        search_datetime = search_datetime.replace(
+            year=today.year, month=today.month, day=today.day
+        )
+
+    if only_train_status:
+        _handle_train_status_only_mode(read_from, output)
+    else:
+        _handle_default_mode(read_from, output, search_datetime)
 
 
 @cli.command("andamentoTreno")
@@ -864,7 +1205,7 @@ def andamento_treno(
         click.echo(
             f"Fetching train status for train {train_number} departing from {departure_station} on {search_date.date()}..."
         )
-        response = api_request(
+        response = API.call(
             "andamentoTreno",
             departure_station,
             train_number,
