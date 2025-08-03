@@ -5,7 +5,7 @@
   "properties": {
     "tipoTreno": {
       "$comment": "Probabilmente esistono altri valori, ma con l'enum è più facile rilevarli.",
-      "enum": ["PG", "ST", "VO", "DV", "SI"],
+      "enum": ["DV", "PG", "PP", "SI", "ST", "VO"],
       "description": "Tipo di treno"
     },
     "orientamento": {
@@ -170,7 +170,7 @@
           },
           "nextTrattaType": {
             "$comment": "Potrebbero esserci altri valori numerici; lasciando la definizione così è possibile rilevare eventuali cambiamenti futuri per ulteriori analisi.",
-            "enum": [0, 1, 2]
+            "enum": [0, 1, 2, 8, 12]
           },
           "actualFermataType": {
             "type": "integer",
@@ -382,7 +382,8 @@
       "const": null
     },
     "origineEstera": {
-      "const": null
+      "type": ["string", "null"],
+      "examples": ["PARIS-GARE-DE-LYON"]
     },
     "destinazioneEstera": {
       "type": ["string", "null"],
@@ -400,7 +401,8 @@
       "examples": [66780000, null]
     },
     "oraArrivoEstera": {
-      "const": null
+      "type": ["integer", "null"],
+      "examples": [30000000, null]
     },
     "tratta": {
       "const": 0
@@ -415,10 +417,10 @@
       "type": "string"
     },
     "orarioPartenzaZero": {
-      "type": "integer"
+      "type": ["integer", "null"]
     },
     "orarioArrivoZero": {
-      "type": "integer"
+      "type": ["integer", "null"]
     },
     "circolante": {
       "type": "boolean"
@@ -462,7 +464,7 @@
       "examples": ["", "Treno cancellato"]
     },
     "esisteCorsaZero": {
-      "const": "0"
+      "enum": ["0", "1"]
     },
     "inStazione": {
       "type": "boolean"
@@ -523,7 +525,7 @@
       "examples": ["11:52"]
     },
     "compOrarioArrivoZeroEffettivo": {
-      "type": "string",
+      "type": ["string", "null"],
       "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$",
       "description": "Orario di arrivo effettivo alla stazione di arrivo programmata nel formato HH:MM.",
       "examples": ["18:10"]
@@ -535,7 +537,7 @@
       "examples": ["21:42"]
     },
     "compOrarioArrivoZero": {
-      "type": "string",
+      "type": ["string", "null"],
       "pattern": "^([01][0-9]|2[0-3]):[0-5][0-9]$",
       "description": "Orario di arrivo programmato alla stazione di arrivo programmata nel formato HH:MM.",
       "examples": ["18:10"]
