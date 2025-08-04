@@ -179,7 +179,7 @@
         "$comment": "Potrebbero esserci altri valori numerici; lasciando la definizione così è possibile rilevare eventuali cambiamenti futuri per ulteriori analisi.",
         "enum": [0, 1, 2, 3],
         "default": 0,
-        "description": "Indica lo stato di cancellazione del treno: 1 = treno completamente cancellato, 2 = cancellato nella tratta finale (arriva in una stazione diversa rispetto a quella programmata), 3 = treno deviato (alcune fermate intermedie sono cancellate)."
+        "description": "Indica lo stato di cancellazione del treno: 1 = treno completamente cancellato, 2 = cancellato nella tratta finale (arriva in una stazione diversa rispetto a quella programmata), 3 = treno deviato (alcune fermate intermedie sono cancellate oppure gli orari sono stati modificati)."
       },
       "riprogrammazione": {
         "enum": ["Y", "N", null],

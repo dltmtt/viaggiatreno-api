@@ -465,9 +465,9 @@
     },
     "provvedimento": {
       "$comment": "Potrebbero esserci altri valori numerici; lasciando la definizione così è possibile rilevare eventuali cambiamenti futuri per ulteriori analisi.",
-      "enum": [0, 1],
+      "enum": [0, 1, 3],
       "default": 0,
-      "description": "Indica lo stato di cancellazione del treno: 1 = treno completamente cancellato."
+      "description": "Indica lo stato di cancellazione del treno: 1 = treno completamente cancellato, 3 = treno deviato (alcune fermate intermedie sono cancellate oppure gli orari sono stati modificati)."
     },
     "riprogrammazione": {
       "const": null
@@ -782,7 +782,10 @@
       "examples": ["1:6", "0:47"]
     },
     "compImgCambiNumerazione": {
-      "const": "&nbsp;&nbsp;",
+      "enum": [
+        "&nbsp;&nbsp;",
+        "&nbsp;&nbsp;&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/deviazione.png\">"
+      ],
       "description": "HTML per l'immagine del cambio numerazione."
     },
 
@@ -916,6 +919,23 @@
           },
           "compImgRitardo": {
             "const": "/vt_static/img/legenda/icone_legenda/nonpartito.png"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "$comment": "Se il treno è stato deviato o se gli orari sono stati modificati.",
+        "properties": {
+          "provvedimento": {
+            "const": 3
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "compImgCambiNumerazione": {
+            "const": "&nbsp;&nbsp;&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/deviazione.png\">"
           }
         }
       }
