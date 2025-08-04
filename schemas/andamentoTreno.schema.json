@@ -5,7 +5,7 @@
   "properties": {
     "tipoTreno": {
       "$comment": "Probabilmente esistono altri valori, ma con l'enum è più facile rilevarli.",
-      "enum": ["DV", "PG", "PP", "SI", "ST", "VO"],
+      "enum": ["DV", "PG", "PP", "SF", "SI", "ST"],
       "description": "Tipo di treno"
     },
     "orientamento": {
@@ -36,8 +36,8 @@
         "type": "object",
         "properties": {
           "orientamento": {
-            "enum": ["A", "B", null],
-            "description": "Orientamento del treno, può essere A (executive/business/1 classe in coda) o B (executive/business/1 classe in testa). È `null` per i treni che non sono distinti in classi o che non prevedono la prenotazione dei posti, come i regionali."
+            "enum": ["A", "B", "", null],
+            "description": "Orientamento del treno, può essere A (executive/business/1 classe in coda) o B (executive/business/1 classe in testa). È `null` per i treni che non sono distinti in classi o che non prevedono la prenotazione dei posti, come i regionali. È una stringa vuota quando, pur essendo un treno con classi, non è possibile determinare l'orientamento."
           },
           "kcNumTreno": {
             "const": null
@@ -172,9 +172,8 @@
             "enum": [0, 1, 2, 8, 12]
           },
           "actualFermataType": {
-            "type": "integer",
-            "description": "Tipo di fermata. 3 per fermate soppresse.",
-            "examples": [0, 3]
+            "enum": [0, 1, 2, 3],
+            "description": "Tipo di fermata. 2 = fermata straordinaria, 3 = fermata soppressa."
           },
           "materiale_label": {
             "enum": ["business", null]
@@ -448,7 +447,12 @@
     "subTitle": {
       "type": "string",
       "description": "Descrizione del provvedimento associato al treno, se presente.",
-      "examples": ["", "Treno cancellato"]
+      "examples": [
+        "",
+        "Treno cancellato",
+        "Treno cancellato da SARZANA a LA SPEZIA CENTRALE. Arriva a SARZANA",
+        "Treno cancellato da REGGIO DI CALABRIA CENTRALE a MELITO DI PORTO SALVO. Parte da MELITO DI PORTO SALVO."
+      ]
     },
     "esisteCorsaZero": {
       "enum": ["0", "1"]
@@ -465,9 +469,9 @@
     },
     "provvedimento": {
       "$comment": "Potrebbero esserci altri valori numerici; lasciando la definizione così è possibile rilevare eventuali cambiamenti futuri per ulteriori analisi.",
-      "enum": [0, 1, 3],
+      "enum": [0, 1, 2, 3],
       "default": 0,
-      "description": "Indica lo stato di cancellazione del treno: 1 = treno completamente cancellato, 3 = treno deviato (alcune fermate intermedie sono cancellate oppure gli orari sono stati modificati)."
+      "description": "Indica lo stato di cancellazione del treno: 1 = treno completamente cancellato, 2 = cancellato nella tratta finale (arriva in una stazione diversa rispetto a quella programmata), 3 = treno deviato (alcune fermate intermedie sono cancellate oppure gli orari sono stati modificati)."
     },
     "riprogrammazione": {
       "const": null
@@ -784,7 +788,8 @@
     "compImgCambiNumerazione": {
       "enum": [
         "&nbsp;&nbsp;",
-        "&nbsp;&nbsp;&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/deviazione.png\">"
+        "&nbsp;&nbsp;&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/deviazione.png\">",
+        "&nbsp;&nbsp;&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/cancellazione.png\">"
       ],
       "description": "HTML per l'immagine del cambio numerazione."
     },
@@ -892,6 +897,58 @@
   "allOf": [
     {
       "if": {
+        "properties": {
+          "provvedimento": {
+            "const": 0
+          }
+        }
+      },
+      "then": {
+        "if": {
+          "properties": {
+            "fermate": {
+              "contains": {
+                "properties": {
+                  "actualFermataType": {
+                    "const": 2
+                  }
+                }
+              }
+            }
+          }
+        },
+        "then": {
+          "properties": {
+            "tipoTreno": {
+              "const": "PG"
+            },
+            "subTitle": {
+              "const": "Percorso deviato con fermate straordinarie"
+            }
+          }
+        },
+        "else": {
+          "if": {
+            "properties": {
+              "subTitle": {
+                "not": {
+                  "const": ""
+                }
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "tipoTreno": {
+                "enum": ["PP", "SI"]
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
         "$comment": "Se il treno è stato cancellato completamente.",
         "properties": {
           "provvedimento": {
@@ -901,6 +958,9 @@
       },
       "then": {
         "properties": {
+          "tipoTreno": {
+            "const": "ST"
+          },
           "compRitardo": {
             "const": [
               "Cancellato",
@@ -925,6 +985,26 @@
     },
     {
       "if": {
+        "$comment": "Se il treno è stato cancellato nella tratta finale.",
+        "properties": {
+          "provvedimento": {
+            "const": 2
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "tipoTreno": {
+            "const": "SF"
+          },
+          "compImgCambiNumerazione": {
+            "const": "&nbsp;&nbsp;&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/cancellazione.png\">"
+          }
+        }
+      }
+    },
+    {
+      "if": {
         "$comment": "Se il treno è stato deviato o se gli orari sono stati modificati.",
         "properties": {
           "provvedimento": {
@@ -934,6 +1014,9 @@
       },
       "then": {
         "properties": {
+          "tipoTreno": {
+            "const": "DV"
+          },
           "compImgCambiNumerazione": {
             "const": "&nbsp;&nbsp;&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/deviazione.png\">"
           }
