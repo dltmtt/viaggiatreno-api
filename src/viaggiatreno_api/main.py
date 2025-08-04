@@ -891,7 +891,7 @@ def extract_trains_from_schedule(
 
 
 def fetch_andamento_treno_bulk(
-    trains: set[tuple[int, str, int]], output_dir: str
+    trains: set[tuple[int, str, int]], output_dir: str, request_datetime: datetime
 ) -> None:
     """Fetch andamentoTreno data for multiple trains in parallel."""
     if not trains:
@@ -926,7 +926,7 @@ def fetch_andamento_treno_bulk(
                 departure_date = datetime.fromtimestamp(
                     departure_timestamp / 1000, tz=ZoneInfo("Europe/Rome")
                 ).date()
-                filename = f"{train_number}_{departure_station}_{departure_date}_andamentoTreno.json"
+                filename = f"{train_number}_{departure_station}_{departure_date}_{request_datetime.isoformat()}_andamentoTreno.json"
                 output_file_path = output_path / filename
 
                 output_data(
@@ -951,106 +951,48 @@ def fetch_andamento_treno_bulk(
     click.echo(summary)
 
 
-def read_schedule_data_from_files(data_dir: Path, endpoint: str) -> dict[str, list]:
-    """Read partenze or arrivi data from JSON files in a directory.
-
-    Args:
-        data_dir: Directory containing the JSON files
-        endpoint: Either "partenze" or "arrivi"
-
-    Returns:
-        dict[str, list]: A dictionary mapping station codes to their schedule data.
-
-    """
-    schedule_data = {}
-    json_files = list(data_dir.glob(f"*_{endpoint}.json"))
-
-    if not json_files:
-        click.echo(f"⚠ No {endpoint} JSON files found in {data_dir}")
-        return schedule_data
-
-    click.echo(f"Reading {len(json_files)} {endpoint} JSON files from {data_dir}...")
-
-    # Minimum filename parts for format: STATION_CODE_datetime_endpoint.json
-    min_filename_parts = 3
-
-    for json_file in json_files:
-        try:
-            # Extract station code from filename (format: STATION_CODE_datetime_endpoint.json)
-            filename_parts = json_file.stem.split("_")
-            if len(filename_parts) >= min_filename_parts:
-                station_code = filename_parts[0]
-
-                with json_file.open("r", encoding="utf-8") as f:
-                    data = json.load(f)
-                    schedule_data[station_code] = data
-
-        except (json.JSONDecodeError, OSError) as e:
-            click.echo(f"✗ Failed to read {json_file}: {e}")
-
-    click.echo(f"✓ Successfully read {endpoint} data for {len(schedule_data)} stations")
-    return schedule_data
-
-
-def _handle_train_status_only_mode(read_from: str | None, output: str) -> None:
-    """Handle the --only-train-status mode of dynamic_dump."""
-    data_dir = Path(read_from or "dumps")
-
-    click.echo(f"Starting train status dump (reading from {data_dir})...")
-
-    # Read partenze data from JSON files
-    partenze_dir = data_dir / "partenze"
-    if partenze_dir.exists():
-        partenze_data = read_schedule_data_from_files(partenze_dir, "partenze")
-    else:
-        click.echo(f"⚠ Partenze directory not found: {partenze_dir}")
-        partenze_data = {}
-
-    # Read arrivi data from JSON files
-    arrivi_dir = data_dir / "arrivi"
-    if arrivi_dir.exists():
-        arrivi_data = read_schedule_data_from_files(arrivi_dir, "arrivi")
-    else:
-        click.echo(f"⚠ Arrivi directory not found: {arrivi_dir}")
-        arrivi_data = {}
-
-    # Extract train information from loaded data
-    all_trains = set()
-    for data in (partenze_data, arrivi_data):
-        for schedule_data in data.values():
-            all_trains.update(extract_trains_from_schedule(schedule_data))
-
-    # Fetch andamentoTreno for all unique trains
-    andamento_output = str(Path(output) / "andamentoTreno")
-    fetch_andamento_treno_bulk(all_trains, andamento_output)
-
-    # Final summary for train status only mode
-    partenze_loaded = len(partenze_data)
-    arrivi_loaded = len(arrivi_data)
-
-    summary = textwrap.dedent(f"""
-    🎉 Train status dump completed successfully!
-
-    Partenze:
-       • Loaded from JSON files: {partenze_loaded} stations
-       • Data read from: {partenze_dir}
-
-    Arrivi:
-       • Loaded from JSON files: {arrivi_loaded} stations
-       • Data read from: {arrivi_dir}
-
-    AndamentoTreno:
-       • Unique trains processed: {len(all_trains)}
-       • Results saved in: {andamento_output}
-    """)
-    click.echo(summary)
-
-
-def _handle_default_mode(
-    read_from: str | None, output: str, search_datetime: datetime
+@cli.command("dynamic-dump")
+@click.option(
+    "--datetime",
+    "search_datetime",
+    type=click.DateTime(["%Y-%m-%dT%H:%M:%S", "%H:%M"]),
+    help="Date and time to search for (defaults to current date and time).",
+)
+@click.option(
+    "-r",
+    "--read-from",
+    type=click.File("r"),
+    default="dumps/autocompletaStazione.csv",
+    help="Path to stations CSV file (default: dumps/autocompletaStazione.csv).",
+)
+@click.option(
+    "-o",
+    "--output",
+    type=click.Path(),
+    help="Output directory for all data (default: dumps).",
+)
+def dynamic_dump(
+    search_datetime: datetime | None,
+    read_from: TextIO,
+    output: str | None,
 ) -> None:
-    """Handle the default mode of dynamic_dump."""
-    stations_file_path = read_from or "dumps/autocompletaStazione.csv"
+    """Comprehensive data dump: fetch partenze, arrivi, and andamentoTreno for all stations.
+
+    Fetch departures and arrivals for all stations from the API, then extract train information to fetch detailed train status data via andamentoTreno.
+    """
+    output = output or "dumps"
+    now = datetime.now(tz=ZoneInfo("Europe/Rome"))
+
+    # If no datetime was provided, default to current date and time
+    if search_datetime is None:
+        search_datetime = now
+
+    # If no date was provided, default to today's date
+    if search_datetime.date() == date(1900, 1, 1):
+        today = now.date()
+        search_datetime = search_datetime.replace(
+            year=today.year, month=today.month, day=today.day
+        )
 
     click.echo(
         f"Starting dynamic dump for {search_datetime.strftime('%Y-%m-%d %H:%M:%S')}..."
@@ -1058,7 +1000,7 @@ def _handle_default_mode(
 
     # Open the stations file
     try:
-        stations_path = Path(stations_file_path)
+        stations_path = Path(read_from)
         with stations_path.open(encoding="utf-8") as stations_file:
             # Fetch partenze for all stations and collect data
             click.echo("Fetching partenze for all stations...")
@@ -1076,7 +1018,7 @@ def _handle_default_mode(
             )
 
     except (OSError, FileNotFoundError) as e:
-        click.echo(f"Error reading stations file '{stations_file_path}': {e}", err=True)
+        click.echo(f"Error reading stations file '{read_from}': {e}", err=True)
         return
 
     # Extract train information from collected data
@@ -1087,7 +1029,7 @@ def _handle_default_mode(
 
     # Fetch andamentoTreno for all unique trains
     andamento_output = str(Path(output) / "andamentoTreno")
-    fetch_andamento_treno_bulk(all_trains, andamento_output)
+    fetch_andamento_treno_bulk(all_trains, andamento_output, now)
 
     # Final summary for default mode
     partenze_successful = len(partenze_data) if partenze_data else 0
@@ -1109,62 +1051,6 @@ def _handle_default_mode(
        • Results saved in: {andamento_output}
     """)
     click.echo(summary)
-
-
-@cli.command("dynamic-dump")
-@click.option(
-    "--datetime",
-    "search_datetime",
-    type=click.DateTime(["%Y-%m-%dT%H:%M:%S", "%H:%M"]),
-    help="Date and time to search for (defaults to current date and time).",
-)
-@click.option(
-    "-r",
-    "--read-from",
-    help="With --only-train-status: directory containing partenze/arrivi folders (default: dumps). Otherwise: path to stations CSV file (default: dumps/autocompletaStazione.csv).",
-)
-@click.option(
-    "-o",
-    "--output",
-    type=click.Path(),
-    help="Output directory for all data (default: dumps).",
-)
-@click.option(
-    "--only-train-status",
-    is_flag=True,
-    help="Skip fetching partenze/arrivi and read existing JSON files instead, then fetch only andamentoTreno data.",
-)
-def dynamic_dump(
-    search_datetime: datetime | None,
-    read_from: str | None,
-    output: str | None,
-    *,
-    only_train_status: bool,
-) -> None:
-    """Comprehensive data dump: fetch partenze, arrivi, and andamentoTreno for all stations.
-
-    This command can operate in two modes:
-    1. Default mode: Fetch departures and arrivals for all stations from the API, then extract train
-       information to fetch detailed train status data via andamentoTreno.
-    2. With --only-train-status: Read existing partenze/arrivi JSON files and fetch only andamentoTreno data.
-    """
-    output = output or "dumps"
-
-    # If no datetime was provided, default to current date and time
-    if search_datetime is None:
-        search_datetime = datetime.now(tz=ZoneInfo("Europe/Rome"))
-
-    # If no date was provided, default to today's date
-    if search_datetime.date() == date(1900, 1, 1):
-        today = datetime.now(tz=ZoneInfo("Europe/Rome")).date()
-        search_datetime = search_datetime.replace(
-            year=today.year, month=today.month, day=today.day
-        )
-
-    if only_train_status:
-        _handle_train_status_only_mode(read_from, output)
-    else:
-        _handle_default_mode(read_from, output, search_datetime)
 
 
 @cli.command("andamentoTreno")
