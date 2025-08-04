@@ -60,7 +60,7 @@
             "const": []
           },
           "programmata": {
-            "type": "integer",
+            "type": ["integer", "null"],
             "description": "Ora di partenza programmata dalla fermata se la fermata è la partenza, o di arrivo programmato se la fermata intermedia o l'arrivo, espressa in millisecondi dalla Unix Epoch"
           },
           "programmataZero": {
@@ -898,49 +898,22 @@
     {
       "if": {
         "properties": {
-          "provvedimento": {
-            "const": 0
+          "tipoTreno": {
+            "enum": ["PP", "SI"]
           }
         }
       },
       "then": {
-        "if": {
-          "properties": {
-            "fermate": {
-              "contains": {
-                "properties": {
-                  "actualFermataType": {
-                    "const": 2
-                  }
-                }
-              }
-            }
-          }
-        },
-        "then": {
-          "properties": {
-            "tipoTreno": {
-              "const": "PG"
-            },
-            "subTitle": {
-              "const": "Percorso deviato con fermate straordinarie"
-            }
-          }
-        },
-        "else": {
-          "if": {
-            "properties": {
-              "subTitle": {
-                "not": {
-                  "const": ""
-                }
-              }
-            }
+        "properties": {
+          "provvedimento": {
+            "const": 0
           },
-          "then": {
-            "properties": {
-              "tipoTreno": {
-                "enum": ["PP", "SI"]
+          "fermate": {
+            "contains": {
+              "properties": {
+                "actualFermataType": {
+                  "const": 3
+                }
               }
             }
           }
@@ -949,17 +922,39 @@
     },
     {
       "if": {
-        "$comment": "Se il treno è stato cancellato completamente.",
         "properties": {
-          "provvedimento": {
-            "const": 1
+          "fermate": {
+            "contains": {
+              "properties": {
+                "actualFermataType": {
+                  "const": 2
+                }
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "subTitle": {
+          "const": "Percorso deviato con fermate straordinarie"
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "tipoTreno": {
+            "const": "ST"
           }
         }
       },
       "then": {
         "properties": {
-          "tipoTreno": {
-            "const": "ST"
+          "provvedimento": {
+            "const": 1
+          },
+          "subTitle": {
+            "const": "Treno cancellato"
           },
           "compRitardo": {
             "const": [
@@ -985,30 +980,60 @@
     },
     {
       "if": {
-        "$comment": "Se il treno è stato cancellato nella tratta finale.",
         "properties": {
-          "provvedimento": {
-            "const": 2
+          "tipoTreno": {
+            "const": "SF"
           }
         }
       },
       "then": {
         "properties": {
-          "tipoTreno": {
-            "const": "SF"
+          "provvedimento": {
+            "const": 2
           },
           "compImgCambiNumerazione": {
             "const": "&nbsp;&nbsp;&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/cancellazione.png\">"
+          },
+          "fermate": {
+            "$comment": "Le ultime fermate sono soppresse.",
+            "contains": {
+              "properties": {
+                "actualFermataType": {
+                  "const": 3
+                }
+              }
+            }
           }
         }
       }
     },
     {
       "if": {
-        "$comment": "Se il treno è stato deviato o se gli orari sono stati modificati.",
+        "properties": {
+          "tipoTreno": {
+            "const": "DV"
+          }
+        }
+      },
+      "then": {
         "properties": {
           "provvedimento": {
             "const": 3
+          },
+          "compImgCambiNumerazione": {
+            "const": "&nbsp;&nbsp;&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/deviazione.png\">"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "provvedimento": {
+            "const": 3
+          },
+          "compImgCambiNumerazione": {
+            "const": "&nbsp;&nbsp;&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/deviazione.png\">"
           }
         }
       },
@@ -1016,9 +1041,6 @@
         "properties": {
           "tipoTreno": {
             "const": "DV"
-          },
-          "compImgCambiNumerazione": {
-            "const": "&nbsp;&nbsp;&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/deviazione.png\">"
           }
         }
       }
