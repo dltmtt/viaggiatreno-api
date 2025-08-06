@@ -35,8 +35,7 @@ Una volta ottenuto il codice della stazione, è possibile chiamare `partenze` o 
   - Si possono passare direttamente i nomi delle stazioni al posto dei codici.
   - Le date sono accettate in formato YYYY-MM-DD e hanno come default la data corrente.
   - Gli endpoint che richiedono informazioni aggiuntive spesso possono essere chiamati con solo il dato principale (ad esempio, [`andamentoTreno`](#andamentotreno) può essere chiamato con il solo numero del treno, e la CLI recupererà automaticamente stazione e data di partenza).
-- L'opzione `-o/--output` permette di salvare l'output su file invece che visualizzarlo a schermo.
-- Tramite l'opzione `-a/--all` è possibile scaricare i dati di tutte le stazioni in un colpo solo per alcuni endpoint. Quando usata con `-o/--output`, quest'ultima specifica il nome della cartella in cui salvare i dati.
+- Tramite l'opzione `-a/--all` è possibile scaricare i dati di tutte le stazioni in un colpo solo per alcuni endpoint.
 
 #### Esempi di utilizzo
 
@@ -50,8 +49,8 @@ uv run vt-api cercaStazione "Roma"
 uv run vt-api partenze S01700
 uv run vt-api arrivi "Roma Termini"
 
-# Salva output su file usando l'opzione -o
-uv run vt-api partenze "Milano Centrale" -o partenze.json
+# Salva output su file
+uv run vt-api partenze "Milano Centrale" > partenze.json
 
 # Specifica data e ora (default: adesso)
 uv run vt-api partenze "Tortona" --datetime 2025-08-02T15:30:00
@@ -63,8 +62,8 @@ uv run vt-api andamentoTreno 9685
 uv run vt-api andamentoTreno 3041 --departure-station "Milano Centrale" --date 2025-08-02
 uv run vt-api andamentoTreno 3041 --departure-station S01700 --date 2025-08-02
 
-# Scarica tutti i dati di cercaStazione
-uv run vt-api cercaStazione --all -o data/stations.json
+# Stampa tutti i dati di cercaStazione
+uv run vt-api cercaStazione --all
 
 # Trova la regione di una stazione
 uv run vt-api regione "Milano Centrale"
