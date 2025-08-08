@@ -1,4 +1,5 @@
 {
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://raw.githubusercontent.com/dltmtt/viaggiatreno-api/refs/heads/main/schemas/partenze.schema.json",
   "title": "Risposta dell'endpoint /partenze",
   "type": "array",
@@ -566,6 +567,7 @@
           "&nbsp;&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/riprogrammato.png\">"
         ],
         "contentMediaType": "text/html",
+        "contentEncoding": "UTF-8",
         "description": "HTML per l'immagine del cambio numerazione."
       },
       "materiale_label": {

@@ -1,4 +1,5 @@
 {
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://raw.githubusercontent.com/dltmtt/viaggiatreno-api/refs/heads/main/schemas/dettaglioStazione.schema.json",
   "title": "Risposta dell'endpoint /dettaglioStazione",
   "type": "object",
@@ -32,7 +33,9 @@
             "examples": ["S01700_1", "F00001_0"]
           },
           "codiceStazione": {
-            "const": { "$data": "3/codiceStazione" }
+            "const": {
+              "$data": "3/codiceStazione"
+            }
           },
           "zoomStartRange": {
             "enum": [6, 8, 9, 10]
@@ -44,16 +47,22 @@
             "type": "boolean"
           },
           "pinpointVisible": {
-            "const": { "$data": "1/pinpointVisibile" }
+            "const": {
+              "$data": "1/pinpointVisibile"
+            }
           },
           "labelVisibile": {
             "type": "boolean"
           },
           "labelVisible": {
-            "const": { "$data": "1/labelVisibile" }
+            "const": {
+              "$data": "1/labelVisibile"
+            }
           },
           "codiceRegione": {
-            "const": { "$data": "3/codReg" }
+            "const": {
+              "$data": "3/codReg"
+            }
           }
         }
       }
@@ -79,7 +88,9 @@
       "examples": ["S01700", "F00001"]
     },
     "codStazione": {
-      "const": { "$data": "1/codiceStazione" }
+      "const": {
+        "$data": "1/codiceStazione"
+      }
     },
     "lat": {
       "type": "number",
@@ -120,7 +131,9 @@
           "type": "string"
         },
         "id": {
-          "const": { "$data": "2/codiceStazione" }
+          "const": {
+            "$data": "2/codiceStazione"
+          }
         }
       },
       "required": ["nomeLungo", "nomeBreve", "label", "id"]
@@ -162,19 +175,43 @@
   "allOf": [
     {
       "if": {
-        "properties": { "codiceStazione": { "pattern": "^F\\d{5}$" } }
+        "properties": {
+          "codiceStazione": {
+            "pattern": "^F\\d{5}$"
+          }
+        }
       },
       "then": {
         "properties": {
-          "tipoStazione": { "const": 4 },
+          "tipoStazione": {
+            "const": 4
+          },
           "localita": {
             "properties": {
-              "nomeLungo": { "const": { "$data": "2/codiceStazione" } },
-              "nomeBreve": { "const": { "$data": "2/codiceStazione" } },
-              "label": { "const": "" },
-              "id": { "const": { "$data": "2/codiceStazione" } }
+              "nomeLungo": {
+                "const": {
+                  "$data": "2/codiceStazione"
+                }
+              },
+              "nomeBreve": {
+                "const": {
+                  "$data": "2/codiceStazione"
+                }
+              },
+              "label": {
+                "const": ""
+              },
+              "id": {
+                "const": {
+                  "$data": "2/codiceStazione"
+                }
+              }
             },
-            "nomeCitta": { "const": { "$data": "2/codiceStazione" } }
+            "nomeCitta": {
+              "const": {
+                "$data": "2/codiceStazione"
+              }
+            }
           }
         }
       }
