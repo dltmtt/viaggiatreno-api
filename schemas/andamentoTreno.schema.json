@@ -6,7 +6,7 @@
   "properties": {
     "tipoTreno": {
       "$comment": "Probabilmente esistono altri valori, ma con l'enum è più facile rilevarli.",
-      "enum": ["DV", "PG", "PP", "SF", "SI", "ST"],
+      "enum": ["DV", "PG", "PP", "SF", "SI", "SM", "ST"],
       "description": "Tipo di treno"
     },
     "orientamento": {
@@ -451,7 +451,8 @@
         "",
         "Treno cancellato",
         "Treno cancellato da SARZANA a LA SPEZIA CENTRALE. Arriva a SARZANA",
-        "Treno cancellato da REGGIO DI CALABRIA CENTRALE a MELITO DI PORTO SALVO. Parte da MELITO DI PORTO SALVO."
+        "Treno cancellato da REGGIO DI CALABRIA CENTRALE a MELITO DI PORTO SALVO. Parte da MELITO DI PORTO SALVO.",
+        "Treno cancellato da S.GIUSEPPE DI CAIRO a SPIGNO. Viaggio con cambio di treno"
       ]
     },
     "esisteCorsaZero": {
@@ -898,7 +899,7 @@
       "if": {
         "properties": {
           "tipoTreno": {
-            "enum": ["PP", "SI"]
+            "const": "SI"
           }
         }
       },
