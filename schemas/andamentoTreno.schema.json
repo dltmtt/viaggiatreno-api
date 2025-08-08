@@ -216,7 +216,22 @@
           "nextTrattaType",
           "actualFermataType",
           "materiale_label"
-        ]
+        ],
+        "if": {
+          "title": "Fermate soppresse",
+          "properties": {
+            "actualFermataType": {
+              "const": 3
+            }
+          }
+        },
+        "then": {
+          "properties": {
+            "tipoFermata": {
+              "const": ""
+            }
+          }
+        }
       }
     },
     "anormalita": {
