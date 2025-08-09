@@ -67,6 +67,8 @@ class API:
     backoff_until = 0.0  # Monotonic time
     session: aiohttp.ClientSession | None = None
 
+    MAX_CONCURRENT_REQUESTS = 16
+
     MAX_RETRIES = 6
     INITIAL_BACKOFF = 4.0
     BACKOFF_FACTOR = 2.0
@@ -540,7 +542,7 @@ async def partenze_arrivi_all(
     all_trains = []
 
     # Create semaphore to limit concurrent requests
-    semaphore = asyncio.Semaphore(8)
+    semaphore = asyncio.Semaphore(API.MAX_CONCURRENT_REQUESTS)
 
     async def fetch_station_data(
         station_code: str,
@@ -753,7 +755,7 @@ async def andamento_treno_bulk(trains: set[tuple[int, str, int]], output: Path) 
     now = datetime.now(tz=ZoneInfo("Europe/Rome")).isoformat()
 
     # Create semaphore to limit concurrent requests
-    semaphore = asyncio.Semaphore(8)
+    semaphore = asyncio.Semaphore(API.MAX_CONCURRENT_REQUESTS)
 
     async def fetch_train_data(
         train: tuple[int, str, int],
