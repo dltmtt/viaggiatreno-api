@@ -6,7 +6,7 @@
   "properties": {
     "tipoTreno": {
       "$comment": "Probabilmente esistono altri valori, ma con l'enum è più facile rilevarli.",
-      "enum": ["DV", "PG", "PP", "SF", "SI", "SM", "ST"],
+      "enum": ["DV", "PG", "PP", "SF", "SI", "SM", "ST", "VD"],
       "description": "Tipo di treno"
     },
     "orientamento": {
@@ -14,9 +14,8 @@
       "description": "Orientamento del treno, può essere A (executive/business/1 classe in coda), B (executive/business/1 classe in testa), A1|B2@A|B (Carrozze A in testa, Executive centro - Carrozze B in coda, Executive centro), A2|B1@B|A (Carrozze A in coda, Executive centro - Carrozze B in testa, Executive centro). È `null` per i treni che non sono distinti in classi o che non prevedono la prenotazione dei posti, come i regionali. È una stringa vuota quando, pur essendo un treno con classi, non è possibile determinare l'orientamento."
     },
     "codiceCliente": {
-      "type": "integer",
-      "description": "Codice cliente RFI associato all'impresa ferroviaria.",
-      "examples": [1, 2, 4, 18, 63, 64, 910]
+      "enum": [1, 2, 4, 18, 63, 64, 910],
+      "description": "Codice cliente RFI associato all'impresa ferroviaria."
     },
     "fermateSoppresse": {
       "type": "array",
@@ -169,7 +168,7 @@
           },
           "nextTrattaType": {
             "$comment": "Potrebbero esserci altri valori numerici; lasciando la definizione così è possibile rilevare eventuali cambiamenti futuri per ulteriori analisi.",
-            "enum": [0, 1, 2, 8, 12]
+            "enum": [0, 1, 2, 3, 8, 12]
           },
           "actualFermataType": {
             "enum": [0, 1, 2, 3],
@@ -478,7 +477,8 @@
         "Treno cancellato",
         "Treno cancellato da SARZANA a LA SPEZIA CENTRALE. Arriva a SARZANA",
         "Treno cancellato da REGGIO DI CALABRIA CENTRALE a MELITO DI PORTO SALVO. Parte da MELITO DI PORTO SALVO.",
-        "Treno cancellato da S.GIUSEPPE DI CAIRO a SPIGNO. Viaggio con cambio di treno"
+        "Treno cancellato da S.GIUSEPPE DI CAIRO a SPIGNO. Viaggio con cambio di treno",
+        "Il treno oggi prosegue da TORTONA a VOGHERA"
       ]
     },
     "esisteCorsaZero": {
@@ -960,26 +960,6 @@
     {
       "if": {
         "properties": {
-          "fermate": {
-            "contains": {
-              "properties": {
-                "actualFermataType": {
-                  "const": 2
-                }
-              }
-            }
-          }
-        }
-      },
-      "then": {
-        "subTitle": {
-          "const": "Percorso deviato con fermate straordinarie"
-        }
-      }
-    },
-    {
-      "if": {
-        "properties": {
           "tipoTreno": {
             "const": "ST"
           }
@@ -1060,24 +1040,23 @@
           "compImgCambiNumerazione": {
             "const": "&nbsp;&nbsp;&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/deviazione.png\">"
           }
-        }
-      }
-    },
-    {
-      "if": {
-        "properties": {
-          "provvedimento": {
-            "const": 3
-          },
-          "compImgCambiNumerazione": {
-            "const": "&nbsp;&nbsp;&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/deviazione.png\">"
+        },
+        "if": {
+          "properties": {
+            "fermate": {
+              "contains": {
+                "properties": {
+                  "actualFermataType": {
+                    "const": 2
+                  }
+                }
+              }
+            }
           }
-        }
-      },
-      "then": {
-        "properties": {
-          "tipoTreno": {
-            "const": "DV"
+        },
+        "then": {
+          "subTitle": {
+            "const": "Percorso deviato con fermate straordinarie"
           }
         }
       }

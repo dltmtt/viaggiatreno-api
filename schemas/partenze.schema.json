@@ -123,9 +123,8 @@
         "type": "boolean"
       },
       "codiceCliente": {
-        "type": "integer",
-        "description": "Codice cliente RFI associato all'impresa ferroviaria.",
-        "examples": [1, 2, 4, 18, 63, 64, 910]
+        "enum": [1, 2, 4, 18, 63, 64, 910],
+        "description": "Codice cliente RFI associato all'impresa ferroviaria."
       },
       "binarioEffettivoArrivoCodice": {
         "const": null
@@ -564,7 +563,8 @@
           "&nbsp;&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/numerazioni.png\">&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/cancellazione.png\">",
           "&nbsp;&nbsp;&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/deviazione.png\">",
           "&nbsp;&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/numerazioni.png\">&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/deviazione.png\">",
-          "&nbsp;&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/riprogrammato.png\">"
+          "&nbsp;&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/riprogrammato.png\">",
+          "&nbsp;&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/riprogrammato.png\">&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/cancellazione.png\">"
         ],
         "contentMediaType": "text/html",
         "contentEncoding": "UTF-8",
@@ -704,9 +704,25 @@
           }
         },
         "then": {
-          "properties": {
-            "compImgCambiNumerazione": {
-              "const": "&nbsp;&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/riprogrammato.png\">"
+          "if": {
+            "properties": {
+              "provvedimento": {
+                "const": 2
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "compImgCambiNumerazione": {
+                "const": "&nbsp;&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/riprogrammato.png\">&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/cancellazione.png\">"
+              }
+            }
+          },
+          "else": {
+            "properties": {
+              "compImgCambiNumerazione": {
+                "const": "&nbsp;&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/riprogrammato.png\">"
+              }
             }
           }
         },
