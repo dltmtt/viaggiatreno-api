@@ -18,11 +18,7 @@
       "description": "Codice cliente RFI associato all'impresa ferroviaria."
     },
     "fermateSoppresse": {
-      "type": "array",
-      "description": "Lista delle fermate soppresse",
-      "items": {
-        "type": "object"
-      }
+      "const": []
     },
     "dataPartenza": {
       "type": "string",
@@ -311,15 +307,13 @@
       "description": "Motivo prevalente del ritardo"
     },
     "descrizioneVCO": {
-      "type": "string",
-      "examples": [""]
+      "const": ""
     },
     "materiale_label": {
       "enum": ["business", null]
     },
     "arrivato": {
-      "type": "boolean",
-      "description": "Se il treno è già arrivato nella stazione di cui si vogliono conoscere le partenze."
+      "type": "boolean"
     },
     "dataPartenzaTrenoAsDate": {
       "type": "string",
@@ -348,27 +342,11 @@
       "examples": [23, 26387, 21007]
     },
     "categoria": {
-      "type": "string",
-      "description": "Categoria del treno. Usato insieme a `tipoProdotto` per calcolare `categoriaDescrizione`. Ad esempio, le Frecce vedono questo campo vuoto.",
-      "examples": ["", "EC", "EN", "EXP", "IC", "ICN", "MET", "REG"]
+      "enum": ["", "EC", "EN", "EXP", "IC", "ICN", "MET", "NCL", "REG"],
+      "description": "Categoria del treno. Usato insieme a `tipoProdotto` per calcolare `categoriaDescrizione`. Ad esempio, le Frecce vedono questo campo vuoto."
     },
     "categoriaDescrizione": {
-      "$comment": "Lo spazio non è un errore, è così che viene restituito.",
-      "type": ["string", "null"],
-      "description": "Categoria del treno.",
-      "examples": [
-        " FA",
-        " FB",
-        " FR",
-        "EC FR",
-        "EC",
-        "EN",
-        "EXP",
-        "IC",
-        "ICN",
-        "MET",
-        "REG"
-      ]
+      "const": null
     },
     "origine": {
       "type": "string",
@@ -491,8 +469,7 @@
       "const": false
     },
     "nonPartito": {
-      "type": "boolean",
-      "description": "Se il treno non è ancora partito."
+      "type": "boolean"
     },
     "provvedimento": {
       "$comment": "Potrebbero esserci altri valori numerici; lasciando la definizione così è possibile rilevare eventuali cambiamenti futuri per ulteriori analisi.",
