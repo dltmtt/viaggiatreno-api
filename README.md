@@ -558,11 +558,6 @@ I seguenti esempi sono stati ottenuti chiamando l'endpoint nella notte tra il 21
 - **Content-Type:** `application/json`
 - **Formato:** [andamentoTreno.schema.json](schemas/andamentoTreno.schema.json)
 
-> [!WARNING]
-> La documentazione di questo endpoint è un _work in progress_.
-> È quasi sicuro che il JSON Schema attuale della risposta contenga errori.
-> Per il momento, si può solo fare affidamento sul nome dei campi.
-
 ### Altro
 
 #### statistiche
