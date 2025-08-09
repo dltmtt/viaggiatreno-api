@@ -26,7 +26,7 @@ uv run vt-api partenze --all -o dumps/    # Bulk operations with threading
 ### API Rate Limiting & Error Handling
 The `API` class implements sophisticated retry logic for 403 (temporarily banned) responses:
 - Exponential backoff: 4s, 8s, 16s, 32s, 64s, 128s
-- Thread-safe global backoff state using `threading.Lock`
+- Thread-safe global backoff state using `asyncio.Lock`
 - Automatic content-type detection (JSON vs text responses)
 
 ## Project-Specific Patterns
@@ -49,9 +49,8 @@ A train is uniquely identified by the triple of train number, departure station 
 - Progress tracking with success/failure/empty statistics
 
 ### Data Output Handling
-- `output_data()` function centralizes JSON formatting and file writing
-- Skips empty responses automatically with warning messages
-- Supports both Click.File objects and string paths
+- Skips empty responses automatically
+- Supports Click.File and click.Path objects
 - UTF-8 encoding with proper indentation for JSON
 
 ## Integration Points
@@ -73,12 +72,11 @@ A train is uniquely identified by the triple of train number, departure station 
 - **Error handling**: Use `click.ClickException` for user-facing errors
 - **Datetime handling**: Always use Europe/Rome timezone, support both ISO and short formats
 - **CSV parsing**: Use `csv.reader(StringIO(response), delimiter="|")` for pipe-delimited responses
-- **Threading**: Use `ThreadPoolExecutor` for bulk operations, never parallel retry logic
+- **Asynchronous programming**: Use `asyncio` for all I/O-bound operations.
 - **File operations**: Use `pathlib.Path` for all path manipulations
 - **JSON validation**: Reference schemas in `schemas/` directory for response structure
 
 ## General Guidelines
-- Use parallelism when appropriate (bulk operations, not individual requests).
 - Use `uv run` to run Python scripts.
 - Use `pathlib` for path manipulations.
 - Use `click`-specific functions and exceptions.
