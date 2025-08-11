@@ -166,8 +166,17 @@
         "const": null
       },
       "orientamento": {
-        "enum": ["A", "B", "", "A1|B2@A|B", "A2|B1@B|A", null],
-        "description": "Orientamento del treno, può essere A (executive/business/1 classe in coda) o B (executive/business/1 classe in testa), A1|B2@A|B (Carrozze A in testa, Executive centro - Carrozze B in coda, Executive centro), A2|B1@B|A (Carrozze A in coda, Executive centro - Carrozze B in testa, Executive centro). È `null` per i treni che non sono distinti in classi o che non prevedono la prenotazione dei posti, come i regionali. È una stringa vuota quando, pur essendo un treno con classi, non è possibile determinare l'orientamento."
+        "enum": [
+          "A",
+          "B",
+          "",
+          "A1|B2@A|B",
+          "A1|B2@B|A",
+          "A2|B1@A|B",
+          "A2|B1@B|A",
+          null
+        ],
+        "description": "Orientamento del treno, può essere A (executive/business/1 classe in coda), B (executive/business/1 classe in testa) o combinazioni varie. È `null` per i treni che non sono distinti in classi o che non prevedono la prenotazione dei posti, come i regionali. È una stringa vuota quando, pur essendo un treno con classi, non è possibile determinare l'orientamento."
       },
       "inStazione": {
         "type": "boolean"
