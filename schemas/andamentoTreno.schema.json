@@ -5,7 +5,6 @@
   "type": "object",
   "properties": {
     "tipoTreno": {
-      "$comment": "Probabilmente esistono altri valori, ma con l'enum è più facile rilevarli.",
       "enum": ["DV", "PG", "PP", "SF", "SI", "SM", "ST", "VD"],
       "description": "Tipo di treno"
     },
@@ -932,15 +931,134 @@
       "if": {
         "properties": {
           "tipoTreno": {
-            "const": "SI"
+            "const": "DV"
           }
         }
       },
       "then": {
         "properties": {
           "provvedimento": {
-            "const": 0
+            "const": 3
           },
+          "compImgCambiNumerazione": {
+            "const": "&nbsp;&nbsp;&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/deviazione.png\">"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "tipoTreno": {
+            "const": "PG"
+          }
+        }
+      },
+      "then": {
+        "if": {
+          "properties": {
+            "fermate": {
+              "not": {
+                "contains": {
+                  "properties": {
+                    "actualFermataType": {
+                      "const": 2
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "then": {
+          "properties": {
+            "subTitle": {
+              "const": ""
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "tipoTreno": {
+            "const": "PP"
+          }
+        }
+      },
+      "then": {
+        "if": {
+          "properties": {
+            "fermate": {
+              "contains": {
+                "properties": {
+                  "actualFermataType": {
+                    "const": 3
+                  }
+                }
+              }
+            }
+          }
+        },
+        "then": {
+          "properties": {
+            "subTitle": {
+              "pattern": "^Treno cancellato da .+ a .+\\. (Parte da|Arriva a) .+\\.?$"
+            }
+          }
+        },
+        "else": {
+          "properties": {
+            "subTitle": {
+              "const": ""
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "tipoTreno": {
+            "const": "SF"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "provvedimento": {
+            "const": 2
+          },
+          "subTitle": {
+            "pattern": "^Treno cancellato da .+ a .+\\. Arriva a .+$"
+          },
+          "compImgCambiNumerazione": {
+            "const": "&nbsp;&nbsp;&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/cancellazione.png\">"
+          },
+          "fermate": {
+            "$comment": "Le ultime fermate sono soppresse.",
+            "contains": {
+              "properties": {
+                "actualFermataType": {
+                  "const": 3
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "tipoTreno": {
+            "const": "SI"
+          }
+        }
+      },
+      "then": {
+        "properties": {
           "fermate": {
             "contains": {
               "properties": {
@@ -949,6 +1067,28 @@
                 }
               }
             }
+          },
+          "provvedimento": {
+            "const": 0
+          },
+          "subTitle": {
+            "pattern": "^Treno cancellato da .+ a .+\\. Parte da .+\\.$"
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "tipoTreno": {
+            "const": "SM"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "subTitle": {
+            "pattern": "^Treno cancellato da .+ a .+\\. Viaggio con cambio di treno$"
           }
         }
       }
@@ -995,27 +1135,14 @@
       "if": {
         "properties": {
           "tipoTreno": {
-            "const": "SF"
+            "const": "VD"
           }
         }
       },
       "then": {
         "properties": {
-          "provvedimento": {
-            "const": 2
-          },
-          "compImgCambiNumerazione": {
-            "const": "&nbsp;&nbsp;&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/cancellazione.png\">"
-          },
-          "fermate": {
-            "$comment": "Le ultime fermate sono soppresse.",
-            "contains": {
-              "properties": {
-                "actualFermataType": {
-                  "const": 3
-                }
-              }
-            }
+          "subTitle": {
+            "pattern": "^Il treno oggi prosegue da .+ a .+$"
           }
         }
       }
@@ -1023,37 +1150,20 @@
     {
       "if": {
         "properties": {
-          "tipoTreno": {
-            "const": "DV"
-          }
-        }
-      },
-      "then": {
-        "properties": {
-          "provvedimento": {
-            "const": 3
-          },
-          "compImgCambiNumerazione": {
-            "const": "&nbsp;&nbsp;&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/deviazione.png\">"
-          }
-        },
-        "if": {
-          "properties": {
-            "fermate": {
-              "contains": {
-                "properties": {
-                  "actualFermataType": {
-                    "const": 2
-                  }
+          "fermate": {
+            "contains": {
+              "properties": {
+                "actualFermataType": {
+                  "const": 2
                 }
               }
             }
           }
-        },
-        "then": {
-          "subTitle": {
-            "const": "Percorso deviato con fermate straordinarie"
-          }
+        }
+      },
+      "then": {
+        "subTitle": {
+          "const": "Percorso deviato con fermate straordinarie"
         }
       }
     }
