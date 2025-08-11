@@ -13,6 +13,8 @@
         "A",
         "B",
         "",
+        "A|B",
+        "B|A",
         "A1|B2@A|B",
         "A1|B2@B|A",
         "A2|B1@A|B",
@@ -44,6 +46,8 @@
               "A",
               "B",
               "",
+              "A|B",
+              "B|A",
               "A1|B2@A|B",
               "A1|B2@B|A",
               "A2|B1@A|B",
@@ -181,7 +185,7 @@
           },
           "nextTrattaType": {
             "$comment": "Potrebbero esserci altri valori numerici; lasciando la definizione così è possibile rilevare eventuali cambiamenti futuri per ulteriori analisi.",
-            "enum": [0, 1, 2, 3, 4, 8, 12, 14, 20]
+            "enum": [0, 1, 2, 3, 4, 8, 12, 13, 14, 19, 20]
           },
           "actualFermataType": {
             "enum": [0, 1, 2, 3],
@@ -1142,7 +1146,7 @@
       "then": {
         "properties": {
           "subTitle": {
-            "pattern": "^Il treno oggi prosegue da .+ a .+$"
+            "pattern": "^(Treno cancellato da .+ a .+. Il treno oggi arriva a .+|Il treno oggi prosegue da .+ a .+)$"
           }
         }
       }
