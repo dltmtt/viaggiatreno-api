@@ -185,7 +185,7 @@
           },
           "nextTrattaType": {
             "$comment": "Potrebbero esserci altri valori numerici; lasciando la definizione così è possibile rilevare eventuali cambiamenti futuri per ulteriori analisi.",
-            "enum": [0, 1, 2, 3, 4, 8, 12, 13, 14, 19, 20]
+            "enum": [0, 1, 2, 3, 4, 8, 12, 13, 14, 18, 19, 20]
           },
           "actualFermataType": {
             "enum": [0, 1, 2, 3],
@@ -1035,7 +1035,7 @@
             "const": 2
           },
           "subTitle": {
-            "pattern": "^Treno cancellato da .+ a .+\\. Arriva a .+$"
+            "pattern": "^Treno cancellato da .+ a .+\\. (Il treno oggi arriva|Arriva) a .+$"
           },
           "compImgCambiNumerazione": {
             "const": "&nbsp;&nbsp;&nbsp;<img src=\"/vt_static/img/legenda/icone_legenda/cancellazione.png\">"
@@ -1130,7 +1130,10 @@
             "const": "/vt_static/img/legenda/icone_legenda/cancellazione.png"
           },
           "compImgRitardo": {
-            "const": "/vt_static/img/legenda/icone_legenda/nonpartito.png"
+            "enum": [
+              "/vt_static/img/legenda/icone_legenda/nonpartito.png",
+              "/vt_static/img/avvisi/alert3.png"
+            ]
           }
         }
       }
