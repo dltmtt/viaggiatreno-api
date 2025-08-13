@@ -5,8 +5,8 @@
   "type": "object",
   "properties": {
     "tipoTreno": {
-      "enum": ["DV", "PG", "PP", "SF", "SI", "SM", "ST", "VD"],
-      "description": "Tipo di treno"
+      "enum": ["DV", "PG", "PP", "SF", "SI", "SM", "ST", "VD", "VO"],
+      "description": "Tipo di treno."
     },
     "orientamento": {
       "enum": [
@@ -1171,6 +1171,22 @@
       "then": {
         "subTitle": {
           "const": "Percorso deviato con fermate straordinarie"
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "tipoTreno": {
+            "const": "VO"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "subTitle": {
+            "pattern": "^Treno cancellato da .+ a .+\\. Il treno oggi parte da .+\\.$"
+          }
         }
       }
     }
