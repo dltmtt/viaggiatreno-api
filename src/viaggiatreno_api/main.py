@@ -67,7 +67,7 @@ class API:
     backoff_until = 0.0  # Monotonic time
     session: aiohttp.ClientSession | None = None
 
-    MAX_CONCURRENT_REQUESTS = 16
+    MAX_CONCURRENT_REQUESTS = 14
 
     MAX_RETRIES = 6
     INITIAL_BACKOFF = 4.0
