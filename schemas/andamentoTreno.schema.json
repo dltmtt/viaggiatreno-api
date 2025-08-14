@@ -15,10 +15,14 @@
         "",
         "A|B",
         "B|A",
+        "A1|B2@A|A",
         "A1|B2@A|B",
         "A1|B2@B|A",
+        "A1|B2@B|B",
+        "A2|B1@A|A",
         "A2|B1@A|B",
         "A2|B1@B|A",
+        "A2|B1@B|B",
         null
       ],
       "description": "Orientamento del treno, può essere A (executive/business/1 classe in coda), B (executive/business/1 classe in testa) o combinazioni varie. È `null` per i treni che non sono distinti in classi o che non prevedono la prenotazione dei posti, come i regionali. È una stringa vuota quando, pur essendo un treno con classi, non è possibile determinare l'orientamento."
@@ -48,10 +52,14 @@
               "",
               "A|B",
               "B|A",
+              "A1|B2@A|A",
               "A1|B2@A|B",
               "A1|B2@B|A",
+              "A1|B2@B|B",
+              "A2|B1@A|A",
               "A2|B1@A|B",
               "A2|B1@B|A",
+              "A2|B1@B|B",
               null
             ],
             "description": "Orientamento del treno, può essere A (executive/business/1 classe in coda), B (executive/business/1 classe in testa) o combinazioni varie. È `null` per i treni che non sono distinti in classi o che non prevedono la prenotazione dei posti, come i regionali. È una stringa vuota quando, pur essendo un treno con classi, non è possibile determinare l'orientamento."
@@ -315,6 +323,17 @@
           "キューの中の馬車B、Executiveセンター - 大手、Executiveセンターの馬車",
           "車廂領先的，行政中心 - 在隊列中，行政中心馬車乙",
           "Вагоны А на голове, Executive центр - Каретки B в очереди, Executive центр"
+        ],
+        [
+          "Carrozze A in coda, Executive testa - Carrozze B in testa, Executive testa",
+          "Carriages A in the queue, Executive head - Carriages B in the head, Executive head",
+          null,
+          "Carrosses A en queue, Executive en tête - Carrosses B en tête, Executive en tête",
+          "Carros A al final, Executive al inicio - Carros B al inicio, Executive al inicio",
+          "cărucior A din coadă, cap Executive - cărucior B în cap, Executivee cap",
+          "頭の中で馬車B、ヘッドExecutive - キュー、Executive頭の中で馬車A",
+          "在頭馬車B，頭部Executive - 在隊列中，行政首長一推車",
+          "Каретки А в очереди, Executive глава - Каретки В в голове, голова Executive"
         ]
       ]
     },
@@ -1008,7 +1027,7 @@
         "then": {
           "properties": {
             "subTitle": {
-              "pattern": "^Treno cancellato da .+ a .+\\. (Parte da|Arriva a) .+\\.?$"
+              "pattern": "^Treno cancellato da .+ a .+\\. (Il treno oggi parte da|Parte da|Arriva a) .+\\.?$"
             }
           }
         },

@@ -168,10 +168,14 @@
           "",
           "A|B",
           "B|A",
+          "A1|B2@A|A",
           "A1|B2@A|B",
           "A1|B2@B|A",
+          "A1|B2@B|B",
+          "A2|B1@A|A",
           "A2|B1@A|B",
           "A2|B1@B|A",
+          "A2|B1@B|B",
           null
         ],
         "description": "Orientamento del treno, può essere A (executive/business/1 classe in coda) o B (executive/business/1 classe in testa) o combinazioni varie. È `null` per i treni che non sono distinti in classi o che non prevedono la prenotazione dei posti, come i regionali. È una stringa vuota quando, pur essendo un treno con classi, non è possibile determinare l'orientamento."
