@@ -558,6 +558,20 @@ I seguenti esempi sono stati ottenuti chiamando l'endpoint nella notte tra il 21
 - **Content-Type:** `application/json`
 - **Formato:** [andamentoTreno.schema.json](schemas/andamentoTreno.schema.json)
 
+Di seguito è riportata una tabella contente il significato presunto dei valori che può assumere il campo `tipoTreno`. Per ulteriori dettagli, si rimanda al JSON Schema.
+
+| `tipoTreno` | Significato             | Descrizione                                                                   |
+| ----------- | ----------------------- | ----------------------------------------------------------------------------- |
+| `DV`        | Deviazione              | Il treno devia dal percorso programmato.                                      |
+| `PG`        | Programmato             | Il treno seguirà il percorso previsto.                                        |
+| `PP`        | ?                       | ?                                                                             |
+| `SF`        | Soppressione finale     | Le ultime fermate del treno sono cancellate.                                  |
+| `SI`        | Soppressione iniziale   | Le prime fermate del treno sono cancellate.                                   |
+| `SM`        | ?                       | Il treno è cancellato in una tratta e il viaggio presenta un cambio di treno. |
+| `ST`        | Soppressione treno      | Il treno è cancellato.                                                        |
+| `VD`        | Variazione destinazione | Il treno arriva in una stazione diversa da quella programmata.                |
+| `VO`        | Variazione origine      | Il treno parte da una stazione diversa da quella programmata.                 |
+
 ### Altro
 
 #### statistiche
