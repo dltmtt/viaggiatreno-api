@@ -193,7 +193,7 @@
           },
           "nextTrattaType": {
             "$comment": "Potrebbero esserci altri valori numerici; lasciando la definizione così è possibile rilevare eventuali cambiamenti futuri per ulteriori analisi.",
-            "enum": [0, 1, 2, 3, 4, 8, 12, 13, 14, 18, 19, 20]
+            "enum": [0, 1, 2, 3, 4, 8, 12, 13, 14, 17, 18, 19, 20]
           },
           "actualFermataType": {
             "enum": [0, 1, 2, 3],
