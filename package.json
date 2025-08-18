@@ -13,6 +13,7 @@
 	"author": "Matteo Delton",
 	"dependencies": {
 		"commander": "^14.0.0",
+		"env-paths": "^3.0.0",
 		"ky": "^1.8.2",
 		"p-queue": "^8.1.0"
 	}
