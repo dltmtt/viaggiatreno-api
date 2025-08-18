@@ -1,0 +1,19 @@
+{
+	"name": "viaggiatreno-api",
+	"version": "1.0.0",
+	"description": "Command-line tools for interacting with the ViaggiaTreno API.",
+	"main": "src/index.js",
+	"type": "module",
+	"bin": {
+		"vt-api": "./src/index.js"
+	},
+	"engines": {
+		"bun": ">=1.0.0"
+	},
+	"author": "Matteo Delton",
+	"dependencies": {
+		"commander": "^14.0.0",
+		"ky": "^1.8.2",
+		"p-queue": "^8.1.0"
+	}
+}
