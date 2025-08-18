@@ -105,16 +105,18 @@
       "maximum": 180.0
     },
     "latMappaCitta": {
-      "$comment": "Sempre a 0.0 tranne per l'AV di Reggio Emilia (codice S05254).",
+      "$comment": "Sempre a 0 tranne per l'AV di Reggio Emilia (codice S05254).",
       "type": "number",
       "minimum": -90.0,
-      "maximum": 90.0
+      "maximum": 90.0,
+      "default": 0
     },
     "lonMappaCitta": {
-      "$comment": "Sempre a 0.0 tranne per l'AV di Reggio Emilia.",
+      "$comment": "Sempre a 0 tranne per l'AV di Reggio Emilia.",
       "type": "number",
       "minimum": -180.0,
-      "maximum": 180.0
+      "maximum": 180.0,
+      "default": 0
     },
     "localita": {
       "type": ["object", "null"],
