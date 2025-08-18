@@ -27,7 +27,7 @@ Una volta ottenuto il codice della stazione, è possibile chiamare `partenze` o 
 
 ### CLI
 
-È disponibile un'interfaccia a riga di comando (CLI) che fornisce accesso semplificato agli endpoint documentati. La CLI è accessibile tramite il comando `vt-api` dopo l'installazione del package, oppure tramite `uv run vt-api` per eseguirla direttamente senza installazione.
+È disponibile un'interfaccia a riga di comando (CLI) che fornisce accesso semplificato agli endpoint documentati.
 
 #### Caratteristiche principali
 
@@ -41,52 +41,52 @@ Una volta ottenuto il codice della stazione, è possibile chiamare `partenze` o 
 
 ```bash
 # Cerca stazioni
-uv run vt-api autocompletaStazione "Milano"
-uv run vt-api autocompletaStazioneNTS "Venezia"
-uv run vt-api cercaStazione "Roma"
+vt-api autocompletaStazione "Milano"
+vt-api autocompletaStazioneNTS "Venezia"
+vt-api cercaStazione "Roma"
 
 # Partenze da/arrivi a una stazione (accetta sia nomi che codici stazione)
-uv run vt-api partenze S01700
-uv run vt-api arrivi "Roma Termini"
+vt-api partenze S01700
+vt-api arrivi "Roma Termini"
 
 # Salva output su file
-uv run vt-api partenze "Milano Centrale" > partenze.json
+vt-api partenze "Milano Centrale" > partenze.json
 
 # Specifica data e ora (default: adesso)
-uv run vt-api partenze "Tortona" --datetime 2025-08-02T15:30:00
+vt-api partenze "Tortona" --datetime 2025-08-02T15:30:00
 
 # Andamento di un treno (recupera stazione e data di partenza in automatico)
-uv run vt-api andamentoTreno 9685
+vt-api andamentoTreno 9685
 
 # Andamento con parametri specifici (accetta sia nomi che codici stazione)
-uv run vt-api andamentoTreno 3041 --departure-station "Milano Centrale" --date 2025-08-02
-uv run vt-api andamentoTreno 3041 --departure-station S01700 --date 2025-08-02
+vt-api andamentoTreno 3041 --departure-station "Milano Centrale" --date 2025-08-02
+vt-api andamentoTreno 3041 --departure-station S01700 --date 2025-08-02
 
 # Stampa tutti i dati di cercaStazione
-uv run vt-api cercaStazione --all
+vt-api cercaStazione --all
 
 # Trova la regione di una stazione
-uv run vt-api regione "Milano Centrale"
-uv run vt-api regione S01700
+vt-api regione "Milano Centrale"
+vt-api regione S01700
 
 # Mostra la tabella dei codici regione
-uv run vt-api regione --table
+vt-api regione --table
 
 # Elenco stazioni in una regione (es. Lombardia)
-uv run vt-api elencoStazioni 1
+vt-api elencoStazioni 1
 
 # Mostra i dettagli di una stazione recuperando codice stazione e codice regione in automatico
-uv run vt-api dettaglioStazione "Milano Centrale"
+vt-api dettaglioStazione "Milano Centrale"
 
 # Mostra i dettagli di un treno
-uv run vt-api cercaNumeroTreno 711
+vt-api cercaNumeroTreno 711
 
 # Mostra i treni compatibili con un certo numero treno
-uv run vt-api cercaNumeroTrenoTrenoAutocomplete 711
+vt-api cercaNumeroTrenoTrenoAutocomplete 711
 
 # Scarica partenze/arrivi per tutte le stazioni
-uv run vt-api partenze --all
-uv run vt-api arrivi --all --output tmp
+vt-api partenze --all
+vt-api arrivi --all --output tmp
 ```
 
 ## Documentazione degli endpoint
