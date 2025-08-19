@@ -70,6 +70,45 @@ export async function cercaStazione(prefix, all) {
 }
 
 /**
+ * Fetch data from any autocomplete endpoint for all letters A-Z
+ *
+ * @param {string} endpointName - The API endpoint name to use
+ * @returns {Promise<string>} Raw response text from all letters combined
+ */
+async function fetchAllFromEndpoint(endpointName) {
+	const alphabet = [..."ABCDEFGHIJKLMNOPQRSTUVWXYZ"];
+	const tasks = alphabet.map(
+		(letter) => () => api.get(`${endpointName}/${letter}`).text(),
+	);
+
+	const results = await queue.addAll(tasks);
+	return results
+		.filter(Boolean)
+		.join("\n")
+		.split("\n")
+		.filter((line) => line.trim() !== "")
+		.join("\n");
+}
+
+/**
+ * Fetch all station codes from the autocompletaStazione API
+ * This function fetches station data for all letters A-Z and parses it into an array
+ *
+ * @returns {Promise<Array<Array<string>>>} Array of station data [name, code] pairs
+ */
+export async function fetchAllStationCodes() {
+	const stationText = await fetchAllFromEndpoint("autocompletaStazione");
+
+	// Parse the CSV-like format: "STATION_NAME|STATION_CODE"
+	const stations = stationText
+		.split("\n")
+		.map((line) => line.split("|"))
+		.filter((parts) => parts.length === 2);
+
+	return stations;
+}
+
+/**
  * Autocomplete station search using various API endpoints
  *
  * @param {string} endpointName - The API endpoint name to use for autocomplete
@@ -77,21 +116,9 @@ export async function cercaStazione(prefix, all) {
  * @param {boolean} all - If true, fetches all stations (A-Z) using the specified endpoint
  * @throws {Error} If no prefix is provided and all is false, or if no stations are found
  */
-// Consolidated autocomplete station handler for all endpoint variants
 export async function autocompleteStation(endpointName, prefix, all) {
 	if (all) {
-		const alphabet = [..."ABCDEFGHIJKLMNOPQRSTUVWXYZ"];
-		const tasks = alphabet.map(
-			(letter) => () => api.get(`${endpointName}/${letter}`).text(),
-		);
-
-		const results = await queue.addAll(tasks);
-		const stations = results
-			.filter(Boolean)
-			.join("\n")
-			.split("\n")
-			.filter((line) => line.trim() !== "")
-			.join("\n");
+		const stations = await fetchAllFromEndpoint(endpointName);
 		console.log(stations);
 		return;
 	}

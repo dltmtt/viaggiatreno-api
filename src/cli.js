@@ -134,11 +134,6 @@ export function setupCLI() {
 			Temporal.Now.zonedDateTimeISO("Europe/Rome"),
 		)
 		.option("-a, --all", "Process all stations")
-		.option(
-			"-r, --read-from <file>",
-			"CSV file to read stations from",
-			CONFIG.DEFAULT_STATIONS_FILE,
-		)
 		.option("-o, --output <dir>", "Output directory", CONFIG.DEFAULT_OUTPUT_DIR)
 		.action((station, options) => {
 			validateMutuallyExclusive(
@@ -147,13 +142,7 @@ export function setupCLI() {
 				"station argument",
 				"--all option",
 			);
-			commands.partenze(
-				station,
-				options.datetime,
-				options.all,
-				options.readFrom,
-				options.output,
-			);
+			commands.partenze(station, options.datetime, options.all, options.output);
 		});
 
 	// arrivi command
@@ -168,11 +157,6 @@ export function setupCLI() {
 			Temporal.Now.zonedDateTimeISO("Europe/Rome"),
 		)
 		.option("-a, --all", "Process all stations")
-		.option(
-			"-r, --read-from <file>",
-			"CSV file to read stations from",
-			CONFIG.DEFAULT_STATIONS_FILE,
-		)
 		.option("-o, --output <dir>", "Output directory", CONFIG.DEFAULT_OUTPUT_DIR)
 		.action((station, options) => {
 			validateMutuallyExclusive(
@@ -181,13 +165,7 @@ export function setupCLI() {
 				"station argument",
 				"--all option",
 			);
-			commands.arrivi(
-				station,
-				options.datetime,
-				options.all,
-				options.readFrom,
-				options.output,
-			);
+			commands.arrivi(station, options.datetime, options.all, options.output);
 		});
 
 	// andamentoTreno command
@@ -225,18 +203,12 @@ export function setupCLI() {
 			(value) => Temporal.ZonedDateTime.from(value),
 			Temporal.Now.zonedDateTimeISO("Europe/Rome"),
 		)
-		.option(
-			"-r, --read-from <file>",
-			"CSV file to read stations from (for dynamic dump)",
-			CONFIG.DEFAULT_STATIONS_FILE,
-		)
 		.option("-o, --output <dir>", "Output directory", CONFIG.DEFAULT_OUTPUT_DIR)
 		.action((options) => {
 			commands.dump(
 				options.dynamic,
 				options.static,
 				options.datetime,
-				options.readFrom,
 				options.output,
 			);
 		});

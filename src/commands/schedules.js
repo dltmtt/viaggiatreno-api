@@ -5,7 +5,8 @@
 import { join } from "node:path";
 import { api, queue } from "../api.js";
 import { resolveStationCode } from "../resolvers.js";
-import { ProgressBar, parseCSV } from "../utils.js";
+import { ProgressBar } from "../utils.js";
+import { fetchAllStationCodes } from "./stations.js";
 
 /**
  * Get departure schedule data for a station
@@ -13,11 +14,10 @@ import { ProgressBar, parseCSV } from "../utils.js";
  * @param {string} station - The station name or code
  * @param {Temporal.ZonedDateTime} dateTime - The date and time to search for departures
  * @param {boolean} all - If true, get departures for all stations
- * @param {string} readFrom - File path to read station data from (when using --all)
  * @param {string} output - Output directory for saving results
  */
-export function partenze(station, dateTime, all, readFrom, output) {
-	return scheduleData("partenze", station, dateTime, all, readFrom, output);
+export function partenze(station, dateTime, all, output) {
+	return scheduleData("partenze", station, dateTime, all, output);
 }
 
 /**
@@ -26,11 +26,10 @@ export function partenze(station, dateTime, all, readFrom, output) {
  * @param {string} station - The station name or code
  * @param {Temporal.ZonedDateTime} dateTime - The date and time to search for arrivals
  * @param {boolean} all - If true, get arrivals for all stations
- * @param {string} readFrom - File path to read station data from (when using --all)
  * @param {string} output - Output directory for saving results
  */
-export function arrivi(station, dateTime, all, readFrom, output) {
-	return scheduleData("arrivi", station, dateTime, all, readFrom, output);
+export function arrivi(station, dateTime, all, output) {
+	return scheduleData("arrivi", station, dateTime, all, output);
 }
 
 /**
@@ -40,20 +39,12 @@ export function arrivi(station, dateTime, all, readFrom, output) {
  * @param {string} station - The station name or code
  * @param {Temporal.ZonedDateTime} dateTime - The date and time to search
  * @param {boolean} all - If true, get data for all stations
- * @param {string} readFrom - File path to read station data from (when using --all)
  * @param {string} output - Output directory for saving results
  * @throws {Error} If station is not provided when not using --all
  */
-export async function scheduleData(
-	endpoint,
-	station,
-	dateTime,
-	all,
-	readFrom,
-	output,
-) {
+export async function scheduleData(endpoint, station, dateTime, all, output) {
 	if (all) {
-		return partenzeArriviAll(endpoint, readFrom, dateTime, output);
+		return partenzeArriviAll(endpoint, dateTime, output);
 	}
 
 	if (!station) {
@@ -76,21 +67,19 @@ export async function scheduleData(
 }
 
 /**
- * Get departure or arrival data for all stations from a CSV file
+ * Get departure or arrival data for all stations using API
  *
  * @param {string} endpoint - The API endpoint to call ('partenze' or 'arrivi')
- * @param {string} readFrom - File path to read station data from
  * @param {Temporal.ZonedDateTime} dateTime - The date and time to search
  * @param {string} output - Output directory for saving results
  * @returns {Promise<Array>} Array of all train data collected
  */
-export async function partenzeArriviAll(endpoint, readFrom, dateTime, output) {
+export async function partenzeArriviAll(endpoint, dateTime, output) {
 	const outputPath = join(output, endpoint);
 
-	console.info(`Loading station data from ${readFrom}...`);
+	console.info("Fetching station data from API...");
 
-	const stationData = await Bun.file(readFrom).text();
-	const stations = parseCSV(stationData, "|");
+	const stations = await fetchAllStationCodes();
 
 	console.info(`Processing all ${stations.length} stations for ${endpoint}...`);
 

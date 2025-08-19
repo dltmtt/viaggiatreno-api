@@ -11,7 +11,6 @@ const paths = envPaths("vt-api", { suffix: "" });
 export const CONFIG = {
 	MAX_RESULTS_TO_SHOW: 10,
 	DEFAULT_OUTPUT_DIR: join(paths.data, "dumps"),
-	DEFAULT_STATIONS_FILE: join(paths.data, "dumps", "autocompletaStazione.csv"),
 };
 
 export const REGIONS = {

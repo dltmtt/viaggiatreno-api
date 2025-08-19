@@ -16,25 +16,14 @@ import {
  * This function fetches departures, arrivals, and train status for all stations
  *
  * @param {Temporal.ZonedDateTime} dateTime - The date and time to search for train data
- * @param {string} readFrom - File path to read station data from
  * @param {string} output - Output directory for saving results
  */
-export async function dynamicDump(dateTime, readFrom, output) {
+export async function dynamicDump(dateTime, output) {
 	console.info("Fetching departures for all stations...");
-	const departures = await partenzeArriviAll(
-		"partenze",
-		readFrom,
-		dateTime,
-		output,
-	);
+	const departures = await partenzeArriviAll("partenze", dateTime, output);
 
 	console.info("Fetching arrivals for all stations...");
-	const arrivals = await partenzeArriviAll(
-		"arrivi",
-		readFrom,
-		dateTime,
-		output,
-	);
+	const arrivals = await partenzeArriviAll("arrivi", dateTime, output);
 
 	// Extract train information
 	const trains = new Set();
@@ -127,14 +116,13 @@ export async function staticDump(output) {
  * @param {boolean} isDynamic - If true, performs dynamic dump
  * @param {boolean} isStatic - If true, performs static dump
  * @param {Temporal.ZonedDateTime} dateTime - The date and time to search (for dynamic dump)
- * @param {string} readFrom - File path to read station data from (for dynamic dump)
  * @param {string} output - Output directory for saving results
  */
-export async function dump(isDynamic, isStatic, dateTime, readFrom, output) {
+export async function dump(isDynamic, isStatic, dateTime, output) {
 	if (!isDynamic && !isStatic) {
 		throw new Error("Either --dynamic or --static option must be specified");
 	}
 
-	if (isDynamic) await dynamicDump(dateTime, readFrom, output);
+	if (isDynamic) await dynamicDump(dateTime, output);
 	if (isStatic) await staticDump(output);
 }
