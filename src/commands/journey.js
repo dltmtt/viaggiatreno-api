@@ -5,7 +5,7 @@
 import { join } from "node:path";
 import { api, queue } from "../api.js";
 import { resolveStationCode, resolveTrainDetails } from "../resolvers.js";
-import { ProgressBar, saveJsonToFile } from "../utils.js";
+import { ProgressBar } from "../utils.js";
 
 /**
  * Get real-time status and journey information for a specific train
@@ -78,9 +78,7 @@ export async function andamentoTrenoBulk(trains, output) {
 			.toPlainDate()
 			.toString();
 		const filename = `${trainNumber}_${stationCode}_${humanReadableDate}@${now.day}T${now.hour}:${now.minute}_andamentoTreno.json`;
-		const filePath = join(outputPath, filename);
-
-		saveJsonToFile(result, filePath);
+		Bun.write(join(outputPath, filename), JSON.stringify(result, null, 2));
 		stats.saved++;
 	};
 

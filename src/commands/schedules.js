@@ -2,11 +2,10 @@
  * Schedule data commands (arrivals and departures)
  */
 
-import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { api, queue } from "../api.js";
 import { resolveStationCode } from "../resolvers.js";
-import { ProgressBar, parseCSV, saveJsonToFile } from "../utils.js";
+import { ProgressBar, parseCSV } from "../utils.js";
 
 /**
  * Get departure schedule data for a station
@@ -83,13 +82,14 @@ export async function scheduleData(
  * @param {string} readFrom - File path to read station data from
  * @param {Temporal.ZonedDateTime} dateTime - The date and time to search
  * @param {string} output - Output directory for saving results
+ * @returns {Promise<Array>} Array of all train data collected
  */
 export async function partenzeArriviAll(endpoint, readFrom, dateTime, output) {
 	const outputPath = join(output, endpoint);
 
 	console.info(`Loading station data from ${readFrom}...`);
 
-	const stationData = readFileSync(readFrom, "utf-8");
+	const stationData = await Bun.file(readFrom).text();
 	const stations = parseCSV(stationData, "|");
 
 	console.info(`Processing all ${stations.length} stations for ${endpoint}...`);
@@ -119,9 +119,8 @@ export async function partenzeArriviAll(endpoint, readFrom, dateTime, output) {
 			offset: "never",
 		});
 		const filename = `${stationCode}_${humanReadableDateTime}_${endpoint}.json`;
-		const filePath = join(outputPath, filename);
 
-		saveJsonToFile(trains, filePath);
+		Bun.write(join(outputPath, filename), JSON.stringify(trains, null, 2));
 		allTrains.push(...trains);
 		stats.saved++;
 

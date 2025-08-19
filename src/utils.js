@@ -2,9 +2,6 @@
  * Utility functions for the ViaggiaTreno API
  */
 
-import { mkdirSync, writeFileSync } from "node:fs";
-import { dirname } from "node:path";
-
 /**
  * Parse CSV with the specified delimiter
  *
@@ -30,36 +27,6 @@ export function parseCSV(csvText, delimiter = ",") {
 export function validateMutuallyExclusive(arg1, arg2, name1, name2) {
 	if (arg1 && arg2) {
 		throw new Error(`Cannot specify both ${name1} and ${name2}`);
-	}
-}
-
-/**
- * Save JSON data to file
- *
- * @param {any} data The data to save
- * @param {string} filePath The path to the file where the data should be saved
- */
-export function saveJsonToFile(data, filePath) {
-	try {
-		mkdirSync(dirname(filePath), { recursive: true });
-		writeFileSync(filePath, JSON.stringify(data, null, 2));
-	} catch (error) {
-		console.error(`Error saving file ${filePath}:`, error.message);
-	}
-}
-
-/**
- * Save text data to file
- *
- * @param {string} data The text data to save
- * @param {string} filePath The path to the file where the data should be saved
- */
-export function saveTextToFile(data, filePath) {
-	try {
-		mkdirSync(dirname(filePath), { recursive: true });
-		writeFileSync(filePath, data);
-	} catch (error) {
-		console.error(`Error saving file ${filePath}:`, error.message);
 	}
 }
 
