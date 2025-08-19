@@ -130,8 +130,8 @@ export function setupCLI() {
 		.option(
 			"--datetime <datetime>",
 			"Search date and time",
-			(value) => new Date(value),
-			new Date(),
+			(value) => Temporal.ZonedDateTime.from(value),
+			Temporal.Now.zonedDateTimeISO("Europe/Rome"),
 		)
 		.option("-a, --all", "Process all stations")
 		.option(
@@ -164,8 +164,8 @@ export function setupCLI() {
 		.option(
 			"--datetime <datetime>",
 			"Search date and time",
-			(value) => new Date(value),
-			new Date(),
+			(value) => Temporal.ZonedDateTime.from(value),
+			Temporal.Now.zonedDateTimeISO("Europe/Rome"),
 		)
 		.option("-a, --all", "Process all stations")
 		.option(
@@ -199,7 +199,9 @@ export function setupCLI() {
 			"-s, --departure-station <station>",
 			"Departure station name or code",
 		)
-		.option("--date <date>", "Departure date", (value) => new Date(value))
+		.option("--date <date>", "Departure date", (value) =>
+			Temporal.PlainDate.from(value),
+		)
 		.action((trainNumber, options) => {
 			commands.andamentoTreno(
 				trainNumber,
@@ -220,8 +222,8 @@ export function setupCLI() {
 		.option(
 			"--datetime <datetime>",
 			"Search date and time (for dynamic dump)",
-			(value) => new Date(value),
-			new Date(),
+			(value) => Temporal.ZonedDateTime.from(value),
+			Temporal.Now.zonedDateTimeISO("Europe/Rome"),
 		)
 		.option(
 			"-r, --read-from <file>",

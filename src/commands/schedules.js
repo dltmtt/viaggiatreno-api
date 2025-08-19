@@ -12,33 +12,26 @@ import { ProgressBar, parseCSV, saveJsonToFile } from "../utils.js";
  * Get departure schedule data for a station
  *
  * @param {string} station - The station name or code
- * @param {Date} searchDateTime - The date and time to search for departures
+ * @param {Temporal.ZonedDateTime} dateTime - The date and time to search for departures
  * @param {boolean} all - If true, get departures for all stations
  * @param {string} readFrom - File path to read station data from (when using --all)
  * @param {string} output - Output directory for saving results
  */
-export function partenze(station, searchDateTime, all, readFrom, output) {
-	return scheduleData(
-		"partenze",
-		station,
-		searchDateTime,
-		all,
-		readFrom,
-		output,
-	);
+export function partenze(station, dateTime, all, readFrom, output) {
+	return scheduleData("partenze", station, dateTime, all, readFrom, output);
 }
 
 /**
  * Get arrival schedule data for a station
  *
  * @param {string} station - The station name or code
- * @param {Date} searchDateTime - The date and time to search for arrivals
+ * @param {Temporal.ZonedDateTime} dateTime - The date and time to search for arrivals
  * @param {boolean} all - If true, get arrivals for all stations
  * @param {string} readFrom - File path to read station data from (when using --all)
  * @param {string} output - Output directory for saving results
  */
-export function arrivi(station, searchDateTime, all, readFrom, output) {
-	return scheduleData("arrivi", station, searchDateTime, all, readFrom, output);
+export function arrivi(station, dateTime, all, readFrom, output) {
+	return scheduleData("arrivi", station, dateTime, all, readFrom, output);
 }
 
 /**
@@ -46,7 +39,7 @@ export function arrivi(station, searchDateTime, all, readFrom, output) {
  *
  * @param {string} endpoint - The API endpoint to call ('partenze' or 'arrivi')
  * @param {string} station - The station name or code
- * @param {Date} searchDateTime - The date and time to search
+ * @param {Temporal.ZonedDateTime} dateTime - The date and time to search
  * @param {boolean} all - If true, get data for all stations
  * @param {string} readFrom - File path to read station data from (when using --all)
  * @param {string} output - Output directory for saving results
@@ -55,13 +48,13 @@ export function arrivi(station, searchDateTime, all, readFrom, output) {
 export async function scheduleData(
 	endpoint,
 	station,
-	searchDateTime,
+	dateTime,
 	all,
 	readFrom,
 	output,
 ) {
 	if (all) {
-		return partenzeArriviAll(endpoint, readFrom, searchDateTime, output);
+		return partenzeArriviAll(endpoint, readFrom, dateTime, output);
 	}
 
 	if (!station) {
@@ -69,9 +62,9 @@ export async function scheduleData(
 	}
 
 	const stationCode = await resolveStationCode(station);
-	const formattedDateTime = searchDateTime.toUTCString();
+	const rfc7231DateTime = new Date(dateTime.epochMilliseconds).toUTCString();
 	const res = await api
-		.get(`${endpoint}/${stationCode}/${formattedDateTime}`)
+		.get(`${endpoint}/${stationCode}/${rfc7231DateTime}`)
 		.json();
 
 	if (!res || res.length === 0) {
@@ -88,15 +81,10 @@ export async function scheduleData(
  *
  * @param {string} endpoint - The API endpoint to call ('partenze' or 'arrivi')
  * @param {string} readFrom - File path to read station data from
- * @param {Date} searchDateTime - The date and time to search
+ * @param {Temporal.ZonedDateTime} dateTime - The date and time to search
  * @param {string} output - Output directory for saving results
  */
-export async function partenzeArriviAll(
-	endpoint,
-	readFrom,
-	searchDateTime,
-	output,
-) {
+export async function partenzeArriviAll(endpoint, readFrom, dateTime, output) {
 	const outputPath = join(output, endpoint);
 
 	console.info(`Loading station data from ${readFrom}...`);
@@ -106,7 +94,7 @@ export async function partenzeArriviAll(
 
 	console.info(`Processing all ${stations.length} stations for ${endpoint}...`);
 
-	const formattedDateTime = searchDateTime.toUTCString();
+	const rfc7231DateTime = new Date(dateTime.epochMilliseconds).toUTCString();
 	const stats = { saved: 0, empty: 0 };
 	const allTrains = [];
 
@@ -115,7 +103,7 @@ export async function partenzeArriviAll(
 	const fetchStationData = (station) => async () => {
 		const stationCode = station[1];
 		const trains = await api
-			.get(`${endpoint}/${stationCode}/${formattedDateTime}`)
+			.get(`${endpoint}/${stationCode}/${rfc7231DateTime}`)
 			.json();
 		progressBar.update();
 
@@ -124,8 +112,13 @@ export async function partenzeArriviAll(
 			return [];
 		}
 
-		const humanReadableDate = searchDateTime.toISOString().split(".")[0];
-		const filename = `${stationCode}_${humanReadableDate}_${endpoint}.json`;
+		// This is implicitly in Rome timezone
+		const humanReadableDateTime = dateTime.toString({
+			smallestUnit: "second",
+			timeZoneName: "never",
+			offset: "never",
+		});
+		const filename = `${stationCode}_${humanReadableDateTime}_${endpoint}.json`;
 		const filePath = join(outputPath, filename);
 
 		saveJsonToFile(trains, filePath);

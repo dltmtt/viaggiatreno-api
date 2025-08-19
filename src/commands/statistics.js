@@ -10,7 +10,7 @@ import { api } from "../api.js";
  * @returns {Promise<void>} Logs the API statistics as JSON
  */
 export async function statistiche() {
-	const nowMs = Date.now();
+	const nowMs = Temporal.Now.instant().epochMilliseconds;
 	const res = await api.get(`statistiche/${nowMs}`).json();
 	console.log(JSON.stringify(res, null, 2));
 }

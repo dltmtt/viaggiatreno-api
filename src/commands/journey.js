@@ -12,7 +12,7 @@ import { ProgressBar, saveJsonToFile } from "../utils.js";
  *
  * @param {string|number} trainNumber - The train number to track
  * @param {string} departureStation - The departure station code or name (optional)
- * @param {Date} departureDate - The departure date (optional)
+ * @param {Temporal.PlainDate} departureDate - The departure date (optional)
  */
 export async function andamentoTreno(
 	trainNumber,
@@ -25,14 +25,16 @@ export async function andamentoTreno(
 		departureStation = await resolveStationCode(departureStation);
 	}
 
-	const departureDateMs = departureDate.getTime();
+	const departureDateMs = departureDate
+		.toPlainDateTime({ hour: 0, minute: 0, second: 0 })
+		.toZonedDateTime("Europe/Rome").epochMilliseconds;
 	const res = await api
 		.get(`andamentoTreno/${departureStation}/${trainNumber}/${departureDateMs}`)
 		.json();
 
 	if (!res) {
 		console.warn(
-			`No results found for train ${trainNumber} departing from ${departureStation} on ${departureDate.toDateString()}.`,
+			`No results found for train ${trainNumber} departing from ${departureStation} on ${departureDate.toString()}.`,
 		);
 		return;
 	}
@@ -43,7 +45,7 @@ export async function andamentoTreno(
 /**
  * Bulk processing of andamentoTreno data for multiple trains
  *
- * @param {Array<Array>} trains - Array of train data [trainNumber, stationCode, departureDateMs]
+ * @param {[number, string, Temporal.PlainDate]} trains - Triple containing [trainNumber, stationCode, departureDate]
  * @param {string} output - Output directory path for saving results
  */
 export async function andamentoTrenoBulk(trains, output) {
@@ -53,7 +55,7 @@ export async function andamentoTrenoBulk(trains, output) {
 
 	const outputPath = join(output, "andamentoTreno");
 	const stats = { saved: 0, empty: 0 };
-	const now = new Date().toISOString();
+	const now = Temporal.Now.zonedDateTimeISO("Europe/Rome");
 
 	const progressBar = new ProgressBar(trains.length);
 
@@ -69,10 +71,13 @@ export async function andamentoTrenoBulk(trains, output) {
 			return;
 		}
 
-		const humanReadableDate = new Date(Number(departureDateMs))
-			.toISOString()
-			.split("T")[0];
-		const filename = `${trainNumber}_${stationCode}_${humanReadableDate}_${now}_andamentoTreno.json`;
+		const humanReadableDate = Temporal.Instant.fromEpochMilliseconds(
+			departureDateMs,
+		)
+			.toZonedDateTimeISO("Europe/Rome")
+			.toPlainDate()
+			.toString();
+		const filename = `${trainNumber}_${stationCode}_${humanReadableDate}@${now.day}T${now.hour}:${now.minute}_andamentoTreno.json`;
 		const filePath = join(outputPath, filename);
 
 		saveJsonToFile(result, filePath);

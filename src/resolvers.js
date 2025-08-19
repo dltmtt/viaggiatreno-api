@@ -68,7 +68,7 @@ export async function resolveStationCode(stationInput) {
  * and departure dates for a given train number.
  *
  * @param {string} trainNumber The train number to resolve
- * @returns {Promise<Array<string>>} A promise that resolves to an array containing the departure station code and the departure date associated with the train number
+ * @returns {Promise<[string, Temporal.PlainDate]>} A promise that resolves to a tuple containing the departure station code and the departure date associated with the train number
  * @throws {Error} If no matching train is found
  */
 export async function resolveTrainDetails(trainNumber) {
@@ -88,10 +88,14 @@ export async function resolveTrainDetails(trainNumber) {
 		const stationName = humanReadablePart.split(" - ")[1];
 		const stationCode = machineReadablePart.split("-")[1];
 		const departureDateMs = Number(machineReadablePart.split("-")[2]);
-		const departureDate = new Date(departureDateMs);
+		const departureDate = Temporal.Instant.fromEpochMilliseconds(
+			departureDateMs,
+		)
+			.toZonedDateTimeISO("Europe/Rome")
+			.toPlainDate();
 
 		console.info(
-			`Using train: ${trainNumber} departing from ${stationName} (${stationCode}) on ${departureDate.toDateString()}.`,
+			`Using train: ${trainNumber} departing from ${stationName} (${stationCode}) on ${departureDate.toString()}.`,
 		);
 
 		return [stationCode, departureDate];
@@ -108,10 +112,14 @@ export async function resolveTrainDetails(trainNumber) {
 		const stationName = humanReadablePart.split(" - ")[1];
 		const stationCode = machineReadablePart.split("-")[1];
 		const departureDateMs = Number(machineReadablePart.split("-")[2]);
-		const departureDate = new Date(departureDateMs);
+		const departureDate = Temporal.Instant.fromEpochMilliseconds(
+			departureDateMs,
+		)
+			.toZonedDateTimeISO("Europe/Rome")
+			.toPlainDate();
 
 		console.log(
-			`  ${i + 1}. Train ${trainNumber} departing from ${stationName} (${stationCode}) on ${departureDate.toDateString()}.`,
+			`  ${i + 1}. Train ${trainNumber} departing from ${stationName} (${stationCode}) on ${departureDate.toString()}.`,
 		);
 	}
 
@@ -131,10 +139,12 @@ export async function resolveTrainDetails(trainNumber) {
 	const stationName = humanReadablePart.split(" - ")[1];
 	const stationCode = machineReadablePart.split("-")[1];
 	const departureDateMs = Number(machineReadablePart.split("-")[2]);
-	const departureDate = new Date(departureDateMs);
+	const departureDate = Temporal.Instant.fromEpochMilliseconds(departureDateMs)
+		.toZonedDateTimeISO("Europe/Rome")
+		.toPlainDate();
 
 	console.info(
-		`Selected: Train ${trainNumber} departing from ${stationName} (${stationCode}) on ${departureDate.toDateString()}.`,
+		`Selected: Train ${trainNumber} departing from ${stationName} (${stationCode}) on ${departureDate.toString()}.`,
 	);
 
 	// Return the details of the selected train

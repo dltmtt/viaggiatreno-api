@@ -24,11 +24,11 @@ import {
  *
  * @param {string} endpoint - The API endpoint to call ('partenze' or 'arrivi')
  * @param {string} readFrom - File path to read station data from
- * @param {Date} searchDateTime - The date and time to search
+ * @param {Temporal.ZonedDateTime} dateTime - The date and time to search
  * @param {string} output - Output directory for saving results
  * @returns {Promise<Array>} Array of all train data collected
  */
-async function partenzeArriviAll(endpoint, readFrom, searchDateTime, output) {
+async function partenzeArriviAll(endpoint, readFrom, dateTime, output) {
 	const outputPath = join(output, endpoint);
 
 	console.info(`Loading station data from ${readFrom}...`);
@@ -38,7 +38,7 @@ async function partenzeArriviAll(endpoint, readFrom, searchDateTime, output) {
 
 	console.info(`Processing all ${stations.length} stations for ${endpoint}...`);
 
-	const formattedDateTime = searchDateTime.toUTCString();
+	const formattedDateTime = new Date(dateTime.epochMilliseconds).toUTCString();
 	const stats = { saved: 0, empty: 0 };
 	const allTrains = [];
 
@@ -56,8 +56,13 @@ async function partenzeArriviAll(endpoint, readFrom, searchDateTime, output) {
 			return [];
 		}
 
-		const humanReadableDate = searchDateTime.toISOString().split(".")[0];
-		const filename = `${stationCode}_${humanReadableDate}_${endpoint}.json`;
+		// This is implicitly in Rome timezone
+		const humanReadableDateTime = dateTime.toString({
+			smallestUnit: "second",
+			timeZoneName: "never",
+			offset: "never",
+		});
+		const filename = `${stationCode}_${humanReadableDateTime}_${endpoint}.json`;
 		const filePath = join(outputPath, filename);
 
 		saveJsonToFile(trains, filePath);
@@ -82,16 +87,16 @@ async function partenzeArriviAll(endpoint, readFrom, searchDateTime, output) {
  * Dynamic dump process that collects comprehensive train and station data
  * This function fetches departures, arrivals, and train status for all stations
  *
- * @param {Date} searchDateTime - The date and time to search for train data
+ * @param {Temporal.ZonedDateTime} dateTime - The date and time to search for train data
  * @param {string} readFrom - File path to read station data from
  * @param {string} output - Output directory for saving results
  */
-export async function dynamicDump(searchDateTime, readFrom, output) {
+export async function dynamicDump(dateTime, readFrom, output) {
 	console.info("Fetching departures for all stations...");
 	const departures = await partenzeArriviAll(
 		"partenze",
 		readFrom,
-		searchDateTime,
+		dateTime,
 		output,
 	);
 
@@ -99,7 +104,7 @@ export async function dynamicDump(searchDateTime, readFrom, output) {
 	const arrivals = await partenzeArriviAll(
 		"arrivi",
 		readFrom,
-		searchDateTime,
+		dateTime,
 		output,
 	);
 
@@ -202,21 +207,15 @@ export async function staticDump(output) {
  *
  * @param {boolean} isDynamic - If true, performs dynamic dump
  * @param {boolean} isStatic - If true, performs static dump
- * @param {Date} searchDateTime - The date and time to search (for dynamic dump)
+ * @param {Temporal.ZonedDateTime} dateTime - The date and time to search (for dynamic dump)
  * @param {string} readFrom - File path to read station data from (for dynamic dump)
  * @param {string} output - Output directory for saving results
  */
-export async function dump(
-	isDynamic,
-	isStatic,
-	searchDateTime,
-	readFrom,
-	output,
-) {
+export async function dump(isDynamic, isStatic, dateTime, readFrom, output) {
 	if (!isDynamic && !isStatic) {
 		throw new Error("Either --dynamic or --static option must be specified");
 	}
 
-	if (isDynamic) await dynamicDump(searchDateTime, readFrom, output);
+	if (isDynamic) await dynamicDump(dateTime, readFrom, output);
 	if (isStatic) await staticDump(output);
 }
