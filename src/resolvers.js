@@ -3,8 +3,9 @@
  */
 
 import { api } from "./api.js";
-import { CONFIG } from "./config.js";
 import { parseCSV } from "./utils.js";
+
+const MAX_RESULTS_TO_SHOW = 10;
 
 /**
  * Resolve station input to station code
@@ -35,17 +36,13 @@ export async function resolveStationCode(stationInput) {
 
 	// If there are multiple stations, show options
 	console.log(`Multiple stations found matching '${stationInput}':`);
-	for (
-		let i = 0;
-		i < Math.min(stations.length, CONFIG.MAX_RESULTS_TO_SHOW);
-		i++
-	) {
+	for (let i = 0; i < Math.min(stations.length, MAX_RESULTS_TO_SHOW); i++) {
 		const [stationName, stationCode] = stations[i];
 		console.log(`  ${i + 1}. ${stationName} (${stationCode})`);
 	}
 
-	if (stations.length > CONFIG.MAX_RESULTS_TO_SHOW) {
-		const remaining = stations.length - CONFIG.MAX_RESULTS_TO_SHOW;
+	if (stations.length > MAX_RESULTS_TO_SHOW) {
+		const remaining = stations.length - MAX_RESULTS_TO_SHOW;
 		console.log(`  ...and ${remaining} more results.`);
 	}
 
@@ -103,11 +100,7 @@ export async function resolveTrainDetails(trainNumber) {
 
 	// If multiple trains share the same number, show options
 	console.log(`Multiple trains found with number ${trainNumber}:`);
-	for (
-		let i = 0;
-		i < Math.min(trains.length, CONFIG.MAX_RESULTS_TO_SHOW);
-		i++
-	) {
+	for (let i = 0; i < Math.min(trains.length, MAX_RESULTS_TO_SHOW); i++) {
 		const [humanReadablePart, machineReadablePart] = trains[i];
 		const stationName = humanReadablePart.split(" - ")[1];
 		const stationCode = machineReadablePart.split("-")[1];
@@ -123,8 +116,8 @@ export async function resolveTrainDetails(trainNumber) {
 		);
 	}
 
-	if (trains.length > CONFIG.MAX_RESULTS_TO_SHOW) {
-		const remaining = trains.length - CONFIG.MAX_RESULTS_TO_SHOW;
+	if (trains.length > MAX_RESULTS_TO_SHOW) {
+		const remaining = trains.length - MAX_RESULTS_TO_SHOW;
 		console.log(`  ...and ${remaining} more results.`);
 	}
 

@@ -4,7 +4,6 @@
 
 import { Command } from "commander";
 import { commands } from "./commands/index.js";
-import { CONFIG } from "./config.js";
 import { validateMutuallyExclusive } from "./utils.js";
 
 /**
@@ -134,7 +133,7 @@ export function setupCLI() {
 			Temporal.Now.zonedDateTimeISO("Europe/Rome"),
 		)
 		.option("-a, --all", "Process all stations")
-		.option("-o, --output <dir>", "Output directory", CONFIG.DEFAULT_OUTPUT_DIR)
+		.option("-o, --output <dir>", "Output directory", process.cwd())
 		.action((station, options) => {
 			validateMutuallyExclusive(
 				station,
@@ -157,7 +156,7 @@ export function setupCLI() {
 			Temporal.Now.zonedDateTimeISO("Europe/Rome"),
 		)
 		.option("-a, --all", "Process all stations")
-		.option("-o, --output <dir>", "Output directory", CONFIG.DEFAULT_OUTPUT_DIR)
+		.option("-o, --output <dir>", "Output directory", process.cwd())
 		.action((station, options) => {
 			validateMutuallyExclusive(
 				station,
@@ -203,7 +202,7 @@ export function setupCLI() {
 			(value) => Temporal.ZonedDateTime.from(value),
 			Temporal.Now.zonedDateTimeISO("Europe/Rome"),
 		)
-		.option("-o, --output <dir>", "Output directory", CONFIG.DEFAULT_OUTPUT_DIR)
+		.option("-o, --output <dir>", "Output directory", process.cwd())
 		.action((options) => {
 			commands.dump(
 				options.dynamic,

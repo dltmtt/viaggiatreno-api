@@ -3,7 +3,7 @@
  */
 
 import { api, queue } from "../api.js";
-import { REGIONS } from "../config.js";
+import { REGIONS } from "./regions.js";
 
 /**
  * List stations by region or all stations
