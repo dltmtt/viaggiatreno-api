@@ -17,6 +17,9 @@ export const api = ky.create({
 		statusCodes: [403],
 		backoffLimit: 120_000,
 	},
+	headers: {
+		Accept: "application/json; charset=utf-8, text/*; charset=utf-8",
+	},
 });
 
 export const queue = new PQueue({
