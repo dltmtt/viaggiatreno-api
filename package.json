@@ -1,16 +1,35 @@
 {
 	"name": "viaggiatreno-api",
 	"version": "1.0.0",
-	"description": "Command-line tools for interacting with the ViaggiaTreno API.",
+	"description": "Strumenti per interagire con l'API di ViaggiaTreno.",
+	"keywords": [
+		"api",
+		"cli",
+		"orari",
+		"stazioni",
+		"treni",
+		"trenitalia",
+		"trenord",
+		"viaggiatreno"
+	],
+	"homepage": "https://github.com/dltmtt/viaggiatreno-api",
+	"bugs": {
+		"url": "https://github.com/dltmtt/viaggiatreno-api/issues",
+		"email": "deltonmatteo@gmail.com"
+	},
+	"author": "Matteo Delton <deltonmatteo@gmail.com>",
 	"main": "src/index.js",
 	"type": "module",
 	"bin": {
 		"vt-api": "./src/index.js"
 	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/dltmtt/viaggiatreno-api.git"
+	},
 	"engines": {
 		"bun": ">=1.0.0"
 	},
-	"author": "Matteo Delton",
 	"dependencies": {
 		"commander": "^14.0.0",
 		"ky": "^1.8.2",
