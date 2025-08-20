@@ -3,7 +3,7 @@
  */
 
 import { api, queue } from "../api.js";
-import { resolveStationCode } from "../resolvers.js";
+import { resolveStationCode } from "../utils.js";
 import { REGIONS } from "./regions.js";
 
 /**

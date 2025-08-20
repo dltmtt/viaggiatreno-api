@@ -4,8 +4,11 @@
 
 import { join } from "node:path";
 import { api, queue } from "../api.js";
-import { resolveStationCode, resolveTrainDetails } from "../resolvers.js";
-import { ProgressBar } from "../utils.js";
+import {
+	ProgressBar,
+	resolveStationCode,
+	resolveTrainDetails,
+} from "../utils.js";
 
 /**
  * Search for train numbers using autocomplete functionality

@@ -3,7 +3,7 @@
  */
 
 import { api } from "../api.js";
-import { resolveStationCode } from "../resolvers.js";
+import { resolveStationCode } from "../utils.js";
 
 export const REGIONS = {
 	0: "Italia",

@@ -40,5 +40,4 @@ if (import.meta.main) {
 export { setupCLI } from "./cli.js";
 export { commands } from "./commands/index.js";
 export { REGIONS } from "./commands/regions.js";
-export * from "./resolvers.js";
 export * from "./utils.js";

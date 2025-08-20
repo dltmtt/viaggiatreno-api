@@ -4,8 +4,7 @@
 
 import { join } from "node:path";
 import { api, queue } from "../api.js";
-import { resolveStationCode } from "../resolvers.js";
-import { ProgressBar } from "../utils.js";
+import { ProgressBar, resolveStationCode } from "../utils.js";
 import { fetchAllStationCodes } from "./stations.js";
 
 /**
