@@ -3,6 +3,7 @@
  */
 
 import { Command } from "commander";
+import data from "../package.json";
 import { commands } from "./commands/index.js";
 import { REGIONS } from "./commands/regions.js";
 
@@ -13,9 +14,9 @@ export function setupCLI() {
 	const program = new Command();
 
 	program
-		.name("vt-api")
-		.description("ViaggiaTreno API command-line utilities")
-		.version("1.0.0");
+		.name(Object.keys(data.bin)[0])
+		.description(data.description)
+		.version(data.version);
 
 	// statistiche command
 	program
