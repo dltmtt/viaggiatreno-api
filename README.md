@@ -572,6 +572,10 @@ Di seguito è riportata una tabella contente il significato presunto dei valori 
 | `VD`        | Variazione destinazione | Il treno arriva in una stazione diversa da quella programmata.                |
 | `VO`        | Variazione origine      | Il treno parte da una stazione diversa da quella programmata.                 |
 
+Come riportato nel JSON Schema, il campo `subTitle` può essere `null`. Il sito di ViaggiaTreno non contempla questo caso, provando a leggere l'attributo `length` senza controlli. Ciò porta a un caricamento infinito, come dimostrato nell'immagine sottostante.
+
+![Caricamento infinito quando `subTitle` è `null`](images/subtitle-null.png)
+
 ### Altro
 
 #### statistiche
