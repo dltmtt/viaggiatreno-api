@@ -3,9 +3,22 @@
  */
 
 import { api } from "./api.js";
-import { parseCSV } from "./utils.js";
 
 const MAX_RESULTS_TO_SHOW = 10;
+
+/**
+ * Parse CSV with the specified delimiter
+ *
+ * @param {string} csvText The CSV text to parse
+ * @param {string} delimiter The delimiter used in the CSV (default is ",")
+ * @returns {Array<Array<string>>} The parsed CSV as an array of rows and columns
+ */
+function parseCSV(csvText, delimiter = ",") {
+	return csvText
+		.trim()
+		.split("\n")
+		.map((line) => line.split(delimiter));
+}
 
 /**
  * Resolve station input to station code

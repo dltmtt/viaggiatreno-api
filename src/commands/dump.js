@@ -3,13 +3,13 @@
  */
 
 import { join } from "node:path";
-import { andamentoTrenoBulk } from "./journey.js";
 import { partenzeArriviAll } from "./schedules.js";
 import {
 	autocompleteStation,
 	cercaStazione,
 	elencoStazioni,
 } from "./stations.js";
+import { andamentoTrenoBulk } from "./trains.js";
 
 /**
  * Dynamic dump process that collects comprehensive train and station data
@@ -119,10 +119,6 @@ export async function staticDump(output) {
  * @param {string} output - Output directory for saving results
  */
 export async function dump(isDynamic, isStatic, dateTime, output) {
-	if (!isDynamic && !isStatic) {
-		throw new Error("Either --dynamic or --static option must be specified");
-	}
-
 	if (isDynamic) await dynamicDump(dateTime, output);
 	if (isStatic) await staticDump(output);
 }

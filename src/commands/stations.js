@@ -3,6 +3,7 @@
  */
 
 import { api, queue } from "../api.js";
+import { resolveStationCode } from "../resolvers.js";
 import { REGIONS } from "./regions.js";
 
 /**
@@ -10,7 +11,6 @@ import { REGIONS } from "./regions.js";
  *
  * @param {number} region - The region number (0-22) to get stations for
  * @param {boolean} all - If true, fetches stations from all regions
- * @throws {Error} If no region is specified and all is false
  */
 export async function elencoStazioni(region, all) {
 	if (all) {
@@ -29,10 +29,6 @@ export async function elencoStazioni(region, all) {
 		console.log(JSON.stringify(stations, null, 2));
 		return;
 	}
-
-	throw new Error(
-		`Specify a region number (0-${Object.keys(REGIONS).length - 1}) or use --all to fetch stations from all regions.`,
-	);
 }
 
 /**
@@ -40,7 +36,6 @@ export async function elencoStazioni(region, all) {
  *
  * @param {string} prefix - The station name prefix to search for
  * @param {boolean} all - If true, fetches all stations (A-Z)
- * @throws {Error} If no prefix is provided and all is false, or if no stations are found
  */
 export async function cercaStazione(prefix, all) {
 	if (all) {
@@ -59,14 +54,13 @@ export async function cercaStazione(prefix, all) {
 		const stations = await api.get(`cercaStazione/${prefix}`).json();
 
 		if (!stations || stations.length === 0) {
-			throw new Error(`No stations found matching prefix '${prefix}'.`);
+			console.warn(`No stations found matching prefix '${prefix}'.`);
+			return;
 		}
 
 		console.log(JSON.stringify(stations, null, 2));
 		return;
 	}
-
-	throw new Error("Specify a prefix or use --all to fetch all stations.");
 }
 
 /**
@@ -83,9 +77,7 @@ async function fetchAllFromEndpoint(endpointName) {
 
 	const results = await queue.addAll(tasks);
 	return results
-		.filter(Boolean)
-		.join("\n")
-		.split("\n")
+		.flatMap((result) => result.split("\n"))
 		.filter((line) => line.trim() !== "")
 		.join("\n");
 }
@@ -114,7 +106,6 @@ export async function fetchAllStationCodes() {
  * @param {string} endpointName - The API endpoint name to use for autocomplete
  * @param {string} prefix - The station name prefix to search for
  * @param {boolean} all - If true, fetches all stations (A-Z) using the specified endpoint
- * @throws {Error} If no prefix is provided and all is false, or if no stations are found
  */
 export async function autocompleteStation(endpointName, prefix, all) {
 	if (all) {
@@ -127,12 +118,46 @@ export async function autocompleteStation(endpointName, prefix, all) {
 		const stations = await api.get(`${endpointName}/${prefix}`).text();
 
 		if (!stations) {
-			throw new Error(`No stations found matching prefix '${prefix}'.`);
+			console.warn(`No stations found matching prefix '${prefix}'.`);
+			return;
 		}
 
-		console.log(stations);
+		console.log(stations.trim);
+		return;
+	}
+}
+
+/**
+ * Get detailed station information including region-specific details
+ *
+ * @param {string} station - The station name or code to get details for
+ * @param {number|string} region - The region code (optional, will be resolved if not provided)
+ * @returns {Promise<void>} Logs the detailed station information as JSON
+ */
+export async function dettaglioStazione(station, region) {
+	const stationCode = await resolveStationCode(station);
+
+	// Get region code if not provided
+	if (!region && region !== 0) {
+		region = await api.get(`regione/${stationCode}`).text();
+	}
+
+	if (region === "") {
+		console.warn(
+			`Region code not available for station ${stationCode}. Calling dettaglioStazione with region -1.`,
+		);
+		region = -1;
+	}
+
+	const res = await api
+		.get(`dettaglioStazione/${stationCode}/${region}`)
+		.json();
+	if (!res) {
+		console.warn(
+			`No details found for station ${stationCode}. Either the station does not exist or there are no details available.`,
+		);
 		return;
 	}
 
-	throw new Error("Specify a prefix or use --all to fetch all stations.");
+	console.log(JSON.stringify(res, null, 2));
 }

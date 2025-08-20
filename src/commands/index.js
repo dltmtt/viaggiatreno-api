@@ -3,16 +3,17 @@
  */
 
 import { dump, dynamicDump } from "./dump.js";
-import { andamentoTreno } from "./journey.js";
-import { dettaglioStazione, regione } from "./regions.js";
+import { regione } from "./regions.js";
 import { arrivi, partenze } from "./schedules.js";
 import {
 	autocompleteStation,
 	cercaStazione,
+	dettaglioStazione,
 	elencoStazioni,
 } from "./stations.js";
 import { statistiche } from "./statistics.js";
 import {
+	andamentoTreno,
 	cercaNumeroTreno,
 	cercaNumeroTrenoTrenoAutocomplete,
 } from "./trains.js";

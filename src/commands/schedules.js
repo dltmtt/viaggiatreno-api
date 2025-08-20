@@ -40,15 +40,10 @@ export function arrivi(station, dateTime, all, output) {
  * @param {Temporal.ZonedDateTime} dateTime - The date and time to search
  * @param {boolean} all - If true, get data for all stations
  * @param {string} output - Output directory for saving results
- * @throws {Error} If station is not provided when not using --all
  */
 export async function scheduleData(endpoint, station, dateTime, all, output) {
 	if (all) {
 		return partenzeArriviAll(endpoint, dateTime, output);
-	}
-
-	if (!station) {
-		throw new Error("STATION argument is required when not using --all.");
 	}
 
 	const stationCode = await resolveStationCode(station);
