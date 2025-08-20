@@ -8,6 +8,25 @@ import { commands } from "./commands/index.js";
 import { REGIONS } from "./commands/regions.js";
 
 /**
+ * Check if either a specific argument is provided or the --all option is used.
+ * @param {any} argument - The specific argument to check.
+ * @param {boolean} all - The --all option flag.
+ * @param {Command} command - The Commander.js command instance.
+ * @param {string} message - The error message to display.
+ */
+function requireArgOrAll(argument, all, command, message) {
+	if (argument === undefined && !all) {
+		console.error(message);
+		command.help({ error: true });
+	}
+	if (argument !== undefined && all) {
+		console.warn(
+			`Both ${argument} and --all options are specified. Using --all option.`,
+		);
+	}
+}
+
+/**
  * Setup and parse command line arguments using Commander.js
  */
 export function setupCLI() {
@@ -31,17 +50,12 @@ export function setupCLI() {
 		.argument("[region]", "Region number (0-22)")
 		.option("-a, --all", "Fetch stations from all regions")
 		.action((region, options, command) => {
-			if (region === undefined && !options.all) {
-				console.error(
-					`Specify a region number (0-${Object.keys(REGIONS).length - 1}) or use --all to fetch stations from all regions.`,
-				);
-				command.help({ error: true });
-			}
-			if (region !== undefined && options.all) {
-				console.warn(
-					"Both region and --all options are specified. Using --all option.",
-				);
-			}
+			requireArgOrAll(
+				region,
+				options.all,
+				command,
+				`Specify a region number (0-${Object.keys(REGIONS).length - 1}) or use --all to fetch stations from all regions.`,
+			);
 			commands.elencoStazioni(Number(region), options.all);
 		});
 
@@ -52,17 +66,12 @@ export function setupCLI() {
 		.argument("[prefix]", "Station name prefix")
 		.option("-a, --all", "Fetch all stations")
 		.action((prefix, options, command) => {
-			if (!prefix && !options.all) {
-				console.error(
-					"Specify a station name prefix or use --all to fetch all stations.",
-				);
-				command.help({ error: true });
-			}
-			if (prefix && options.all) {
-				console.warn(
-					"Both prefix and --all options are specified. Using --all option.",
-				);
-			}
+			requireArgOrAll(
+				prefix,
+				options.all,
+				command,
+				"Specify a station name prefix or use --all to fetch all stations.",
+			);
 			commands.cercaStazione(prefix, options.all);
 		});
 
@@ -78,17 +87,12 @@ export function setupCLI() {
 			.argument("[prefix]", "Station name prefix")
 			.option("-a, --all", "Fetch all stations")
 			.action((prefix, options, command) => {
-				if (!prefix && !options.all) {
-					console.error(
-						"Specify a station name prefix or use --all to fetch all stations.",
-					);
-					command.help({ error: true });
-				}
-				if (prefix && options.all) {
-					console.warn(
-						"Both prefix and --all options are specified. Using --all option.",
-					);
-				}
+				requireArgOrAll(
+					prefix,
+					options.all,
+					command,
+					"Specify a station name prefix or use --all to fetch all stations.",
+				);
 				commands.autocompleteStation(cmdName, prefix, options.all);
 			});
 	});
@@ -99,12 +103,12 @@ export function setupCLI() {
 		.description("Get region information for a station")
 		.argument("[station]", "Station name or code")
 		.option("--table", "Show region codes table")
-		.action((station, options, program) => {
+		.action((station, options, command) => {
 			if ((!station && !options.table) || (station && options.table)) {
 				console.error(
 					"Specify one of the following: a station name or code, or use --table to show region codes.",
 				);
-				program.help({ error: true });
+				command.help({ error: true });
 			}
 			commands.regione(station, options.table);
 		});
@@ -151,18 +155,13 @@ export function setupCLI() {
 			)
 			.option("-a, --all", "Process all stations")
 			.option("-o, --output <dir>", "Output directory", process.cwd())
-			.action((station, options, program) => {
-				if (!station && !options.all) {
-					console.error(
-						"Specify a station name or code, or use --all to process all stations.",
-					);
-					program.help({ error: true });
-				}
-				if (station && options.all) {
-					console.warn(
-						"Both station argument and --all option are specified. Using --all option.",
-					);
-				}
+			.action((station, options, command) => {
+				requireArgOrAll(
+					station,
+					options.all,
+					command,
+					"Specify a station name or code, or use --all to process all stations.",
+				);
 				commands[cmdName](
 					station,
 					options.datetime,
@@ -208,10 +207,10 @@ export function setupCLI() {
 			Temporal.Now.zonedDateTimeISO("Europe/Rome"),
 		)
 		.option("-o, --output <dir>", "Output directory", process.cwd())
-		.action((options, program) => {
+		.action((options, command) => {
 			if (!options.dynamic && !options.static) {
 				console.error("Specify either --dynamic or --static option.");
-				program.help({ error: true });
+				command.help({ error: true });
 			}
 			commands.dump(
 				options.dynamic,
