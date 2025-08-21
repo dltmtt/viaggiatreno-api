@@ -32,7 +32,7 @@
 	},
 	"dependencies": {
 		"commander": "^14.0.0",
-		"ky": "^1.8.2",
+		"ky": "^1.9.0",
 		"p-queue": "^8.1.0",
 		"temporal-polyfill": "^0.3.0"
 	}
