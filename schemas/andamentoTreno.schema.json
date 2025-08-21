@@ -1122,7 +1122,7 @@
 						"const": 0
 					},
 					"subTitle": {
-						"pattern": "^Treno cancellato da .+ a .+\\. Parte da .+\\.$"
+						"pattern": "^Treno cancellato da .+ a .+\\. Parte da .+\\.( Il treno oggi prosegue da .+ a .+)?$"
 					}
 				}
 			}
