@@ -1011,67 +1011,6 @@
       "if": {
         "properties": {
           "tipoTreno": {
-            "const": "PP"
-          }
-        }
-      },
-      "then": {
-        "if": {
-          "properties": {
-            "fermate": {
-              "contains": {
-                "properties": {
-                  "actualFermataType": {
-                    "const": 3
-                  }
-                }
-              }
-            }
-          }
-        },
-        "then": {
-          "properties": {
-            "subTitle": {
-              "pattern": "^(Percorso deviato con fermate soppresse |Treno cancellato da .+ a .+\\. (Il treno oggi parte da|Parte da|Arriva a) .+\\.?)$"
-            }
-          }
-        },
-        "else": {
-          "$comment": "È possibile che la logica sia differente da quella riportata. Il campo `subTitle` è stato trovato a `null` quando anche `esisteCorsaZero` era `null`.",
-          "if": {
-            "properties": {
-              "fermate": {
-                "contains": {
-                  "properties": {
-                    "actualFermataType": {
-                      "const": 2
-                    }
-                  }
-                }
-              }
-            }
-          },
-          "then": {
-            "properties": {
-              "subTitle": {
-                "const": null
-              }
-            }
-          },
-          "else": {
-            "properties": {
-              "subTitle": {
-                "const": ""
-              }
-            }
-          }
-        }
-      }
-    },
-    {
-      "if": {
-        "properties": {
-          "tipoTreno": {
             "const": "SF"
           }
         }
