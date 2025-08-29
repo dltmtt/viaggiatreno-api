@@ -12,5 +12,5 @@ import { api } from "../api.js";
 export async function statistiche() {
 	const nowMs = Temporal.Now.instant().epochMilliseconds;
 	const res = await api.get(`statistiche/${nowMs}`).json();
-	console.log(JSON.stringify(res, null, 2));
+	return res;
 }

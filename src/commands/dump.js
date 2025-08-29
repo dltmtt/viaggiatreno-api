@@ -54,58 +54,57 @@ export async function dynamicDump(dateTime, output) {
 export async function staticDump(output) {
 	console.info("Starting static dump for all station-related endpoints...");
 
-	// Store original console.log to capture output
-	const originalConsoleLog = console.log;
-	let capturedOutput = "";
+	// autocompletaStazione with --all (returns CSV text)
+	console.info("Fetching autocompletaStazione data...");
+	const autocompletaStazioneResult = await autocompleteStation(
+		"autocompletaStazione",
+		null,
+		true,
+	);
+	Bun.write(
+		join(output, "autocompletaStazione.csv"),
+		autocompletaStazioneResult,
+	);
 
-	// Capture console output for each endpoint
-	const captureOutput = () => {
-		capturedOutput = "";
-		console.log = (message) => {
-			capturedOutput = message;
-		};
-	};
+	// autocompletaStazioneImpostaViaggio with --all (returns CSV text)
+	console.info("Fetching autocompletaStazioneImpostaViaggio data...");
+	const autocompletaStazioneImpostaViaggioResult = await autocompleteStation(
+		"autocompletaStazioneImpostaViaggio",
+		null,
+		true,
+	);
+	Bun.write(
+		join(output, "autocompletaStazioneImpostaViaggio.csv"),
+		autocompletaStazioneImpostaViaggioResult,
+	);
 
-	try {
-		// autocompletaStazione with --all (returns CSV text)
-		console.info("Fetching autocompletaStazione data...");
-		captureOutput();
-		await autocompleteStation("autocompletaStazione", null, true);
-		Bun.write(join(output, "autocompletaStazione.csv"), capturedOutput.trim());
+	// autocompletaStazioneNTS with --all (returns CSV text)
+	console.info("Fetching autocompletaStazioneNTS data...");
+	const autocompletaStazioneNTSResult = await autocompleteStation(
+		"autocompletaStazioneNTS",
+		null,
+		true,
+	);
+	Bun.write(
+		join(output, "autocompletaStazioneNTS.csv"),
+		autocompletaStazioneNTSResult,
+	);
 
-		// autocompletaStazioneImpostaViaggio with --all (returns CSV text)
-		console.info("Fetching autocompletaStazioneImpostaViaggio data...");
-		captureOutput();
-		await autocompleteStation("autocompletaStazioneImpostaViaggio", null, true);
-		Bun.write(
-			join(output, "autocompletaStazioneImpostaViaggio.csv"),
-			capturedOutput.trim(),
-		);
+	// cercaStazione with --all (returns JSON)
+	console.info("Fetching cercaStazione data...");
+	const cercaStazioneResult = await cercaStazione(null, true);
+	Bun.write(
+		join(output, "cercaStazione.json"),
+		JSON.stringify(cercaStazioneResult, null, 2),
+	);
 
-		// autocompletaStazioneNTS with --all (returns CSV text)
-		console.info("Fetching autocompletaStazioneNTS data...");
-		captureOutput();
-		await autocompleteStation("autocompletaStazioneNTS", null, true);
-		Bun.write(
-			join(output, "autocompletaStazioneNTS.csv"),
-			capturedOutput.trim(),
-		);
-
-		// cercaStazione with --all (returns JSON)
-		console.info("Fetching cercaStazione data...");
-		captureOutput();
-		await cercaStazione(null, true);
-		Bun.write(join(output, "cercaStazione.json"), capturedOutput.trim());
-
-		// elencoStazioni with --all (returns JSON)
-		console.info("Fetching elencoStazioni data...");
-		captureOutput();
-		await elencoStazioni(null, true);
-		Bun.write(join(output, "elencoStazioni.json"), capturedOutput.trim());
-	} finally {
-		// Restore original console.log
-		console.log = originalConsoleLog;
-	}
+	// elencoStazioni with --all (returns JSON)
+	console.info("Fetching elencoStazioni data...");
+	const elencoStazioniResult = await elencoStazioni(null, true);
+	Bun.write(
+		join(output, "elencoStazioni.json"),
+		JSON.stringify(elencoStazioniResult, null, 2),
+	);
 
 	console.info("🎉 Static dump completed successfully!");
 }

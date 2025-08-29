@@ -41,7 +41,10 @@ export function setupCLI() {
 	program
 		.command("statistiche")
 		.description("Get API statistics")
-		.action(commands.statistiche);
+		.action(async () => {
+			const res = await commands.statistiche();
+			console.log(JSON.stringify(res, null, 2));
+		});
 
 	// elencoStazioni command
 	program
@@ -49,14 +52,15 @@ export function setupCLI() {
 		.description("List stations by region")
 		.argument("[region]", "Region number (0-22)")
 		.option("-a, --all", "Fetch stations from all regions")
-		.action((region, options, command) => {
+		.action(async (region, options, command) => {
 			requireArgOrAll(
 				region,
 				options.all,
 				command,
 				`Specify a region number (0-${Object.keys(REGIONS).length - 1}) or use --all to fetch stations from all regions.`,
 			);
-			commands.elencoStazioni(Number(region), options.all);
+			const res = await commands.elencoStazioni(Number(region), options.all);
+			console.log(JSON.stringify(res, null, 2));
 		});
 
 	// cercaStazione command
@@ -65,14 +69,15 @@ export function setupCLI() {
 		.description("Search stations by prefix")
 		.argument("[prefix]", "Station name prefix")
 		.option("-a, --all", "Fetch all stations")
-		.action((prefix, options, command) => {
+		.action(async (prefix, options, command) => {
 			requireArgOrAll(
 				prefix,
 				options.all,
 				command,
 				"Specify a station name prefix or use --all to fetch all stations.",
 			);
-			commands.cercaStazione(prefix, options.all);
+			const res = await commands.cercaStazione(prefix, options.all);
+			console.log(JSON.stringify(res, null, 2));
 		});
 
 	// autocompletaStazione commands
@@ -86,14 +91,15 @@ export function setupCLI() {
 			.description(`Autocomplete stations using ${cmdName} endpoint`)
 			.argument("[prefix]", "Station name prefix")
 			.option("-a, --all", "Fetch all stations")
-			.action((prefix, options, command) => {
+			.action(async (prefix, options, command) => {
 				requireArgOrAll(
 					prefix,
 					options.all,
 					command,
 					"Specify a station name prefix or use --all to fetch all stations.",
 				);
-				commands.autocompleteStation(cmdName, prefix, options.all);
+				const res = await commands.autocompleteStation(cmdName, prefix, options.all);
+				console.log(res);
 			});
 	});
 
@@ -119,8 +125,9 @@ export function setupCLI() {
 		.description("Get detailed station information")
 		.argument("<station>", "Station name or code")
 		.option("--region <n>", "Region code", (value) => Number(value))
-		.action((station, options) => {
-			commands.dettaglioStazione(station, options.region);
+		.action(async (station, options) => {
+			const res = await commands.dettaglioStazione(station, options.region);
+			console.log(JSON.stringify(res, null, 2));
 		});
 
 	// cercaNumeroTrenoTrenoAutocomplete command
@@ -128,8 +135,9 @@ export function setupCLI() {
 		.command("cercaNumeroTrenoTrenoAutocomplete")
 		.description("Search train number with autocomplete")
 		.argument("<trainNumber>", "Train number", (value) => Number(value))
-		.action((trainNumber) => {
-			commands.cercaNumeroTrenoTrenoAutocomplete(trainNumber);
+		.action(async (trainNumber) => {
+			const res = await commands.cercaNumeroTrenoTrenoAutocomplete(trainNumber);
+			console.log(res);
 		});
 
 	// cercaNumeroTreno command
@@ -137,8 +145,9 @@ export function setupCLI() {
 		.command("cercaNumeroTreno")
 		.description("Search train by number")
 		.argument("<trainNumber>", "Train number", (value) => Number(value))
-		.action((trainNumber) => {
-			commands.cercaNumeroTreno(trainNumber);
+		.action(async (trainNumber) => {
+			const res = await commands.cercaNumeroTreno(trainNumber);
+			console.log(JSON.stringify(res, null, 2));
 		});
 
 	// partenze and arrivi commands
@@ -155,19 +164,20 @@ export function setupCLI() {
 			)
 			.option("-a, --all", "Process all stations")
 			.option("-o, --output <dir>", "Output directory", process.cwd())
-			.action((station, options, command) => {
+			.action(async (station, options, command) => {
 				requireArgOrAll(
 					station,
 					options.all,
 					command,
 					"Specify a station name or code, or use --all to process all stations.",
 				);
-				commands[cmdName](
+				const res = await commands[cmdName](
 					station,
 					options.datetime,
 					options.all,
 					options.output,
 				);
+				console.log(JSON.stringify(res, null, 2));
 			});
 	});
 
@@ -183,12 +193,13 @@ export function setupCLI() {
 		.option("--date <date>", "Departure date", (value) =>
 			Temporal.PlainDate.from(value),
 		)
-		.action((trainNumber, options) => {
-			commands.andamentoTreno(
+		.action(async (trainNumber, options) => {
+			const res = await commands.andamentoTreno(
 				trainNumber,
 				options.departureStation,
 				options.date,
 			);
+			console.log(JSON.stringify(res, null, 2));
 		});
 
 	// dump command

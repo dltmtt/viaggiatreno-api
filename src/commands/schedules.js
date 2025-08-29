@@ -56,7 +56,6 @@ export async function scheduleData(endpoint, station, dateTime, all, output) {
 		return null;
 	}
 
-	console.log(JSON.stringify(res, null, 2));
 	return res;
 }
 

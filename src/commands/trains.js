@@ -24,7 +24,7 @@ export async function cercaNumeroTrenoTrenoAutocomplete(trainNumber) {
 		return;
 	}
 
-	console.log(res.trim());
+	return res.trim();
 }
 
 /**
@@ -39,7 +39,7 @@ export async function cercaNumeroTreno(trainNumber) {
 		return;
 	}
 
-	console.log(JSON.stringify(res, null, 2));
+	return res;
 }
 
 /**
@@ -74,7 +74,7 @@ export async function andamentoTreno(
 		return;
 	}
 
-	console.log(JSON.stringify(res, null, 2));
+	return res;
 }
 
 /**

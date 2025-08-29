@@ -20,14 +20,12 @@ export async function elencoStazioni(region, all) {
 
 		const results = await queue.addAll(tasks);
 		const stations = results.flat().filter(Boolean);
-		console.log(JSON.stringify(stations, null, 2));
-		return;
+		return stations;
 	}
 
 	if (region === 0 || region) {
 		const stations = await api.get(`elencoStazioni/${region}`).json();
-		console.log(JSON.stringify(stations, null, 2));
-		return;
+		return stations;
 	}
 }
 
@@ -46,8 +44,7 @@ export async function cercaStazione(prefix, all) {
 
 		const results = await queue.addAll(tasks);
 		const stations = results.flat().filter(Boolean);
-		console.log(JSON.stringify(stations, null, 2));
-		return;
+		return stations;
 	}
 
 	if (prefix) {
@@ -58,8 +55,7 @@ export async function cercaStazione(prefix, all) {
 			return;
 		}
 
-		console.log(JSON.stringify(stations, null, 2));
-		return;
+		return stations;
 	}
 }
 
@@ -110,8 +106,7 @@ export async function fetchAllStationCodes() {
 export async function autocompleteStation(endpointName, prefix, all) {
 	if (all) {
 		const stations = await fetchAllFromEndpoint(endpointName);
-		console.log(stations);
-		return;
+		return stations;
 	}
 
 	if (prefix) {
@@ -122,8 +117,7 @@ export async function autocompleteStation(endpointName, prefix, all) {
 			return;
 		}
 
-		console.log(stations.trim);
-		return;
+		return stations.trim();
 	}
 }
 
@@ -159,5 +153,5 @@ export async function dettaglioStazione(station, region) {
 		return;
 	}
 
-	console.log(JSON.stringify(res, null, 2));
+	return res;
 }
