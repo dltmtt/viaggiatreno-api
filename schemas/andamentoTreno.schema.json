@@ -387,8 +387,8 @@
       "examples": [23, 26387, 21007]
     },
     "categoria": {
-      "enum": ["", "EC", "EN", "EXP", "IC", "ICN", "MET", "NCL", "REG"],
-      "description": "Categoria del treno. Usato insieme a `tipoProdotto` per calcolare `categoriaDescrizione`. Ad esempio, le Frecce vedono questo campo vuoto."
+      "enum": ["", "EC", "EN", "EXP", "IC", "ICN", "IR", "MET", "NCL", "REG"],
+      "description": "Categoria del treno. Le Frecce vedono questo campo vuoto."
     },
     "categoriaDescrizione": {
       "const": null

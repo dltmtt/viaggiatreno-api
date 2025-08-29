@@ -37,7 +37,7 @@
         "examples": [23, 26387, 21007]
       },
       "categoria": {
-        "enum": ["", "EC", "EN", "EXP", "IC", "ICN", "MET", "NCL", "REG"],
+        "enum": ["", "EC", "EN", "EXP", "IC", "ICN", "IR", "MET", "NCL", "REG"],
         "description": "Categoria del treno. Meno dettagliato di `categoriaDescrizione`: le Frecce vedono questo campo vuoto."
       },
       "categoriaDescrizione": {
@@ -53,6 +53,7 @@
           "EXP",
           "IC",
           "ICN",
+          "IR",
           "MET",
           "NCL",
           "REG"
