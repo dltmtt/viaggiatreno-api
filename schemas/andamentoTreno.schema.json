@@ -553,7 +553,7 @@
       "description": "Ritardo del treno in minuti. Se negativo indica un anticipo. Spesso a 0 anche quando il treno è in ritardo, utilizzare andamentoTreno per informazioni più accurate."
     },
     "tipoProdotto": {
-      "enum": ["0", "99", "100", "101", "102"],
+      "enum": ["", "0", "99", "100", "101", "102"],
       "default": "0",
       "description": "Valore associato a 99 per i Treni Storici, a 100 per i Frecciarossa, a 101 per i Frecciargento e a 102 per i Frecciabianca. Viene usato insieme a `categoria` per determinare `categoriaDescrizione`."
     },
