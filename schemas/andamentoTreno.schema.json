@@ -1045,6 +1045,15 @@
           "tipoTreno": {
             "const": "SI"
           }
+        },
+        "not": {
+          "contains": {
+            "properties": {
+              "actualFermataType": {
+                "const": 2
+              }
+            }
+          }
         }
       },
       "then": {
