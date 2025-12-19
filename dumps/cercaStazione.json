@@ -1020,6 +1020,12 @@
     "id": "S11119"
   },
   {
+    "nomeLungo": "BARI TERMINAL BUS",
+    "nomeBreve": "BARI TERMINAL B.",
+    "label": "BARI TERMINAL BUS",
+    "id": "S41487"
+  },
+  {
     "nomeLungo": "BARI TORRE QUETTA",
     "nomeBreve": "Bari Torre Q.",
     "label": "Bari",
@@ -9931,15 +9937,15 @@
   },
   {
     "nomeLungo": "MONSAMPOLO DEL TRONTO",
-    "nomeBreve": "Monsampolo",
-    "label": null,
-    "id": "S07553"
-  },
-  {
-    "nomeLungo": "MONSAMPOLO DEL TRONTO",
     "nomeBreve": "Monsampolo del T",
     "label": "Monsampolo",
     "id": "S07023"
+  },
+  {
+    "nomeLungo": "MONSAMPOLO DEL TRONTO",
+    "nomeBreve": "Monsampolo",
+    "label": null,
+    "id": "S07553"
   },
   {
     "nomeLungo": "MONSELICE",
@@ -11662,6 +11668,18 @@
     "nomeBreve": "PA NOTARBARTOLO",
     "label": "Pa",
     "id": "S12134"
+  },
+  {
+    "nomeLungo": "PALERMO POLITEAMA PES",
+    "nomeBreve": "PA Politeama PES",
+    "label": "Pa",
+    "id": "S12077"
+  },
+  {
+    "nomeLungo": "PALERMO PORTO",
+    "nomeBreve": "Palermo Porto",
+    "label": "Palermo",
+    "id": "S12076"
   },
   {
     "nomeLungo": "PALERMO S.LORENZO",
