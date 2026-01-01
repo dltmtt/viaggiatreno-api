@@ -9764,14 +9764,14 @@
   {
     "nomeLungo": "MODUGNO",
     "nomeBreve": "Modugno",
-    "label": null,
-    "id": "S11500"
+    "label": "Modugno",
+    "id": "S11516"
   },
   {
     "nomeLungo": "MODUGNO",
     "nomeBreve": "Modugno",
-    "label": "Modugno",
-    "id": "S11516"
+    "label": null,
+    "id": "S11500"
   },
   {
     "nomeLungo": "MODUGNO CITTA'",
@@ -9937,15 +9937,15 @@
   },
   {
     "nomeLungo": "MONSAMPOLO DEL TRONTO",
-    "nomeBreve": "Monsampolo del T",
-    "label": "Monsampolo",
-    "id": "S07023"
-  },
-  {
-    "nomeLungo": "MONSAMPOLO DEL TRONTO",
     "nomeBreve": "Monsampolo",
     "label": null,
     "id": "S07553"
+  },
+  {
+    "nomeLungo": "MONSAMPOLO DEL TRONTO",
+    "nomeBreve": "Monsampolo del T",
+    "label": "Monsampolo",
+    "id": "S07023"
   },
   {
     "nomeLungo": "MONSELICE",
@@ -12405,13 +12405,13 @@
     "nomeLungo": "PINO TRONZANO",
     "nomeBreve": "Pino T.",
     "label": "Pino",
-    "id": "S01110"
+    "id": "S19006"
   },
   {
     "nomeLungo": "PINO TRONZANO",
     "nomeBreve": "Pino T.",
     "label": "Pino",
-    "id": "S19006"
+    "id": "S01110"
   },
   {
     "nomeLungo": "PINZANO",
