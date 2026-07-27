@@ -44,6 +44,12 @@
   {
     "nomeLungo": "ACERRA",
     "nomeBreve": "Acerra",
+    "label": "Acerra(new)",
+    "id": "S09042"
+  },
+  {
+    "nomeLungo": "ACERRA",
+    "nomeBreve": "Acerra",
     "label": "Acerra",
     "id": "S09215"
   },
@@ -130,6 +136,12 @@
     "nomeBreve": "ADRIA",
     "label": "Adria",
     "id": "S05420"
+  },
+  {
+    "nomeLungo": "AFRAGOLA ZONA COMMERCIALE",
+    "nomeBreve": "Afragola Z.Comm.",
+    "label": "Afragola",
+    "id": "S09044"
   },
   {
     "nomeLungo": "AFRICO NUOVO",
@@ -1114,12 +1126,6 @@
     "nomeBreve": "Bagni di Lucca",
     "label": "Bagni",
     "id": "S06308"
-  },
-  {
-    "nomeLungo": "BAGNI DI TIVOLI",
-    "nomeBreve": "Bagni di Tivoli",
-    "label": "Bagni",
-    "id": "S08504"
   },
   {
     "nomeLungo": "BAGNOLI AGNANO TERME",
@@ -2696,14 +2702,14 @@
   {
     "nomeLungo": "CALLIANO",
     "nomeBreve": "Calliano",
-    "label": "Calliano",
-    "id": "S02047"
+    "label": null,
+    "id": "S02041"
   },
   {
     "nomeLungo": "CALLIANO",
     "nomeBreve": "Calliano",
-    "label": null,
-    "id": "S02041"
+    "label": "Calliano",
+    "id": "S02047"
   },
   {
     "nomeLungo": "CALOLZIOCORTE OLGINATE",
@@ -3586,6 +3592,12 @@
     "nomeBreve": "Casalnuovo",
     "label": "Casalnuovo",
     "id": "S09216"
+  },
+  {
+    "nomeLungo": "CASALNUOVO",
+    "nomeBreve": "Casalnuovo",
+    "label": "Casalnuovo(new)",
+    "id": "S09043"
   },
   {
     "nomeLungo": "CASALPUSTERLENGO",
@@ -4906,6 +4918,12 @@
     "nomeBreve": "Civate",
     "label": "Civate",
     "id": "S01462"
+  },
+  {
+    "nomeLungo": "CIVIDALE DEL FRIULI",
+    "nomeBreve": "CIVIDALE D.F.",
+    "label": "Cividale",
+    "id": "S03056"
   },
   {
     "nomeLungo": "CIVIDATE - MALEGNO",
@@ -7650,6 +7668,12 @@
     "id": "S05960"
   },
   {
+    "nomeLungo": "GUIDONIA-MONTECELIO",
+    "nomeBreve": "Guidonia-M.",
+    "label": "Guidonia-m.",
+    "id": "S08023"
+  },
+  {
     "nomeLungo": "GUIDONIA-MONTECELIO-S.ANGELO",
     "nomeBreve": "Guidonia-M.-S.A.",
     "label": "Guidonia-m.-s.a.",
@@ -8619,13 +8643,13 @@
     "nomeLungo": "MACCAGNO",
     "nomeBreve": "Maccagno",
     "label": "Maccagno",
-    "id": "S13653"
+    "id": "S19005"
   },
   {
     "nomeLungo": "MACCAGNO",
     "nomeBreve": "Maccagno",
     "label": "Maccagno",
-    "id": "S19005"
+    "id": "S13653"
   },
   {
     "nomeLungo": "MACCARESE-FREGENE",
@@ -9582,12 +9606,6 @@
     "id": "S01631"
   },
   {
-    "nomeLungo": "MILANO PORTA ROMANA",
-    "nomeBreve": "Milano P.Romana",
-    "label": "Milano",
-    "id": "S01632"
-  },
-  {
     "nomeLungo": "MILANO PORTA VENEZIA",
     "nomeBreve": "Mi. P. Venezia",
     "label": "Mi.",
@@ -9628,6 +9646,12 @@
     "nomeBreve": "MI.S.CRISTOFORO",
     "label": "Mi.s.cristoforo",
     "id": "S01630"
+  },
+  {
+    "nomeLungo": "MILANO SCALO ROMANA",
+    "nomeBreve": "Milano SC.Romana",
+    "label": "Milano",
+    "id": "S01632"
   },
   {
     "nomeLungo": "MILANO TIBALDI UNIVERSITA' BOCCONI",
@@ -9937,15 +9961,15 @@
   },
   {
     "nomeLungo": "MONSAMPOLO DEL TRONTO",
-    "nomeBreve": "Monsampolo",
-    "label": null,
-    "id": "S07553"
-  },
-  {
-    "nomeLungo": "MONSAMPOLO DEL TRONTO",
     "nomeBreve": "Monsampolo del T",
     "label": "Monsampolo",
     "id": "S07023"
+  },
+  {
+    "nomeLungo": "MONSAMPOLO DEL TRONTO",
+    "nomeBreve": "Monsampolo",
+    "label": null,
+    "id": "S07553"
   },
   {
     "nomeLungo": "MONSELICE",
@@ -10624,6 +10648,12 @@
     "nomeBreve": "NAPOLI AFRAGOLA",
     "label": "Napoli",
     "id": "S09988"
+  },
+  {
+    "nomeLungo": "NAPOLI AFRAGOLA PES",
+    "nomeBreve": "NA Afragola PES",
+    "label": "Campania",
+    "id": "S09041"
   },
   {
     "nomeLungo": "NAPOLI CAMPI FLEGREI",
@@ -12405,13 +12435,13 @@
     "nomeLungo": "PINO TRONZANO",
     "nomeBreve": "Pino T.",
     "label": "Pino",
-    "id": "S19006"
+    "id": "S01110"
   },
   {
     "nomeLungo": "PINO TRONZANO",
     "nomeBreve": "Pino T.",
     "label": "Pino",
-    "id": "S01110"
+    "id": "S19006"
   },
   {
     "nomeLungo": "PINZANO",
@@ -14202,6 +14232,12 @@
     "id": "S02346"
   },
   {
+    "nomeLungo": "ROMA ANAGNINA",
+    "nomeBreve": "Roma Anagnina",
+    "label": "Roma",
+    "id": "S08050"
+  },
+  {
     "nomeLungo": "ROMA AURELIA",
     "nomeBreve": "Roma Aurelia",
     "label": "Roma",
@@ -15714,12 +15750,6 @@
     "id": "S12804"
   },
   {
-    "nomeLungo": "SAN GOTTARDO",
-    "nomeBreve": "S.Gottardo",
-    "label": "S.Gottardo",
-    "id": "S03060"
-  },
-  {
     "nomeLungo": "SAN NICOLA VARCO DI EBOLI",
     "nomeBreve": "S.Nicola Varco",
     "label": null,
@@ -16204,18 +16234,6 @@
     "nomeBreve": "Conf.Reno O.",
     "label": null,
     "id": "S05325"
-  },
-  {
-    "nomeLungo": "SEGNALE DI CONFINE 1^BV ORV. SUD (DISP)",
-    "nomeBreve": "Seg.Conf.1Or Sud",
-    "label": null,
-    "id": "S06087"
-  },
-  {
-    "nomeLungo": "SEGNALE DI CONFINE 1^BV ORV. SUD (PARI)",
-    "nomeBreve": "S. Conf. 1Or Sud",
-    "label": null,
-    "id": "S06088"
   },
   {
     "nomeLungo": "SEGNALE DI CONFINE 2BV AREZZO SUD (DISP)",
@@ -17484,6 +17502,12 @@
     "id": "S08508"
   },
   {
+    "nomeLungo": "TIVOLI TERME",
+    "nomeBreve": "Tivoli Terme",
+    "label": "Bagni",
+    "id": "S08504"
+  },
+  {
     "nomeLungo": "TOCCO CASTIGLIONE",
     "nomeBreve": "Tocco C.",
     "label": "Tocco",
@@ -18264,6 +18288,12 @@
     "id": "S09304"
   },
   {
+    "nomeLungo": "VALLE DI MADDALONI PES",
+    "nomeBreve": "Valle di Mad PES",
+    "label": "Valle",
+    "id": "S09036"
+  },
+  {
     "nomeLungo": "VALLE DI MERCATO S.SEVERINO",
     "nomeBreve": "Valle di Mercato",
     "label": "Valle",
@@ -18274,12 +18304,6 @@
     "nomeBreve": "Valle Lomellina",
     "label": "Valle",
     "id": "S00037"
-  },
-  {
-    "nomeLungo": "VALLE MADDALONI",
-    "nomeBreve": "Valle Maddaloni",
-    "label": "Valle",
-    "id": "S09036"
   },
   {
     "nomeLungo": "VALLECROSIA",
@@ -18670,6 +18694,12 @@
     "nomeBreve": "Verres",
     "label": "Verres",
     "id": "S00145"
+  },
+  {
+    "nomeLungo": "VERSCIACO-ELMO",
+    "nomeBreve": "Versciaco-Elmo",
+    "label": "Versciaco-elmo",
+    "id": "S19007"
   },
   {
     "nomeLungo": "VERZUOLO",
