@@ -3,7 +3,7 @@
  */
 
 import { Command } from "commander";
-import data from "../package.json";
+import data from "../package.json" with { type: "json" };
 import { commands } from "./commands/index.js";
 import { REGIONS } from "./commands/regions.js";
 
@@ -98,7 +98,11 @@ export function setupCLI() {
 					command,
 					"Specify a station name prefix or use --all to fetch all stations.",
 				);
-				const res = await commands.autocompleteStation(cmdName, prefix, options.all);
+				const res = await commands.autocompleteStation(
+					cmdName,
+					prefix,
+					options.all,
+				);
 				console.log(res);
 			});
 	});

@@ -10,7 +10,7 @@ import PQueue from "p-queue";
  * ky for HTTP requests with built-in retry on retryable errors
  */
 export const api = ky.create({
-	prefixUrl: "http://www.viaggiatreno.it/infomobilita/resteasy/viaggiatreno",
+	baseUrl: "http://www.viaggiatreno.it/infomobilita/resteasy/viaggiatreno/",
 	timeout: 30_000,
 	retry: {
 		limit: 10,

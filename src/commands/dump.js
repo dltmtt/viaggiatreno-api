@@ -2,7 +2,7 @@
  * Dump command for comprehensive data collection
  */
 
-import { join } from "node:path";
+import { join } from "@std/path";
 import { partenzeArriviAll } from "./schedules.js";
 import {
 	autocompleteStation,
@@ -61,7 +61,7 @@ export async function staticDump(output) {
 		null,
 		true,
 	);
-	Bun.write(
+	Deno.writeTextFile(
 		join(output, "autocompletaStazione.csv"),
 		autocompletaStazioneResult,
 	);
@@ -73,7 +73,7 @@ export async function staticDump(output) {
 		null,
 		true,
 	);
-	Bun.write(
+	Deno.writeTextFile(
 		join(output, "autocompletaStazioneImpostaViaggio.csv"),
 		autocompletaStazioneImpostaViaggioResult,
 	);
@@ -85,7 +85,7 @@ export async function staticDump(output) {
 		null,
 		true,
 	);
-	Bun.write(
+	Deno.writeTextFile(
 		join(output, "autocompletaStazioneNTS.csv"),
 		autocompletaStazioneNTSResult,
 	);
@@ -93,7 +93,7 @@ export async function staticDump(output) {
 	// cercaStazione with --all (returns JSON)
 	console.info("Fetching cercaStazione data...");
 	const cercaStazioneResult = await cercaStazione(null, true);
-	Bun.write(
+	Deno.writeTextFile(
 		join(output, "cercaStazione.json"),
 		JSON.stringify(cercaStazioneResult, null, 2),
 	);
@@ -101,7 +101,7 @@ export async function staticDump(output) {
 	// elencoStazioni with --all (returns JSON)
 	console.info("Fetching elencoStazioni data...");
 	const elencoStazioniResult = await elencoStazioni(null, true);
-	Bun.write(
+	Deno.writeTextFile(
 		join(output, "elencoStazioni.json"),
 		JSON.stringify(elencoStazioniResult, null, 2),
 	);

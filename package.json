@@ -1,39 +1,36 @@
 {
-	"name": "viaggiatreno-api",
-	"version": "1.0.0",
-	"description": "Strumenti per interagire con l'API di ViaggiaTreno.",
-	"keywords": [
-		"api",
-		"cli",
-		"orari",
-		"stazioni",
-		"treni",
-		"trenitalia",
-		"trenord",
-		"viaggiatreno"
-	],
-	"homepage": "https://github.com/dltmtt/viaggiatreno-api",
-	"bugs": {
-		"url": "https://github.com/dltmtt/viaggiatreno-api/issues",
-		"email": "deltonmatteo@gmail.com"
-	},
-	"author": "Matteo Delton <deltonmatteo@gmail.com>",
-	"main": "src/index.js",
-	"type": "module",
-	"bin": {
-		"vt-api": "./src/index.js"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/dltmtt/viaggiatreno-api.git"
-	},
-	"engines": {
-		"bun": ">=1.0.0"
-	},
-	"dependencies": {
-		"commander": "^14.0.2",
-		"ky": "^1.14.2",
-		"p-queue": "^8.1.1",
-		"temporal-polyfill": "^0.3.0"
-	}
+  "name": "viaggiatreno-api",
+  "version": "1.0.0",
+  "description": "Strumenti per interagire con l'API di ViaggiaTreno.",
+  "keywords": [
+    "api",
+    "cli",
+    "orari",
+    "stazioni",
+    "treni",
+    "trenitalia",
+    "trenord",
+    "viaggiatreno"
+  ],
+  "homepage": "https://github.com/dltmtt/viaggiatreno-api",
+  "bugs": {
+    "url": "https://github.com/dltmtt/viaggiatreno-api/issues",
+    "email": "deltonmatteo@gmail.com"
+  },
+  "author": "Matteo Delton <deltonmatteo@gmail.com>",
+  "main": "src/index.js",
+  "type": "module",
+  "bin": {
+    "vt-api": "./src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dltmtt/viaggiatreno-api.git"
+  },
+  "dependencies": {
+    "@std/path": "npm:@jsr/std__path@^1.1.6",
+    "commander": "^15.0.0",
+    "ky": "^2.0.2",
+    "p-queue": "^9.3.3"
+  }
 }

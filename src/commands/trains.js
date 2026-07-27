@@ -2,7 +2,7 @@
  * Train search and status commands
  */
 
-import { join } from "node:path";
+import { join } from "@std/path";
 import { api, queue } from "../api.js";
 import {
 	ProgressBar,
@@ -113,7 +113,10 @@ export async function andamentoTrenoBulk(trains, output) {
 			.toPlainDate()
 			.toString();
 		const filename = `${trainNumber}_${stationCode}_${humanReadableDate}@${now.day}T${now.hour}:${now.minute}_andamentoTreno.json`;
-		Bun.write(join(outputPath, filename), JSON.stringify(result, null, 2));
+		Deno.writeTextFile(
+			join(outputPath, filename),
+			JSON.stringify(result, null, 2),
+		);
 		stats.saved++;
 	};
 
