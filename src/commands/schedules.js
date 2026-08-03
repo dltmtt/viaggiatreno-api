@@ -2,7 +2,7 @@
  * Schedule data commands (arrivals and departures)
  */
 
-import { join } from "@std/path";
+import { join } from "node:path";
 import { api, queue } from "../api.js";
 import { ProgressBar, resolveStationCode } from "../utils.js";
 import { fetchAllStationCodes } from "./stations.js";
@@ -102,10 +102,7 @@ export async function partenzeArriviAll(endpoint, dateTime, output) {
 		});
 		const filename = `${stationCode}_${humanReadableDateTime}_${endpoint}.json`;
 
-		Deno.writeTextFile(
-			join(outputPath, filename),
-			JSON.stringify(trains, null, 2),
-		);
+		Bun.write(join(outputPath, filename), JSON.stringify(trains, null, 2));
 		allTrains.push(...trains);
 		stats.saved++;
 

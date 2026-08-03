@@ -10,7 +10,7 @@ import { api } from "../api.js";
  * @returns {Promise<void>} Logs the API statistics as JSON
  */
 export async function statistiche() {
-	const nowMs = Temporal.Now.instant().epochMilliseconds;
+	const nowMs = Temporal.Now.zonedDateTimeISO("Europe/Rome").epochMilliseconds;
 	const res = await api.get(`statistiche/${nowMs}`).json();
 	return res;
 }

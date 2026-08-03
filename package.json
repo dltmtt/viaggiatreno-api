@@ -3,14 +3,19 @@
   "version": "1.0.0",
   "description": "Strumenti per interagire con l'API di ViaggiaTreno.",
   "keywords": [
+    "viaggiatreno",
     "api",
-    "cli",
     "orari",
     "stazioni",
     "treni",
     "trenitalia",
     "trenord",
-    "viaggiatreno"
+    "tilo",
+    "regionale",
+    "intercity",
+    "frecciarossa",
+    "frecciargento",
+    "frecciabianca"
   ],
   "homepage": "https://github.com/dltmtt/viaggiatreno-api",
   "bugs": {
@@ -21,16 +26,16 @@
   "main": "src/index.js",
   "type": "module",
   "bin": {
-    "vt-api": "./src/index.js"
+    "vt-api": "src/index.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/dltmtt/viaggiatreno-api.git"
   },
   "dependencies": {
-    "@std/path": "npm:@jsr/std__path@^1.1.6",
     "commander": "^15.0.0",
     "ky": "^2.0.2",
-    "p-queue": "^9.3.3"
+    "p-queue": "^9.3.3",
+    "temporal-polyfill": "^1.0.3"
   }
 }

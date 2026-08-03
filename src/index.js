@@ -14,6 +14,7 @@
  */
 
 import { setupCLI } from "./cli.js";
+import "temporal-polyfill/global";
 
 /**
  * Main function
