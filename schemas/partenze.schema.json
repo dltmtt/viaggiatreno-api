@@ -148,13 +148,14 @@
       },
       "binarioEffettivoPartenzaDescrizione": {
         "type": ["string", "null"],
-        "examples": ["16", "1", "6", "2TR"]
+        "examples": ["16", "1", "6", "2TR", null]
       },
       "binarioEffettivoPartenzaTipo": {
         "enum": ["0", null]
       },
       "binarioProgrammatoPartenzaCodice": {
-        "enum": ["0", null]
+        "type": ["string", "null"],
+        "examples": ["0", "6", "51", null]
       },
       "binarioProgrammatoPartenzaDescrizione": {
         "type": ["string", "null"],
