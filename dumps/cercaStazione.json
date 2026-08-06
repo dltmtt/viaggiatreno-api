@@ -1026,30 +1026,6 @@
     "id": "S12426"
   },
   {
-    "nomeLungo": "BARI CENTRALE",
-    "nomeBreve": "BARI C.LE",
-    "label": "Bari",
-    "id": "S11119"
-  },
-  {
-    "nomeLungo": "BARI TERMINAL BUS",
-    "nomeBreve": "BARI TERMINAL B.",
-    "label": "BARI TERMINAL BUS",
-    "id": "S41487"
-  },
-  {
-    "nomeLungo": "BARI TORRE QUETTA",
-    "nomeBreve": "Bari Torre Q.",
-    "label": "Bari",
-    "id": "S11004"
-  },
-  {
-    "nomeLungo": "BOLOGNA CENTRALE",
-    "nomeBreve": "BOLOGNA C.LE",
-    "label": "Bologna",
-    "id": "S05043"
-  },
-  {
     "nomeLungo": "BA POLICLINICO",
     "nomeBreve": "Ba Policlinico",
     "label": null,
@@ -1302,6 +1278,12 @@
     "id": "S13094"
   },
   {
+    "nomeLungo": "BARI CENTRALE",
+    "nomeBreve": "BARI C.LE",
+    "label": "Bari",
+    "id": "S11119"
+  },
+  {
     "nomeLungo": "BARI CENTRALE (FC)",
     "nomeBreve": "Bari Centrale (F",
     "label": "Bari",
@@ -1362,10 +1344,22 @@
     "id": "S13092"
   },
   {
+    "nomeLungo": "BARI TERMINAL BUS",
+    "nomeBreve": "BARI TERMINAL B.",
+    "label": "BARI TERMINAL BUS",
+    "id": "S41487"
+  },
+  {
     "nomeLungo": "BARI TORRE A MARE",
     "nomeBreve": "Ba.Torre a Mare",
     "label": "Ba.torre",
     "id": "S11126"
+  },
+  {
+    "nomeLungo": "BARI TORRE QUETTA",
+    "nomeBreve": "Bari Torre Q.",
+    "label": "Bari",
+    "id": "S11004"
   },
   {
     "nomeLungo": "BARI VILLAGGIO DEL LAVORATORE",
@@ -1806,6 +1800,12 @@
     "id": "S11252"
   },
   {
+    "nomeLungo": "Biv. Venezia",
+    "nomeBreve": "Biv.VE",
+    "label": null,
+    "id": "S05048"
+  },
+  {
     "nomeLungo": "BIVIO D'AURISINA",
     "nomeBreve": "BIVIO D`AURISINA",
     "label": "Bivio",
@@ -1870,6 +1870,12 @@
     "nomeBreve": "BOLOGNA C. LE",
     "label": "Bologna",
     "id": "S05046"
+  },
+  {
+    "nomeLungo": "BOLOGNA CENTRALE",
+    "nomeBreve": "BOLOGNA C.LE",
+    "label": "Bologna",
+    "id": "S05043"
   },
   {
     "nomeLungo": "BOLOGNA CORTICELLA",
@@ -2574,10 +2580,10 @@
     "id": "S03029"
   },
   {
-    "nomeLungo": "Biv. Venezia",
-    "nomeBreve": "Biv.VE",
-    "label": null,
-    "id": "S05048"
+    "nomeLungo": "CA` DI BOSCHETTI",
+    "nomeBreve": "Ca`di Boschetti",
+    "label": "Ca`di",
+    "id": "S06044"
   },
   {
     "nomeLungo": "CABIATE",
@@ -3468,16 +3474,16 @@
     "id": "S08533"
   },
   {
-    "nomeLungo": "CARRUBA",
-    "nomeBreve": "Carruba",
-    "label": "Carruba",
-    "id": "S12326"
-  },
-  {
     "nomeLungo": "CARRU` CLAVESANA",
     "nomeBreve": "Carru' Clavesana",
     "label": null,
     "id": "S00738"
+  },
+  {
+    "nomeLungo": "CARRUBA",
+    "nomeBreve": "Carruba",
+    "label": "Carruba",
+    "id": "S12326"
   },
   {
     "nomeLungo": "CARSOLI",
@@ -3590,14 +3596,14 @@
   {
     "nomeLungo": "CASALNUOVO",
     "nomeBreve": "Casalnuovo",
-    "label": "Casalnuovo",
-    "id": "S09216"
+    "label": "Casalnuovo(new)",
+    "id": "S09043"
   },
   {
     "nomeLungo": "CASALNUOVO",
     "nomeBreve": "Casalnuovo",
-    "label": "Casalnuovo(new)",
-    "id": "S09043"
+    "label": "Casalnuovo",
+    "id": "S09216"
   },
   {
     "nomeLungo": "CASALPUSTERLENGO",
@@ -4338,12 +4344,6 @@
     "id": "S01790"
   },
   {
-    "nomeLungo": "CA` DI BOSCHETTI",
-    "nomeBreve": "Ca`di Boschetti",
-    "label": "Ca`di",
-    "id": "S06044"
-  },
-  {
     "nomeLungo": "CECCANO",
     "nomeBreve": "Ceccano",
     "label": "Ceccano",
@@ -4878,18 +4878,6 @@
     "id": "S06154"
   },
   {
-    "nomeLungo": "CITTADELLA",
-    "nomeBreve": "CITTADELLA",
-    "label": "Cittadella",
-    "id": "S02535"
-  },
-  {
-    "nomeLungo": "CITTADUCALE",
-    "nomeBreve": "Cittaducale",
-    "label": "Cittaducale",
-    "id": "S07406"
-  },
-  {
     "nomeLungo": "CITTA` DELLA PIEVE",
     "nomeBreve": "CITTA' D. PIEVE",
     "label": null,
@@ -4906,6 +4894,18 @@
     "nomeBreve": "Citta` C.-ZI",
     "label": "Citta`",
     "id": "S07938"
+  },
+  {
+    "nomeLungo": "CITTADELLA",
+    "nomeBreve": "CITTADELLA",
+    "label": "Cittadella",
+    "id": "S02535"
+  },
+  {
+    "nomeLungo": "CITTADUCALE",
+    "nomeBreve": "Cittaducale",
+    "label": "Cittaducale",
+    "id": "S07406"
   },
   {
     "nomeLungo": "CITTIGLIO",
@@ -5760,6 +5760,12 @@
     "id": "S06097"
   },
   {
+    "nomeLungo": "Dev.Int. DD/AV",
+    "nomeBreve": "D.I.DDAV",
+    "label": null,
+    "id": "S08220"
+  },
+  {
     "nomeLungo": "DIAMANTE BUONVICINO",
     "nomeBreve": "Diamante",
     "label": "Diamante",
@@ -5922,12 +5928,6 @@
     "id": "S09819"
   },
   {
-    "nomeLungo": "Dev.Int. DD/AV",
-    "nomeBreve": "D.I.DDAV",
-    "label": null,
-    "id": "S08220"
-  },
-  {
     "nomeLungo": "EBOLI",
     "nomeBreve": "Eboli",
     "label": "Eboli",
@@ -6028,12 +6028,6 @@
     "nomeBreve": "Exilles",
     "label": "Exilles",
     "id": "S00251"
-  },
-  {
-    "nomeLungo": "FIRENZE SANTA MARIA NOVELLA",
-    "nomeBreve": "FIRENZE S.M.N.",
-    "label": "Firenze",
-    "id": "S06421"
   },
   {
     "nomeLungo": "FABRIANO",
@@ -6388,6 +6382,12 @@
     "nomeBreve": "Fi Rovezzano",
     "label": "Rovezzano",
     "id": "S06901"
+  },
+  {
+    "nomeLungo": "FIRENZE SANTA MARIA NOVELLA",
+    "nomeBreve": "FIRENZE S.M.N.",
+    "label": "Firenze",
+    "id": "S06421"
   },
   {
     "nomeLungo": "FIRENZE STATUTO",
@@ -6792,12 +6792,6 @@
     "id": "S11738"
   },
   {
-    "nomeLungo": "GENOVA PIAZZA PRINCIPE",
-    "nomeBreve": "GENOVA P.PRINC.",
-    "label": "Genova",
-    "id": "S04700"
-  },
-  {
     "nomeLungo": "GAGGI",
     "nomeBreve": "Gaggi",
     "label": null,
@@ -7138,6 +7132,12 @@
     "nomeBreve": "Genova Pegli",
     "label": "Genova",
     "id": "S04536"
+  },
+  {
+    "nomeLungo": "GENOVA PIAZZA PRINCIPE",
+    "nomeBreve": "GENOVA P.PRINC.",
+    "label": "Genova",
+    "id": "S04700"
   },
   {
     "nomeLungo": "GENOVA PIAZZA PRINCIPE SOTTERRANEA",
@@ -7806,6 +7806,12 @@
     "id": "S09053"
   },
   {
+    "nomeLungo": "ISOLA D`ASTI",
+    "nomeBreve": "Isola d`Asti",
+    "label": "Isola",
+    "id": "S00347"
+  },
+  {
     "nomeLungo": "ISOLA DEL CANTONE",
     "nomeBreve": "Isola del Cant.",
     "label": "Isola",
@@ -7822,12 +7828,6 @@
     "nomeBreve": "Isola d.Femmine",
     "label": "Isola",
     "id": "S12129"
-  },
-  {
-    "nomeLungo": "ISOLA D`ASTI",
-    "nomeBreve": "Isola d`Asti",
-    "label": "Isola",
-    "id": "S00347"
   },
   {
     "nomeLungo": "ISOLA LIRI",
@@ -7924,12 +7924,6 @@
     "nomeBreve": "Krizevci",
     "label": null,
     "id": "S73107"
-  },
-  {
-    "nomeLungo": "LAMEZIA TERME AEROPORTO",
-    "nomeBreve": "LAMEZIA T. A.",
-    "label": null,
-    "id": "S17014"
   },
   {
     "nomeLungo": "L'AQUILA",
@@ -8064,6 +8058,12 @@
     "id": "S01094"
   },
   {
+    "nomeLungo": "LAMEZIA TERME AEROPORTO",
+    "nomeBreve": "LAMEZIA T. A.",
+    "label": null,
+    "id": "S17014"
+  },
+  {
     "nomeLungo": "LAMEZIA TERME CENTRALE",
     "nomeBreve": "LAMEZIA T. C.LE",
     "label": "Lamezia Terme",
@@ -8138,14 +8138,14 @@
   {
     "nomeLungo": "LASCARI",
     "nomeBreve": "Lascari",
-    "label": "Lascari",
-    "id": "S12070"
+    "label": null,
+    "id": "S12018"
   },
   {
     "nomeLungo": "LASCARI",
     "nomeBreve": "Lascari",
-    "label": null,
-    "id": "S12018"
+    "label": "Lascari",
+    "id": "S12070"
   },
   {
     "nomeLungo": "LASTRA A SIGNA",
@@ -8634,22 +8634,16 @@
     "id": "S76290"
   },
   {
-    "nomeLungo": "MILANO CENTRALE",
-    "nomeBreve": "MILANO CENTRALE",
-    "label": "Milano",
-    "id": "S01700"
+    "nomeLungo": "MACCAGNO",
+    "nomeBreve": "Maccagno",
+    "label": "Maccagno",
+    "id": "S13653"
   },
   {
     "nomeLungo": "MACCAGNO",
     "nomeBreve": "Maccagno",
     "label": "Maccagno",
     "id": "S19005"
-  },
-  {
-    "nomeLungo": "MACCAGNO",
-    "nomeBreve": "Maccagno",
-    "label": "Maccagno",
-    "id": "S13653"
   },
   {
     "nomeLungo": "MACCARESE-FREGENE",
@@ -9540,6 +9534,12 @@
     "id": "S01066"
   },
   {
+    "nomeLungo": "MILANO CENTRALE",
+    "nomeBreve": "MILANO CENTRALE",
+    "label": "Milano",
+    "id": "S01700"
+  },
+  {
     "nomeLungo": "MILANO CERTOSA",
     "nomeBreve": "MILANO CERTOSA",
     "label": "Milano",
@@ -9788,14 +9788,14 @@
   {
     "nomeLungo": "MODUGNO",
     "nomeBreve": "Modugno",
-    "label": "Modugno",
-    "id": "S11516"
+    "label": null,
+    "id": "S11500"
   },
   {
     "nomeLungo": "MODUGNO",
     "nomeBreve": "Modugno",
-    "label": null,
-    "id": "S11500"
+    "label": "Modugno",
+    "id": "S11516"
   },
   {
     "nomeLungo": "MODUGNO CITTA'",
@@ -10104,16 +10104,16 @@
     "id": "S06411"
   },
   {
-    "nomeLungo": "MONTECHIARO DENICE",
-    "nomeBreve": "Montechiaro D.",
-    "label": "Montechiaro",
-    "id": "S00872"
-  },
-  {
     "nomeLungo": "MONTECHIARO D`ASTI",
     "nomeBreve": "Montechiaro d`A.",
     "label": "Montechiaro",
     "id": "S00428"
+  },
+  {
+    "nomeLungo": "MONTECHIARO DENICE",
+    "nomeBreve": "Montechiaro D.",
+    "label": "Montechiaro",
+    "id": "S00872"
   },
   {
     "nomeLungo": "MONTECORVINO",
@@ -10626,12 +10626,6 @@
     "id": "S03204"
   },
   {
-    "nomeLungo": "NAPOLI CENTRALE",
-    "nomeBreve": "NAPOLI CENTRALE",
-    "label": "Napoli",
-    "id": "S09218"
-  },
-  {
     "nomeLungo": "N.D.",
     "nomeBreve": "N.D.",
     "label": null,
@@ -10660,6 +10654,12 @@
     "nomeBreve": "NAPOLI CAMPI F.",
     "label": "Napoli",
     "id": "S09103"
+  },
+  {
+    "nomeLungo": "NAPOLI CENTRALE",
+    "nomeBreve": "NAPOLI CENTRALE",
+    "label": "Napoli",
+    "id": "S09218"
   },
   {
     "nomeLungo": "NAPOLI GIANTURCO",
@@ -11292,6 +11292,12 @@
     "id": "S08209"
   },
   {
+    "nomeLungo": "Ortona",
+    "nomeBreve": "Ortona",
+    "label": "Ortona",
+    "id": "S07815"
+  },
+  {
     "nomeLungo": "ORVIETO",
     "nomeBreve": "ORVIETO",
     "label": "Orvieto",
@@ -11452,18 +11458,6 @@
     "nomeBreve": "Ozzano Taro",
     "label": "Ozzano",
     "id": "S06152"
-  },
-  {
-    "nomeLungo": "Ortona",
-    "nomeBreve": "Ortona",
-    "label": "Ortona",
-    "id": "S07815"
-  },
-  {
-    "nomeLungo": "PALERMO CENTRALE",
-    "nomeBreve": "PALERMO C.LE",
-    "label": "Palermo",
-    "id": "S12002"
   },
   {
     "nomeLungo": "P.M. RENO",
@@ -11668,6 +11662,12 @@
     "nomeBreve": "PA Cardillo",
     "label": "Cardillo",
     "id": "S12140"
+  },
+  {
+    "nomeLungo": "PALERMO CENTRALE",
+    "nomeBreve": "PALERMO C.LE",
+    "label": "Palermo",
+    "id": "S12002"
   },
   {
     "nomeLungo": "PALERMO DE GASPERI",
@@ -11944,6 +11944,12 @@
     "nomeBreve": "PC R.Monte Mario",
     "label": null,
     "id": "S08017"
+  },
+  {
+    "nomeLungo": "PdE 2AV",
+    "nomeBreve": "PdE 2AV",
+    "label": null,
+    "id": "S05299"
   },
   {
     "nomeLungo": "PEDASO",
@@ -12600,16 +12606,16 @@
     "id": "S12816"
   },
   {
-    "nomeLungo": "PM ALBATE",
-    "nomeBreve": "P.M. ALBATE",
-    "label": "Albate",
-    "id": "S01310"
-  },
-  {
     "nomeLungo": "PM Agognate",
     "nomeBreve": "PM Agognate",
     "label": null,
     "id": "S00226"
+  },
+  {
+    "nomeLungo": "PM ALBATE",
+    "nomeBreve": "P.M. ALBATE",
+    "label": "Albate",
+    "id": "S01310"
   },
   {
     "nomeLungo": "PM CHAMBAVE",
@@ -12636,16 +12642,16 @@
     "id": "S11871"
   },
   {
-    "nomeLungo": "PM GROTTALUPARA",
-    "nomeBreve": "PM Grottalupara",
-    "label": null,
-    "id": "S11514"
-  },
-  {
     "nomeLungo": "PM Groane",
     "nomeBreve": "PMGroane",
     "label": null,
     "id": "S01928"
+  },
+  {
+    "nomeLungo": "PM GROTTALUPARA",
+    "nomeBreve": "PM Grottalupara",
+    "label": null,
+    "id": "S11514"
   },
   {
     "nomeLungo": "PM ISOLA CAPO RIZZUTO",
@@ -13512,12 +13518,6 @@
     "id": "S13102"
   },
   {
-    "nomeLungo": "PdE 2AV",
-    "nomeBreve": "PdE 2AV",
-    "label": null,
-    "id": "S05299"
-  },
-  {
     "nomeLungo": "QUADRI-BORELLO",
     "nomeBreve": "Quadri-Borello",
     "label": "Quadri-borello",
@@ -13588,18 +13588,6 @@
     "nomeBreve": "Quistello",
     "label": "Quistello",
     "id": "S05156"
-  },
-  {
-    "nomeLungo": "Reggio Emilia (tutte le stazioni)",
-    "nomeBreve": "REGGIO EM.TS",
-    "label": null,
-    "id": "S13550"
-  },
-  {
-    "nomeLungo": "ROMA TERMINI",
-    "nomeBreve": "ROMA TERMINI",
-    "label": "Roma",
-    "id": "S08409"
   },
   {
     "nomeLungo": "RACALE-ALLISTE",
@@ -13792,6 +13780,12 @@
     "nomeBreve": "REGGIO EM. (FER)",
     "label": "Reggio",
     "id": "S17251"
+  },
+  {
+    "nomeLungo": "Reggio Emilia (tutte le stazioni)",
+    "nomeBreve": "REGGIO EM.TS",
+    "label": null,
+    "id": "S13550"
   },
   {
     "nomeLungo": "REGGIO EMILIA AV MEDIOPADANA",
@@ -14296,6 +14290,12 @@
     "nomeBreve": "ROMA S.PIETRO",
     "label": "Roma",
     "id": "S08323"
+  },
+  {
+    "nomeLungo": "ROMA TERMINI",
+    "nomeBreve": "ROMA TERMINI",
+    "label": "Roma",
+    "id": "S08409"
   },
   {
     "nomeLungo": "ROMA TIBURTINA",
@@ -14988,16 +14988,16 @@
     "id": "S03031"
   },
   {
-    "nomeLungo": "S.GIOVANNI DI CASARSA",
-    "nomeBreve": "S.Giovanni di C.",
-    "label": "S.Giovanni",
-    "id": "S03199"
-  },
-  {
     "nomeLungo": "S.GIOVANNI D`ASSO",
     "nomeBreve": "S.Giovanni d'As.",
     "label": null,
     "id": "S06816"
+  },
+  {
+    "nomeLungo": "S.GIOVANNI DI CASARSA",
+    "nomeBreve": "S.Giovanni di C.",
+    "label": "S.Giovanni",
+    "id": "S03199"
   },
   {
     "nomeLungo": "S.GIOVANNI IN CROCE",
@@ -15846,6 +15846,18 @@
     "id": "S07932"
   },
   {
+    "nomeLungo": "SANT`ANNA",
+    "nomeBreve": "Sant'Anna",
+    "label": null,
+    "id": "S12897"
+  },
+  {
+    "nomeLungo": "SANT`ORSOLA",
+    "nomeBreve": "Sant'Orsola",
+    "label": null,
+    "id": "S12806"
+  },
+  {
     "nomeLungo": "SANTA LUCE",
     "nomeBreve": "Santa Luce",
     "label": null,
@@ -15904,18 +15916,6 @@
     "nomeBreve": "Santuario Incor.",
     "label": null,
     "id": "S11201"
-  },
-  {
-    "nomeLungo": "SANT`ANNA",
-    "nomeBreve": "Sant'Anna",
-    "label": null,
-    "id": "S12897"
-  },
-  {
-    "nomeLungo": "SANT`ORSOLA",
-    "nomeBreve": "Sant'Orsola",
-    "label": null,
-    "id": "S12806"
   },
   {
     "nomeLungo": "SANZANO OCCHINO",
@@ -16236,18 +16236,6 @@
     "id": "S05325"
   },
   {
-    "nomeLungo": "SEGNALE DI CONFINE 2BV AREZZO SUD (DISP)",
-    "nomeBreve": "Seg.Conf.2AR Sud",
-    "label": null,
-    "id": "S06089"
-  },
-  {
-    "nomeLungo": "SEGNALE DI CONFINE 2BV AREZZO SUD (PARI)",
-    "nomeBreve": "S.Conf.2AR Sud",
-    "label": null,
-    "id": "S06090"
-  },
-  {
     "nomeLungo": "SEGNALE DI CONFINE 2^BV ORV. NORD (DISP)",
     "nomeBreve": "Seg.Conf.2OrNord",
     "label": null,
@@ -16258,6 +16246,18 @@
     "nomeBreve": "Seg.Conf.2OrNord",
     "label": null,
     "id": "S06096"
+  },
+  {
+    "nomeLungo": "SEGNALE DI CONFINE 2BV AREZZO SUD (DISP)",
+    "nomeBreve": "Seg.Conf.2AR Sud",
+    "label": null,
+    "id": "S06089"
+  },
+  {
+    "nomeLungo": "SEGNALE DI CONFINE 2BV AREZZO SUD (PARI)",
+    "nomeBreve": "S.Conf.2AR Sud",
+    "label": null,
+    "id": "S06090"
   },
   {
     "nomeLungo": "SEGNALE DI CONFINE PM MONTALLESE (DISP)",
@@ -17184,12 +17184,6 @@
     "id": "S03269"
   },
   {
-    "nomeLungo": "TORINO PORTA NUOVA",
-    "nomeBreve": "TORINO P.NUOVA",
-    "label": "Torino",
-    "id": "S00219"
-  },
-  {
     "nomeLungo": "TAGGIA ARMA",
     "nomeBreve": "Taggia Arma",
     "label": "Taggia",
@@ -17622,6 +17616,12 @@
     "id": "S00193"
   },
   {
+    "nomeLungo": "TORINO PORTA NUOVA",
+    "nomeBreve": "TORINO P.NUOVA",
+    "label": "Torino",
+    "id": "S00219"
+  },
+  {
     "nomeLungo": "TORINO PORTA SUSA",
     "nomeBreve": "TORINO P. SUSA",
     "label": "Torino",
@@ -17806,6 +17806,12 @@
     "nomeBreve": "Trabia",
     "label": "Trabia",
     "id": "S12013"
+  },
+  {
+    "nomeLungo": "Traccia",
+    "nomeBreve": "Traccia",
+    "label": "Traccia",
+    "id": "S09122"
   },
   {
     "nomeLungo": "TRADATE",
@@ -18126,12 +18132,6 @@
     "id": "S11140"
   },
   {
-    "nomeLungo": "Traccia",
-    "nomeBreve": "Traccia",
-    "label": "Traccia",
-    "id": "S09122"
-  },
-  {
     "nomeLungo": "UDINE",
     "nomeBreve": "UDINE",
     "label": "Udine",
@@ -18166,30 +18166,6 @@
     "nomeBreve": "Ururi Rotello",
     "label": "Ururi",
     "id": "S09467"
-  },
-  {
-    "nomeLungo": "VENEZIA S.LUCIA",
-    "nomeBreve": "VENEZIA S.LUCIA",
-    "label": "Venezia",
-    "id": "S02593"
-  },
-  {
-    "nomeLungo": "VERGINESE",
-    "nomeBreve": "Verginese",
-    "label": "Verginese",
-    "id": "S05197"
-  },
-  {
-    "nomeLungo": "VERONA PORTA NUOVA",
-    "nomeBreve": "VERONA P.NUOVA",
-    "label": "Verona",
-    "id": "S02430"
-  },
-  {
-    "nomeLungo": "VITERBO PORTA FIORENTINA",
-    "nomeBreve": "VITERBO P.F.",
-    "label": "Viterbo",
-    "id": "S08304"
   },
   {
     "nomeLungo": "VADA",
@@ -18576,6 +18552,12 @@
     "id": "S02592"
   },
   {
+    "nomeLungo": "VENEZIA S.LUCIA",
+    "nomeBreve": "VENEZIA S.LUCIA",
+    "label": "Venezia",
+    "id": "S02593"
+  },
+  {
     "nomeLungo": "VENOSA-MASCHITO",
     "nomeBreve": "Venosa Maschito",
     "label": "Venosa",
@@ -18636,6 +18618,12 @@
     "id": "S01027"
   },
   {
+    "nomeLungo": "VERGINESE",
+    "nomeBreve": "Verginese",
+    "label": "Verginese",
+    "id": "S05197"
+  },
+  {
     "nomeLungo": "VERGNASCO",
     "nomeBreve": "Vergnasco",
     "label": "Vergnasco",
@@ -18682,6 +18670,12 @@
     "nomeBreve": "Verona Parona",
     "label": null,
     "id": "S02058"
+  },
+  {
+    "nomeLungo": "VERONA PORTA NUOVA",
+    "nomeBreve": "VERONA P.NUOVA",
+    "label": "Verona",
+    "id": "S02430"
   },
   {
     "nomeLungo": "VERONA PORTA VESCOVO",
@@ -19228,6 +19222,12 @@
     "nomeBreve": "Visone",
     "label": "Visone",
     "id": "S04100"
+  },
+  {
+    "nomeLungo": "VITERBO PORTA FIORENTINA",
+    "nomeBreve": "VITERBO P.F.",
+    "label": "Viterbo",
+    "id": "S08304"
   },
   {
     "nomeLungo": "VITERBO PORTA ROMANA",

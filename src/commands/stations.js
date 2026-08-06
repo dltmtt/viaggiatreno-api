@@ -20,6 +20,25 @@ export async function elencoStazioni(region, all) {
 
 		const results = await queue.addAll(tasks);
 		const stations = results.flat().filter(Boolean);
+		stations.sort((a, b) => {
+			const nameA =
+				a.localita?.nomeLungo ||
+				a.localita?.label ||
+				a.codiceStazione ||
+				a.key ||
+				"";
+			const nameB =
+				b.localita?.nomeLungo ||
+				b.localita?.label ||
+				b.codiceStazione ||
+				b.key ||
+				"";
+			const cmp = nameA.localeCompare(nameB, "it");
+			if (cmp !== 0) return cmp;
+			const codeA = a.codiceStazione || a.key || "";
+			const codeB = b.codiceStazione || b.key || "";
+			return codeA.localeCompare(codeB, "it");
+		});
 		return stations;
 	}
 
@@ -44,6 +63,15 @@ export async function cercaStazione(prefix, all) {
 
 		const results = await queue.addAll(tasks);
 		const stations = results.flat().filter(Boolean);
+		stations.sort((a, b) => {
+			const nameA = a.nomeLungo || a.label || a.nomeBreve || "";
+			const nameB = b.nomeLungo || b.label || b.nomeBreve || "";
+			const cmp = nameA.localeCompare(nameB, "it");
+			if (cmp !== 0) return cmp;
+			const idA = a.id || "";
+			const idB = b.id || "";
+			return idA.localeCompare(idB, "it");
+		});
 		return stations;
 	}
 
@@ -72,10 +100,19 @@ async function fetchAllFromEndpoint(endpointName) {
 	);
 
 	const results = await queue.addAll(tasks);
-	return results
+	const lines = results
 		.flatMap((result) => result.split("\n"))
-		.filter((line) => line.trim() !== "")
-		.join("\n");
+		.filter((line) => line.trim() !== "");
+
+	lines.sort((a, b) => {
+		const nameA = a.split("|")[0];
+		const nameB = b.split("|")[0];
+		const cmp = nameA.localeCompare(nameB, "it");
+		if (cmp !== 0) return cmp;
+		return a.localeCompare(b, "it");
+	});
+
+	return lines.join("\n");
 }
 
 /**
