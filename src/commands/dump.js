@@ -3,6 +3,7 @@
  */
 
 import { join } from "node:path";
+import { languageAll } from "./language.js";
 import { datimeteoAll } from "./regions.js";
 import { partenzeArriviAll } from "./schedules.js";
 import {
@@ -109,6 +110,9 @@ export async function staticDump(output) {
 		join(output, "elencoStazioni.json"),
 		JSON.stringify(elencoStazioniResult, null, 2),
 	);
+
+	// language dictionaries with --all (returns JSON files in languages/ directory)
+	await languageAll(output);
 
 	console.info("🎉 Static dump completed successfully!");
 }

@@ -85,6 +85,12 @@ vt-api infomobilitaRSS --lavori
 vt-api infomobilitaRSSBox
 vt-api infomobilitaTicker
 
+# Dizionario di traduzione delle stringhe dell'interfaccia
+vt-api language it
+vt-api language en
+vt-api language --all
+
+
 
 
 # Mostra i dettagli di una stazione recuperando codice stazione e codice regione in automatico
@@ -128,6 +134,7 @@ I [JSON Schema](https://json-schema.org/) riportati sono frutto di reverse engin
   - [`infomobilitaRSS`](#infomobilitarss)
   - [`infomobilitaRSSBox`](#infomobilitarssbox)
   - [`infomobilitaTicker`](#infomobilitaticker)
+  - [`language`](#language)
 
 ### Stazioni
 
@@ -771,6 +778,48 @@ Come riportato nel JSON Schema, il campo `subTitle` può essere `null`. Il sito 
   ```
 
 ![Striscia scorrevole delle notizie su ViaggiaTreno](assets/ticker.gif)
+
+#### language
+
+**Metodo e percorso:** `GET /language/{idLingua}`
+
+**Parametri:**
+
+- `idLingua`: codice della lingua desiderata. I codici supportati sono:
+  - `it`: Italiano
+  - `en`: Inglese
+  - `de`: Tedesco
+  - `fr`: Francese
+  - `sp`: Spagnolo
+  - `ro`: Rumeno
+  - `jp`: Giapponese
+  - `zh`: Cinese
+  - `ru`: Russo
+
+Se viene specificato un codice lingua non valido o non riconosciuto, l'endpoint restituisce di default il dizionario in lingua inglese (`en`).
+
+**Risposta:**
+
+- **Content-Type:** `application/json`
+- **Formato:** [language.schema.json](schemas/language.schema.json)
+
+**Esempi:**
+
+- Chiamando `/language/en`, otteniamo:
+  ```jsonc
+  {
+    "treno_in_testa_AA_coda_BB_fr": "Carriages A in the head, Executive middle - Carriages B in the queue, Executive middle",
+    "cercaTreno.da.label": "From",
+    "statistica_attuale": "Currently, {{treniCircolanti}} trains are in transit.",
+    "del": "for",
+    "fermate.partenzaEffettiva": "Actual departure",
+    "nessun_servizio_descrizione": "$Nessun servizio disponibile per questo treno$",
+    "classe_in_testa_fr": "Executive in the head",
+    "prec": "(prec. {0})",
+    "programmaOrario.6": "before 06:00",
+    // altri campi omessi per brevità
+  }
+  ```
 
 [API]: http://www.viaggiatreno.it/infomobilita/rest-jsapi
 [location code]: https://uic.org/support-activities/it/location-codes-enee

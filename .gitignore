@@ -3,3 +3,5 @@ node_modules/
 dumps/*
 !dumps/*.json
 !dumps/*.csv
+!dumps/languages/
+!dumps/languages/*.json

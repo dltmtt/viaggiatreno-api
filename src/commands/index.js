@@ -8,6 +8,7 @@ import {
 	infomobilitaRSSBox,
 	infomobilitaTicker,
 } from "./infomobilita.js";
+import { language, languageAll } from "./language.js";
 import { datimeteo, datimeteoAll, regione } from "./regions.js";
 import { arrivi, partenze } from "./schedules.js";
 import {
@@ -40,6 +41,8 @@ export const commands = {
 	infomobilitaRSS,
 	infomobilitaRSSBox,
 	infomobilitaTicker,
+	language,
+	languageAll,
 	dynamicDump,
 	dump,
 };

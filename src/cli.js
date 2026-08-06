@@ -179,6 +179,28 @@ export function setupCLI() {
 			console.log(res);
 		});
 
+	// language command
+	program
+		.command("language")
+		.description("Get language translation dictionary")
+		.argument("[lang]", "Language code (it, en, de, fr, sp, ro, jp, zh, ru)")
+		.option("-a, --all", "Fetch translation dictionaries for all languages")
+		.option("-o, --output <dir>", "Output directory", process.cwd())
+		.action(async (lang, options, command) => {
+			requireArgOrAll(
+				lang,
+				options.all,
+				command,
+				"Specify a language code (it, en, de, fr, sp, ro, jp, zh, ru) or use --all to fetch all languages.",
+			);
+			const res = await commands.language(
+				lang || "it",
+				options.all,
+				options.output,
+			);
+			if (res && !options.all) console.log(JSON.stringify(res, null, 2));
+		});
+
 	// dettaglioStazione command
 	program
 		.command("dettaglioStazione")
