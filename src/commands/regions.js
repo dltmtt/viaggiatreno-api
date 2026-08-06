@@ -2,7 +2,8 @@
  * Region-related commands
  */
 
-import { api } from "../api.js";
+import { join } from "node:path";
+import { api, queue } from "../api.js";
 import { resolveStationCode } from "../utils.js";
 
 export const REGIONS = {
@@ -58,4 +59,63 @@ export async function regione(station, table) {
 	console.log(
 		`Region for station ${stationCode}: ${region} (${REGIONS[region] || "Unknown Region"}).`,
 	);
+}
+
+/**
+ * Get weather data for a region or all regions
+ *
+ * @param {number} region - The region code (0-22)
+ * @param {boolean} all - If true, fetches weather data for all regions
+ * @param {Temporal.ZonedDateTime} dateTime - Date and time for timestamping output files
+ * @param {string} output - Output directory for saving results when all is true
+ * @returns {Promise<object>} Weather data object by station code
+ */
+export async function datimeteo(region, all, dateTime, output) {
+	if (all) {
+		return datimeteoAll(dateTime, output);
+	}
+
+	if (region === 0 || region) {
+		const res = await api.get(`datimeteo/${region}`).json();
+		return res;
+	}
+}
+
+/**
+ * Fetch weather data for all regions and save to output directory
+ *
+ * @param {Temporal.ZonedDateTime} dateTime - Date and time for timestamping output files
+ * @param {string} output - Output directory for saving results
+ * @returns {Promise<object>} Combined weather data for all regions
+ */
+export async function datimeteoAll(
+	dateTime = Temporal.Now.zonedDateTimeISO("Europe/Rome"),
+	output = process.cwd(),
+) {
+	const outputPath = join(output, "datimeteo");
+
+	console.info("Fetching weather data for all regions...");
+
+	const humanReadableDateTime = dateTime.toString({
+		smallestUnit: "second",
+		timeZoneName: "never",
+		offset: "never",
+	});
+
+	const allWeatherData = {};
+
+	const tasks = Object.keys(REGIONS).map((regionCode) => async () => {
+		const res = await api.get(`datimeteo/${regionCode}`).json();
+		if (res && Object.keys(res).length > 0) {
+			const filename = `${regionCode}_${humanReadableDateTime}_datimeteo.json`;
+			Bun.write(join(outputPath, filename), JSON.stringify(res, null, 2));
+			Object.assign(allWeatherData, res);
+		}
+		return res;
+	});
+
+	await queue.addAll(tasks);
+
+	console.info(`✅ Weather data saved to ${outputPath}.`);
+	return allWeatherData;
 }

@@ -123,6 +123,35 @@ export function setupCLI() {
 			commands.regione(station, options.table);
 		});
 
+	// datimeteo command
+	program
+		.command("datimeteo")
+		.description("Get weather data for a region or all regions")
+		.argument("[region]", "Region number (0-22)", (value) => Number(value))
+		.option("-a, --all", "Fetch weather data for all regions")
+		.option(
+			"--datetime <datetime>",
+			"Search date and time",
+			(value) => Temporal.ZonedDateTime.from(value),
+			Temporal.Now.zonedDateTimeISO("Europe/Rome"),
+		)
+		.option("-o, --output <dir>", "Output directory", process.cwd())
+		.action(async (region, options, command) => {
+			requireArgOrAll(
+				region,
+				options.all,
+				command,
+				"Specify a region number (0-22) or use --all to fetch weather data for all regions.",
+			);
+			const res = await commands.datimeteo(
+				region,
+				options.all,
+				options.datetime,
+				options.output,
+			);
+			if (res) console.log(JSON.stringify(res, null, 2));
+		});
+
 	// dettaglioStazione command
 	program
 		.command("dettaglioStazione")

@@ -1,0 +1,102 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://raw.githubusercontent.com/dltmtt/viaggiatreno-api/refs/heads/main/schemas/datimeteo.schema.json",
+  "title": "Risposta dell'endpoint /datimeteo",
+  "type": "object",
+  "patternProperties": {
+    "^S\\d{5}$": {
+      "type": "object",
+      "properties": {
+        "codStazione": {
+          "type": "string",
+          "pattern": "^S\\d{5}$",
+          "description": "Codice della stazione."
+        },
+        "oggiTemperatura": {
+          "type": "integer",
+          "description": "Temperatura massima prevista per oggi in gradi Celsius."
+        },
+        "oggiTemperaturaMattino": {
+          "type": "integer",
+          "description": "Temperatura prevista per la mattina di oggi in gradi Celsius."
+        },
+        "oggiTemperaturaPomeriggio": {
+          "type": "integer",
+          "description": "Temperatura prevista per il pomeriggio di oggi in gradi Celsius."
+        },
+        "oggiTemperaturaSera": {
+          "type": "integer",
+          "description": "Temperatura prevista per la sera di oggi in gradi Celsius."
+        },
+        "oggiTempo": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 8
+        },
+        "oggiTempoMattino": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 8
+        },
+        "oggiTempoPomeriggio": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 8
+        },
+        "oggiTempoSera": {
+          "type": "integer",
+          "minimum": 101,
+          "maximum": 108
+        },
+        "domaniTemperatura": {
+          "type": "integer",
+          "description": "Temperatura massima prevista per domani in gradi Celsius."
+        },
+        "domaniTemperaturaMattino": {
+          "type": "integer",
+          "description": "Temperatura prevista per la mattina di domani in gradi Celsius."
+        },
+        "domaniTemperaturaPomeriggio": {
+          "type": "integer",
+          "description": "Temperatura prevista per il pomeriggio di domani in gradi Celsius."
+        },
+        "domaniTemperaturaSera": {
+          "type": "integer",
+          "description": "Temperatura prevista per la sera di domani in gradi Celsius."
+        },
+        "domaniTempo": {
+          "type": "integer"
+        },
+        "domaniTempoMattino": {
+          "type": "integer"
+        },
+        "domaniTempoPomeriggio": {
+          "type": "integer"
+        },
+        "domaniTempoSera": {
+          "type": "integer"
+        }
+      },
+      "required": [
+        "codStazione",
+        "oggiTemperatura",
+        "oggiTemperaturaMattino",
+        "oggiTemperaturaPomeriggio",
+        "oggiTemperaturaSera",
+        "oggiTempo",
+        "oggiTempoMattino",
+        "oggiTempoPomeriggio",
+        "oggiTempoSera",
+        "domaniTemperatura",
+        "domaniTemperaturaMattino",
+        "domaniTemperaturaPomeriggio",
+        "domaniTemperaturaSera",
+        "domaniTempo",
+        "domaniTempoMattino",
+        "domaniTempoPomeriggio",
+        "domaniTempoSera"
+      ]
+    }
+  },
+  "additionalProperties": false
+}

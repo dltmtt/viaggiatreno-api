@@ -3,7 +3,7 @@
  */
 
 import { dump, dynamicDump } from "./dump.js";
-import { regione } from "./regions.js";
+import { datimeteo, datimeteoAll, regione } from "./regions.js";
 import { arrivi, partenze } from "./schedules.js";
 import {
 	autocompleteStation,
@@ -24,6 +24,8 @@ export const commands = {
 	cercaStazione,
 	autocompleteStation,
 	regione,
+	datimeteo,
+	datimeteoAll,
 	dettaglioStazione,
 	cercaNumeroTrenoTrenoAutocomplete,
 	cercaNumeroTreno,

@@ -75,6 +75,10 @@ vt-api regione --table
 # Elenco stazioni in una regione (es. Lombardia)
 vt-api elencoStazioni 1
 
+# Dati meteo per una regione (es. Lombardia) o per tutte le regioni
+vt-api datimeteo 1
+vt-api datimeteo --all
+
 # Mostra i dettagli di una stazione recuperando codice stazione e codice regione in automatico
 vt-api dettaglioStazione "Milano Centrale"
 
@@ -112,6 +116,7 @@ I [JSON Schema](https://json-schema.org/) riportati sono frutto di reverse engin
   - [`andamentoTreno`](#andamentotreno)
 - [Altro](#altro)
   - [`statistiche`](#statistiche)
+  - [`datimeteo`](#datimeteo)
 
 ### Stazioni
 
@@ -599,6 +604,49 @@ Come riportato nel JSON Schema, il campo `subTitle` può essere `null`. Il sito 
     "treniGiorno": 86,
     "ultimoAggiornamento": 1754263735490,
     "treniCircolanti": 42
+  }
+  ```
+
+#### datimeteo
+
+**Metodo e percorso:** `GET /datimeteo/{codiceRegione}`
+
+**Parametri:**
+
+- `codiceRegione`: codice numerico della regione (0-22). Si veda [`regione --table`](#regione) per l'elenco dei codici.
+
+**Risposta:**
+
+- **Content-Type:** `application/json`
+- **Formato:** [datimeteo.schema.json](schemas/datimeteo.schema.json)
+
+> [!NOTE]
+> Se l'endpoint viene chiamato con il codice regione `9` (Trentino-Alto Adige), restituisce un oggetto vuoto `{}`. Per ottenere i dati meteo della zona occorre usare i codici delle relative province autonome (es. `22` per Bolzano).
+
+**Esempi:**
+
+- Chiamando `/datimeteo/1` (Lombardia), otteniamo:
+  ```json
+  {
+    "S01700": {
+      "codStazione": "S01700",
+      "oggiTemperatura": 37,
+      "oggiTemperaturaMattino": 30,
+      "oggiTemperaturaPomeriggio": 37,
+      "oggiTemperaturaSera": 32,
+      "oggiTempo": 1,
+      "oggiTempoMattino": 2,
+      "oggiTempoPomeriggio": 2,
+      "oggiTempoSera": 101,
+      "domaniTemperatura": 36,
+      "domaniTemperaturaMattino": 29,
+      "domaniTemperaturaPomeriggio": 37,
+      "domaniTemperaturaSera": 29,
+      "domaniTempo": 5,
+      "domaniTempoMattino": 2,
+      "domaniTempoPomeriggio": 2,
+      "domaniTempoSera": 105
+    }
   }
   ```
 

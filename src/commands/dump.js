@@ -3,6 +3,7 @@
  */
 
 import { join } from "node:path";
+import { datimeteoAll } from "./regions.js";
 import { partenzeArriviAll } from "./schedules.js";
 import {
 	autocompleteStation,
@@ -13,7 +14,7 @@ import { andamentoTrenoBulk } from "./trains.js";
 
 /**
  * Dynamic dump process that collects comprehensive train and station data
- * This function fetches departures, arrivals, and train status for all stations
+ * This function fetches departures, arrivals, train status, and weather data
  *
  * @param {Temporal.ZonedDateTime} dateTime - The date and time to search for train data
  * @param {string} output - Output directory for saving results
@@ -40,6 +41,9 @@ export async function dynamicDump(dateTime, output) {
 		Array.from(trains).map((t) => t.split(",")),
 		output,
 	);
+
+	console.info("Fetching weather data for all regions...");
+	await datimeteoAll(dateTime, output);
 
 	console.info("🎉 Dynamic dump completed successfully!");
 }
