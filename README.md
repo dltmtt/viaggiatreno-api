@@ -79,6 +79,14 @@ vt-api elencoStazioni 1
 vt-api datimeteo 1
 vt-api datimeteo --all
 
+# Notizie di infomobilità ed eventi di circolazione o lavori
+vt-api infomobilitaRSS
+vt-api infomobilitaRSS --lavori
+vt-api infomobilitaRSSBox
+vt-api infomobilitaTicker
+
+
+
 # Mostra i dettagli di una stazione recuperando codice stazione e codice regione in automatico
 vt-api dettaglioStazione "Milano Centrale"
 
@@ -117,6 +125,9 @@ I [JSON Schema](https://json-schema.org/) riportati sono frutto di reverse engin
 - [Altro](#altro)
   - [`statistiche`](#statistiche)
   - [`datimeteo`](#datimeteo)
+  - [`infomobilitaRSS`](#infomobilitarss)
+  - [`infomobilitaRSSBox`](#infomobilitarssbox)
+  - [`infomobilitaTicker`](#infomobilitaticker)
 
 ### Stazioni
 
@@ -161,7 +172,7 @@ I [JSON Schema](https://json-schema.org/) riportati sono frutto di reverse engin
   ```
 
 Questo è l'endpoint utilizzato da [ViaggiaTreno] per visualizzare i suggerimenti delle stazioni quando si inizia a digitare il nome di una stazione.
-![Schermata di [ViaggiaTreno] in cui viene effettuata una chiamata ad autocompletaStazione.](images/demo-autocompleta-stazione.png)
+![Schermata di [ViaggiaTreno] in cui viene effettuata una chiamata ad autocompletaStazione.](assets/demo-autocompleta-stazione.png)
 
 #### autocompletaStazioneImpostaViaggio
 
@@ -421,7 +432,7 @@ Il nome effettivo con cui un'impresa ferroviaria è registrata presso RFI può e
 
 Le maggior parte delle immagini che indicano ritardi o cancellazioni sono visibili aprendo la legenda di [ViaggiaTreno], sebbene alcune di esse non siano più presenti (ad esempio quella per la mancata rilevazione, che è presente ma non nella legenda).
 
-![Legenda](images/legenda.png)
+![Legenda](assets/legenda.png)
 
 #### partenze
 
@@ -431,7 +442,6 @@ Le maggior parte delle immagini che indicano ritardi o cancellazioni sono visibi
 
 - `codiceStazione`: codice della stazione di cui si vogliono sapere le partenze nel formato `^S\d{5}$` (es. `S01700` per Milano Centrale)
 - `dataOra`: data e ora in cui si vogliono vedere le partenze un formato simile a quello prodotto dalla funzione `Date.toUTCString()` di JavaScript, ad esempio:
-
   - `Fri Aug 2 2025 20:00:00`
   - `Fri, Aug 2 2025 13:20:00 GMT+0100 (Central European Time)`
   - `Fri, Aug 2 2025 06:30:00 UTC-0100`
@@ -451,7 +461,6 @@ Si noti il gran numero di campi `const` che sono presenti in questo schema. Ques
 
 - `codiceStazione`: codice della stazione di cui si vogliono sapere gli arrivi nel formato `^S\d{5}$` (es. `S01700` per Milano Centrale)
 - `dataOra`: data e ora in cui si vogliono vedere gli arrivi un formato simile a quello prodotto dalla funzione `Date.toUTCString()` di JavaScript, ad esempio:
-
   - `Fri Aug 2 2025 20:00:00`
   - `Fri, Aug 2 2025 13:20:00 GMT+0100 (Central European Time)`
   - `Fri, Aug 2 2025 06:30:00 UTC-0100`
@@ -579,7 +588,7 @@ Di seguito è riportata una tabella contente il significato presunto dei valori 
 
 Come riportato nel JSON Schema, il campo `subTitle` può essere `null`. Il sito di ViaggiaTreno non contempla questo caso, provando a leggere l'attributo `length` senza controlli. Ciò porta a un caricamento infinito, come dimostrato nell'immagine sottostante.
 
-![Caricamento infinito quando `subTitle` è `null`](images/subtitle-null.png)
+![Caricamento infinito quando `subTitle` è `null`](assets/subtitle-null.png)
 
 ### Altro
 
@@ -649,6 +658,119 @@ Come riportato nel JSON Schema, il campo `subTitle` può essere `null`. Il sito 
     }
   }
   ```
+
+#### infomobilitaRSS
+
+**Metodo e percorso:** `GET /infomobilitaRSS/{isInfoLavori}`
+
+**Parametri:**
+
+- `isInfoLavori`: valore booleano (`true` o `false`). Se `true`, restituisce la lista delle notizie riguardanti i lavori programmati e le modifiche alla linea. Se `false`, restituisce le notizie e gli avvisi generali sull'andamento della circolazione nazionale.
+
+**Risposta:**
+
+- **Content-Type:** `text/plain`
+- **Formato:** Stringa contenente un frammento di codice HTML (`<ul id="accordionGenericInfomob">...</ul>`). L'HTML contiene ciò che viene visualizzato cliccando su un elemento qualsiasi della sezione "Notizie Infomobilità" (corrispondente al `isInfoLavori` uguale a `false`) o "Modifiche programmate" (corrispondente al `isInfoLavori` uguale a `true`) del sito [ViaggiaTreno]. L'HTML contiene i titoli delle notizie e i blocchi di testo estesi, che possono essere visualizzati cliccando sul titolo della notizia.
+
+**Esempi:**
+
+- Chiamando `/infomobilitaRSS/false` (notizie di circolazione generale), otteniamo:
+  ```html
+  <ul id="accordionGenericInfomob">
+    <li class="editModeCollapsibleElement">
+      <a
+        href="#"
+        id="headingNewsAccordion0"
+        onclick="infoCollapse('headingNewsAccordion0')"
+        class="headingNewsAccordion inEvidenza"
+        id="CIRCOLAZIONE REGOLARE"
+        >CIRCOLAZIONE REGOLARE</a
+      >
+      <div class="boxAcc">
+        <div>
+          <div class="textComponent">
+            <h4>06.08.2026</h4>
+            <div class="info-text  inEvidenza">
+              <p>
+                <b
+                  >In questo momento la circolazione si svolge regolarmente su
+                  tutta la rete ferroviaria nazionale.</b
+                >
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </li>
+  </ul>
+  ```
+
+![Notizie infomobilità](assets/infomobilità.png)
+
+#### infomobilitaRSSBox
+
+**Metodo e percorso:** `GET /infomobilitaRSSBox/{isInfoLavori}`
+
+**Parametri:**
+
+- `isInfoLavori`: valore booleano (`true` o `false`). Identico all'endpoint [`infomobilitaRSS`](#infomobilitarss).
+
+**Risposta:**
+
+- **Content-Type:** `text/plain`
+- **Formato:** Stringa contenente un frammento di codice HTML (`<ul id="accordionGenericInfomob">...</ul>`). A differenza di [`infomobilitaRSS`](#infomobilitarss), questo endpoint restituisce unicamente i titoli delle notizie infomobilità/modifiche programmate senza i blocchi di testo estesi, pensato per essere integrato nel box Infotraffico del sito.
+
+**Esempi:**
+
+- Chiamando `/infomobilitaRSSBox/false`, otteniamo:
+  ```html
+  <ul id="accordionGenericInfomob">
+    <li class="editModeCollapsibleElement">
+      <a
+        href="#"
+        id="headingNewsAccordion0"
+        onclick="infoBox('headingNewsAccordion')"
+        class="headingNewsAccordionBox inEvidenza"
+        id="CIRCOLAZIONE REGOLARE"
+        >CIRCOLAZIONE REGOLARE</a
+      >
+    </li>
+    <li class="editModeCollapsibleElement">
+      <a
+        href="#"
+        id="headingNewsAccordion1"
+        onclick="infoBox('headingNewsAccordion')"
+        class="headingNewsAccordionBox "
+        id="INFOTRENI INTERCITY - EUROCITY"
+        >INFOTRENI INTERCITY - EUROCITY</a
+      >
+    </li>
+  </ul>
+  ```
+
+![Box Infotraffico](assets/infolavori.png)
+
+#### infomobilitaTicker
+
+**Metodo e percorso:** `GET /infomobilitaTicker`
+
+**Parametri:** Nessuno.
+
+**Risposta:**
+
+- **Content-Type:** `text/plain`
+- **Formato:** Stringa contenente un frammento di codice HTML (`<ul><li>...</li></ul>`) contenente gli avvisi brevi e sintetici destinati al banner o alla striscia scorrevole (ticker) del sito (si vedano le immagini sottostanti).
+
+**Esempi:**
+
+- Chiamando `/infomobilitaTicker`, otteniamo:
+  ```html
+  <ul>
+    <li>CIRCOLAZIONE REGOLARE</li>
+  </ul>
+  ```
+
+![Striscia scorrevole delle notizie su ViaggiaTreno](assets/ticker.gif)
 
 [API]: http://www.viaggiatreno.it/infomobilita/rest-jsapi
 [location code]: https://uic.org/support-activities/it/location-codes-enee

@@ -152,6 +152,33 @@ export function setupCLI() {
 			if (res) console.log(JSON.stringify(res, null, 2));
 		});
 
+	// infomobilitaRSS and infomobilitaRSSBox commands
+	[
+		["infomobilitaRSS", "Get full infomobility RSS news HTML"],
+		["infomobilitaRSSBox", "Get infomobility RSS summary box HTML"],
+	].forEach(([cmdName, desc]) => {
+		program
+			.command(cmdName)
+			.description(desc)
+			.option(
+				"-l, --lavori",
+				"Fetch planned works (isInfoLavori=true) instead of general news",
+			)
+			.action(async (options) => {
+				const res = await commands[cmdName](Boolean(options.lavori));
+				console.log(res);
+			});
+	});
+
+	// infomobilitaTicker command
+	program
+		.command("infomobilitaTicker")
+		.description("Get infomobility news ticker HTML")
+		.action(async () => {
+			const res = await commands.infomobilitaTicker();
+			console.log(res);
+		});
+
 	// dettaglioStazione command
 	program
 		.command("dettaglioStazione")

@@ -3,6 +3,11 @@
  */
 
 import { dump, dynamicDump } from "./dump.js";
+import {
+	infomobilitaRSS,
+	infomobilitaRSSBox,
+	infomobilitaTicker,
+} from "./infomobilita.js";
 import { datimeteo, datimeteoAll, regione } from "./regions.js";
 import { arrivi, partenze } from "./schedules.js";
 import {
@@ -32,6 +37,9 @@ export const commands = {
 	partenze,
 	arrivi,
 	andamentoTreno,
+	infomobilitaRSS,
+	infomobilitaRSSBox,
+	infomobilitaTicker,
 	dynamicDump,
 	dump,
 };
