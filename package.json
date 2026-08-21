@@ -35,7 +35,6 @@
   "dependencies": {
     "commander": "^15.0.0",
     "ky": "^2.0.2",
-    "p-queue": "^9.3.3",
-    "temporal-polyfill": "^1.0.3"
+    "p-queue": "^9.3.3"
   }
 }
